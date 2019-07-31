@@ -29,6 +29,13 @@ public abstract class BaseMediaPlayer extends FrameLayout {
     * */
     public abstract void play(String url);
 
+
+    /*
+     * 设置开始时间
+     *@param url
+     * */
+    public abstract void setStartTime(int time);
+
     /*
      * 恢复
      *@param url

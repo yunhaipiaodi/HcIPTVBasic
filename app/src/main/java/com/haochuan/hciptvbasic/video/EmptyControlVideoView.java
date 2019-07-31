@@ -16,6 +16,7 @@ import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
 public class EmptyControlVideoView extends StandardGSYVideoPlayer {
 
     IVideoPlayer iVideoPlayerListener ;
+    private int startTime = 0;                                 //播放器开始的时间
 
     public EmptyControlVideoView(Context context, Boolean fullFlag) {
         super(context, fullFlag);
@@ -68,6 +69,15 @@ public class EmptyControlVideoView extends StandardGSYVideoPlayer {
         if(iVideoPlayerListener != null){
             iVideoPlayerListener.onPlaying();
         }
+
+    }
+
+    @Override
+    public void onPrepared() {
+        super.onPrepared();
+        if(startTime > 0){
+            seekTo(startTime);
+        }
     }
 
     @Override
@@ -116,6 +126,9 @@ public class EmptyControlVideoView extends StandardGSYVideoPlayer {
         this.iVideoPlayerListener = iVideoPlayer;
     }
 
+    public void setStartTime(int time){
+        this.startTime = time;
+    };
 
     /*-----------------*/
 

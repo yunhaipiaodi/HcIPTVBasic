@@ -1,75 +1,73 @@
 package com.haochuan.hciptvbasic.webview;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
+import android.util.TypedValue;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
-
-import androidx.annotation.StringDef;
+import android.widget.TextView;
 
 import com.haochuan.hciptvbasic.BuildConfig;
+import com.haochuan.hciptvbasic.Util.DownloadUtils;
+import com.haochuan.hciptvbasic.Util.JsUtil;
 import com.haochuan.hciptvbasic.Util.Logger;
 import com.haochuan.hciptvbasic.Util.MacUtil;
+import com.haochuan.hciptvbasic.Util.Md5Util;
+import com.haochuan.hciptvbasic.Util.ToolsUtil;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import static com.haochuan.hciptvbasic.webview.ToolToJS.JsEvent.JS_EVENT_BACK;
+import java.io.File;
 
 
 public class ToolToJS {
     private Context context;                        //MainActivity 句柄
     private WebView webView;
+    private ToolsUtil toolsUtil;
+
+    //将遥控返回按键事件传递给前端
+    String JS_EVENT_BACK = "javascript:onBackEvent()";
+
+    //将日志传递给js
+    String JS_EVENT_LOG = "javascript:onLog('%s')";
+
+    //将response传递给js
+    String JS_EVENT_RESPONSE ="javascript:onWebRequestResponse('%s','%s')";
+
+    //开始下载事件
+    String JS_EVENT_DOWNLOAD_START = "javascript:onDownloadStart()";
+
+    //下载进度通知,参数progress,下载进度
+    String JS_EVENT_DOWNLOAD_PROGRESS = "javascript:onDownloadProgress(%s)";
+
+    //下载成功事件，参数filePath,下载路径
+    String JS_EVENT_DOWNLOAD_SUCCESS = "javascript:onDownloadSuccess('%s')";
+
+    //下载失败事件，参数errorMessage,错误信息
+    String JS_EVENT_DOWNLOAD_FAIL = "javascript:onDownloadFail('%s')";
+
 
     public ToolToJS(Context context, WebView webView){
         this.context = context;
         this.webView = webView;
-    }
-
-    /**
-     * JS调用类型
-     */
-    @StringDef({JS_EVENT_BACK})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface JsEvent{
-
-        /**
-         * 将遥控返回按键传递给js
-         */
-        String JS_EVENT_BACK = "javascript:onBackEvent()";
-
+        toolsUtil = new ToolsUtil();
     }
 
     /*------------------------------------功能性函数-----------------------------------------*/
     /*---------------------------------------------------------------------------------------*/
 
-    /**
-     * 调用js事件
-     */
-    private void evaluateJavascript(WebView webView, @ToolToJS.JsEvent String script) {
-        Logger.show(context,"ToolToJS 执行脚本：" + script);
-        if (webView == null) {
-            Logger.show(context,"webView对象为空，JS事件调用无法执行");
-            return;
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            webView.evaluateJavascript(script, value -> {
-                //此处为 js 返回的结果
-                Logger.show(context,value);
-            });
-        } else {
-            webView.loadUrl(script);
-        }
+    /*
+     * 将log传递给前端
+     * */
+    public void logToJs(String log){
+        JsUtil.evaluateJavascript(context,webView,
+                String.format(JS_EVENT_LOG,log));
     }
 
     /*
      * webView对象获取"返回"按键事件
      * */
     public void onBackPressed(){
-        evaluateJavascript(webView, JS_EVENT_BACK);
+        JsUtil.evaluateJavascript(context,webView, JS_EVENT_BACK);
     }
 
     /*---------------------------------获取本地参数--------------------------*/
@@ -98,14 +96,69 @@ public class ToolToJS {
         return MacUtil.getMac(context);
     }
 
-    /*-----------------------------操作APK-------------------------------------*/
-
     /*
-    * 查看目标包名app是否安装
+    * 获取intent启动参数
     * */
     @JavascriptInterface
-    public void checkInstall(String pkgName) {
-        //((Activity) context).runOnUiThread(() -> installApk(apkPath));
+    public String getIntentJson(){
+        return toolsUtil.getIntentJson(context);
+    }
+
+    /*-----------------------------操作APK-------------------------------------*/
+
+    /**
+     * 判定是否安装第三方应用
+     * packageName,包名
+     * 返回 0,安装；-1，未安装
+     * **/
+    @JavascriptInterface
+    public int checkAppInstalled(String packageName){
+        return toolsUtil.checkSubAppInstalled(context,packageName)?1:-1;
+    }
+
+
+    /*
+    * 下载
+    * */
+    @JavascriptInterface
+    public void download(String downloadUrl){
+        DownloadUtils.download(downloadUrl, context.getPackageName() + getVersionCode(), "apk", new DownloadUtils.DownloadProgressListener() {
+            @Override
+            public void onDownloadStart(String fileName) {
+                JsUtil.evaluateJavascript(context,webView,JS_EVENT_DOWNLOAD_START);
+            }
+
+            @Override
+            public void onDownloadProgress(int progress) {
+                JsUtil.evaluateJavascript(context,webView,
+                        String.format(JS_EVENT_DOWNLOAD_START,progress));
+            }
+
+            @Override
+            public void onDownloadSuccessful(String filePath) {
+                JsUtil.evaluateJavascript(context,webView,
+                        String.format(JS_EVENT_DOWNLOAD_SUCCESS,filePath));
+            }
+
+            @Override
+            public void onDownloadFail(String message){
+                JsUtil.evaluateJavascript(context,webView,
+                        String.format(JS_EVENT_DOWNLOAD_FAIL,message));
+            }
+        });
+    }
+
+    /*
+    * 获得下载文件MD5值
+    * */
+    @JavascriptInterface
+    public String getMD5(String filePath){
+        try{
+            return Md5Util.getFileMD5(new File(filePath));
+        }catch (Exception e){
+            e.printStackTrace();
+            return "";
+        }
     }
 
     /**
@@ -114,25 +167,39 @@ public class ToolToJS {
      */
     @JavascriptInterface
     public void install(String apkPath) {
-        ((Activity) context).runOnUiThread(() -> installApk(apkPath));
+        ((Activity) context).runOnUiThread(() -> toolsUtil.installApk(context,apkPath));
     }
 
-    private void installApk(String filePath) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.parse("file://" + filePath), "application/vnd.android.package-archive");
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//4.0以上系统弹出安装成功打开界面
-        context.startActivity(intent);
-    }
+
 
     /**
      * 卸载app
      */
     @JavascriptInterface
-    public void uninstall() {
-        ((Activity) context).runOnUiThread(() -> {
-            Uri uri = Uri.fromParts("package", context.getPackageName(), null);
-            Intent intent = new Intent(Intent.ACTION_DELETE, uri);
-            context.startActivity(intent);
-        });
+    public void uninstall(String pkgName) {
+        ((Activity) context).runOnUiThread(() -> toolsUtil.uninstall(context,pkgName));
     }
+
+    /*---------------------------通过客户端请求接口------------------------*/
+
+    /*
+     *js 通过apk客户端访问网络接口
+     *@param paramJson 请求参数集,格式为json字符串
+     *@param headJson 请求头部集，格式为json字符串
+     *@param method 请求方法，1,get;2,post
+     *@param ignoreResult 是否忽略结果,true,忽略;false,不忽略.
+     *@param tag 透传参数，将在结果回调中一并返回，主要区别多个并发请求
+     * */
+    @JavascriptInterface
+    public void clientWebRequest(String url,String paramJson,String headJson,int method,boolean ignoreResult,String tag){
+        toolsUtil.clientWebRequest(context, url, paramJson, headJson, method, ignoreResult, tag,
+                (int what,String response,String tag1)->{
+                        if(what == 0){
+                            Logger.d(String.format("response:%s;tag:%s",response,tag1));
+                            JsUtil.evaluateJavascript(context,webView,
+                                    String.format(JS_EVENT_RESPONSE,response,tag1));
+                        }
+                });
+    }
+
 }

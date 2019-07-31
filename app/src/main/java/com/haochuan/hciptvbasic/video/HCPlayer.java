@@ -55,7 +55,7 @@ public class HCPlayer extends BaseMediaPlayer implements IVideoPlayer{
         if(iVideoPlayerListener != null){
             iVideoPlayerListener.onPreparing();
         }else{
-            Logger.show(CommonUtil.getActivityContext(getContext()),"错误！HCPlayer 未设置监听接口");
+            Logger.e("HCPlayer 未设置监听接口");
         }
     }
 
@@ -64,7 +64,7 @@ public class HCPlayer extends BaseMediaPlayer implements IVideoPlayer{
         if(iVideoPlayerListener != null){
             iVideoPlayerListener.onPlaying();
         }else{
-            Logger.show(CommonUtil.getActivityContext(getContext()),"错误！HCPlayer 未设置监听接口");
+            Logger.e("HCPlayer 未设置监听接口");
         }
     }
 
@@ -78,7 +78,7 @@ public class HCPlayer extends BaseMediaPlayer implements IVideoPlayer{
         if(iVideoPlayerListener != null){
             iVideoPlayerListener.onPause();
         }else{
-            Logger.show(CommonUtil.getActivityContext(getContext()),"错误！HCPlayer 未设置监听接口");
+            Logger.e("HCPlayer 未设置监听接口");
         }
     }
 
@@ -93,7 +93,7 @@ public class HCPlayer extends BaseMediaPlayer implements IVideoPlayer{
         if(iVideoPlayerListener != null){
             iVideoPlayerListener.onPlayingBuffering();
         }else{
-            Logger.show(CommonUtil.getActivityContext(getContext()),"错误！HCPlayer 未设置监听接口");
+            Logger.e("HCPlayer 未设置监听接口");
         }
     }
 
@@ -102,7 +102,7 @@ public class HCPlayer extends BaseMediaPlayer implements IVideoPlayer{
         if(iVideoPlayerListener != null){
             iVideoPlayerListener.onCompletion();
         }else{
-            Logger.show(CommonUtil.getActivityContext(getContext()),"错误！HCPlayer 未设置监听接口");
+            Logger.e("HCPlayer 未设置监听接口");
         }
     }
 
@@ -112,7 +112,7 @@ public class HCPlayer extends BaseMediaPlayer implements IVideoPlayer{
         if(iVideoPlayerListener != null){
             iVideoPlayerListener.onError(what,extra);
         }else{
-            Logger.show(CommonUtil.getActivityContext(getContext()),"错误！HCPlayer 未设置监听接口");
+            Logger.e("HCPlayer 未设置监听接口");
         }
     }
 
@@ -121,6 +121,9 @@ public class HCPlayer extends BaseMediaPlayer implements IVideoPlayer{
     public void play(String url) {
         mHcGsyVideoPlayer.play(url);
     }
+
+    @Override
+    public void setStartTime(int time){mHcGsyVideoPlayer.setStartTime(time);};
 
     @Override
     public void resume() {

@@ -1,13 +1,16 @@
 package com.haochuan.hciptvbasic.test;
 
+import android.bluetooth.le.BluetoothLeScanner;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 
 import com.haochuan.hciptvbasic.BaseWebActivity;
 import com.haochuan.hciptvbasic.R;
+import com.haochuan.hciptvbasic.Util.Logger;
 import com.haochuan.hciptvbasic.Util.ScreenSnap;
 import com.haochuan.hciptvbasic.webview.PlayerToJS;
+import com.haochuan.hciptvbasic.webview.ToolToJS;
 
 public class TestActivity extends BaseWebActivity {
 
@@ -16,10 +19,6 @@ public class TestActivity extends BaseWebActivity {
         return "";
     }
 
-    @Override
-    protected void handleIntent(Intent intent) {
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +28,11 @@ public class TestActivity extends BaseWebActivity {
         Button playBtn = findViewById(R.id.play_btn);
         playBtn.setOnClickListener(v -> {
             String url = "https://gzhc-sxrj.oss-cn-shenzhen.aliyuncs.com/gzhc-djbl/djbl01.mp4";
-            int x = 0;
-            int y = 0;
-            int width = ScreenSnap.getScreenWidth(TestActivity.this);
-            int height = ScreenSnap.getScreenHeight(TestActivity.this);
-            getPlayerToJS().play(url,x,y,width,height);
+            String x = "0";
+            String y = "0";
+            String width = "1280";
+            String height = "720";
+            getPlayerToJS().play(url,"20",x,y,width,height);
         });
 
         Button pauseBtn = findViewById(R.id.pause_btn);
@@ -64,6 +63,17 @@ public class TestActivity extends BaseWebActivity {
 
         Button exitBtn = findViewById(R.id.exit_btn);
         exitBtn.setOnClickListener(v -> getPlayerToJS().exit());
+
+
+        /*String intentJson = new ToolToJS(this,getWebView()).getIntentJson();
+        Logger.d("intentJson:" + intentJson);*/
+
+        ToolToJS toolToJS = new ToolToJS(this,getWebView());
+        String url = "http://117.169.11.222:8018/tv/index.php";
+        String paramJson = "{\"m\":\"Home\",\"c\":\"Activity\",\"a\":\"getActStatus\"}";
+        String headJson = "{\"cookie\":\"head=123123123131fdfsfsdfs\"}";
+        toolToJS.clientWebRequest(url,paramJson,headJson,2,false,"test");
+        //toolToJS.download("http://202.99.114.74:56251/dudu_youxi/h5/gameList/apk/jiSuKuangBiao.apk");
     }
 
 

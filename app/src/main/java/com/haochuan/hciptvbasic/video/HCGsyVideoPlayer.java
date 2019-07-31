@@ -14,6 +14,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer {
 
     private EmptyControlVideoView mEmptyControlVideo;        //GSY播放器实例
 
+
     public HCGsyVideoPlayer(@NonNull Context context) {
         super(context);
         init(context);
@@ -51,6 +52,11 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer {
     }
 
     @Override
+    public void setStartTime(int time){
+        mEmptyControlVideo.setStartTime(time);
+    };
+
+    @Override
     public void resume() {
         mEmptyControlVideo.onVideoResume();
     }
@@ -65,7 +71,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer {
         if(isPrePared()){
             mEmptyControlVideo.seekTo(position);
         }else{
-            Logger.show(mEmptyControlVideo.getCurrentContext(),"视频未准备，不能拖动");
+            Logger.w("视频未准备，不能拖动");
         }
     }
 
@@ -88,7 +94,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer {
         if(isPrePared()){
             return mEmptyControlVideo.getDuration();
         }else{
-            Logger.show(mEmptyControlVideo.getCurrentContext(),"视频未准备，不能获得视频总时长");
+            Logger.w("视频未准备，不能获得视频总时长");
             return 0;
         }
     }
@@ -98,7 +104,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer {
         if(isPrePared()){
             return mEmptyControlVideo.getCurrentPositionWhenPlaying();
         }else{
-            Logger.show(mEmptyControlVideo.getCurrentContext(),"视频未准备，不能获得视频当前位置");
+            Logger.w("视频未准备，不能获得视频当前位置");
             return 0;
         }
     }

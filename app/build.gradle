@@ -72,4 +72,6 @@ dependencies {
     // classpath.
     androidTestImplementation 'androidx.test.espresso:espresso-idling-resource:3.1.0'
     implementation 'com.shuyu:GSYVideoPlayer:7.0.2'
+    implementation 'com.yanzhenjie.nohttp:nohttp:1.1.11'
+    implementation 'com.liulishuo.filedownloader:library:1.7.6'
 }

@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.haochuan.hciptvbasic.Util.Logger;
 import com.haochuan.hciptvbasic.video.BaseMediaPlayer;
 import com.haochuan.hciptvbasic.video.HCPlayer;
 import com.haochuan.hciptvbasic.video.IVideoPlayer;
@@ -43,22 +44,19 @@ public abstract class BaseWebActivity extends AppCompatActivity {
 
     //获取启动页web地址
     protected abstract String getIndexURL();
-    //处理intent中的参数
-    protected abstract void handleIntent(Intent intent);
 
     /*--------------------生命周期---------------------*/
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getIntent() != null) {
-            handleIntent(getIntent());
-        }
+
+        //初始化日志
+        Logger.init(this);
 
         initPlayer();
 
         webView = new WebView(this);
         webView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
-//        webView.setBackgroundResource(R.drawable.img_start_bg);
         setContentView(webView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         initWebSetting(webView);
@@ -213,12 +211,29 @@ public abstract class BaseWebActivity extends AppCompatActivity {
     private void setPayToJS(){ payToJS = new PayToJS(this,webView); }
     private void setToolToJS(){ toolToJS = new ToolToJS(this,webView); }
 
+    /*-----------------------------------功能函数 start----------------------------------*/
+
+    /*
+     *  将日志发给前端
+     *  @param log    日志内容
+     * */
+
+    public void loggerToJs(String log){
+        getToolToJS().logToJs(log);
+    }
+
     /*------------------------子类获取实例接口------------------------------*/
 
     /**
      * 获取当前WebView对象
      */
     protected WebView getWebView(){return this.webView;}
+
+    /*
+     * 获取播放器实例
+     * */
+    protected BaseMediaPlayer getMediaPlayer(){return this.mHCPlayer;}
+
 
 
     /*
@@ -227,8 +242,15 @@ public abstract class BaseWebActivity extends AppCompatActivity {
     protected PlayerToJS getPlayerToJS(){return playerToJS;}
 
     /*
-    * 获取播放器实例
-    * */
-    protected BaseMediaPlayer getMediaPlayer(){return this.mHCPlayer;}
+     * 获取PayToJS实例
+     * */
+    protected PayToJS getPayToJS(){return payToJS;}
+
+
+    /*
+     * 获取ToolToJS实例
+     * */
+    protected ToolToJS getToolToJS(){return toolToJS;}
+
 
 }
