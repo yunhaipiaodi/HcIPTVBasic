@@ -157,7 +157,6 @@ public abstract class BaseWebActivity extends AppCompatActivity {
 
             @Override
             public void onDestroy() {
-                playerToJS.onPlayerDestroy();
             }
 
             @Override
