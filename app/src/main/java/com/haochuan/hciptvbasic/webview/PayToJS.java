@@ -15,20 +15,20 @@ public class PayToJS {
      * 将SDK初始化结果传递给js
      * 参数：0，成功；-1，失败
      */
-    String JS_EVENT_SDK_INIT_RESULT = "javascript:onSDKInitResult(%s)";
+    private String JS_EVENT_SDK_INIT_RESULT = "javascript:onSDKInitResult(%s)";
 
     /**
      * 将SDK鉴权结果传递给js
      * 参数：json字符串
      */
-    String JS_EVENT_AUTH_RESULT = "javascript:onAuthResult('%s')";
+    private String JS_EVENT_AUTH_RESULT = "javascript:onAuthResult('%s')";
 
 
     /*
      * 将计费结果传递给js
      * 参数：json字符串
      * */
-    String JS_EVENT_PAY_RESULT = "javascript:onPayResult('%s')";
+    private String JS_EVENT_PAY_RESULT = "javascript:onPayResult('%s')";
 
 
     public PayToJS(Context context, WebView webView) {

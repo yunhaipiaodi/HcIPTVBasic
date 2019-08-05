@@ -21,7 +21,6 @@ public class MainActivity extends BaseWebActivity {
         return mBasicUrl;
     }
 
-    /**-------------------BaseWebActivity重载函数 end--------------------------*/
 
 
 }

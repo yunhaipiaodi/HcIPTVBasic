@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
-import android.util.Log;
 
 import com.yanzhenjie.nohttp.NoHttp;
 import com.yanzhenjie.nohttp.RequestMethod;
@@ -37,11 +36,7 @@ public class ToolsUtil {
             packageInfo = null;
             e.printStackTrace();
         }
-        if(packageInfo == null) {
-            return false;
-        } else {
-            return true;//true为安装了，false为未安装
-        }
+       return packageInfo == null;
     }
 
     public void installApk(Context context,String filePath) {
@@ -98,7 +93,7 @@ public class ToolsUtil {
      *@param ignoreResult 是否忽略结果,true,忽略;false,不忽略.
      *@param tag 透传参数，将在结果回调中一并返回，主要区别多个并发请求
      * */
-    public void clientWebRequest(Context context,String url,String paramJson,
+    public void clientWebRequest(String url,String paramJson,
                                  String headJson,int method, boolean ignoreResult,
                                  String tag,IResponseListener listener){
         if(url == null || paramJson == null || headJson == null || tag == null){

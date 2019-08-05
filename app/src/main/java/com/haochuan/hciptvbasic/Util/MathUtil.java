@@ -9,7 +9,7 @@ public class MathUtil {
     }
 
     // 判断整数（int）
-    public static boolean isInteger(String str) {
+    private static boolean isInteger(String str) {
         if (null == str || "".equals(str)) {
             return false;
         }
@@ -18,7 +18,7 @@ public class MathUtil {
     }
 
     //判断浮点数（double和float）
-    public static boolean isDouble(String str) {
+    private static boolean isDouble(String str) {
         if (null == str || "".equals(str)) {
             return false;
         }

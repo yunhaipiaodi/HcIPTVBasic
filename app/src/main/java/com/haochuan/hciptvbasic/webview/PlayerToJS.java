@@ -25,13 +25,13 @@ public class PlayerToJS {
 
 
     /*--------------------传给前端的播放器事件--------------------------*/
-    String JS_EVENT_PREPARING = "javascript:onPlayerPreparing()";
-    String JS_EVENT_PLAYING = "javascript:onPlayerPlaying()";
-    String JS_EVENT_RESUME = "javascript:onPlayerResume()";
-    String JS_EVENT_PAUSE = "javascript:onPlayerPause()";
-    String JS_EVENT_PLAYINGBUFFER = "javascript:onPlayingBuffer()";
-    String JS_EVENT_COMPLETE = "javascript:onPlayerComplete()";
-    String JS_EVENT_PLAYERROR="javascript:onPlayerError(%s,%s)";
+    private String JS_EVENT_PREPARING = "javascript:onPlayerPreparing()";
+    private String JS_EVENT_PLAYING = "javascript:onPlayerPlaying()";
+    private String JS_EVENT_RESUME = "javascript:onPlayerResume()";
+    private String JS_EVENT_PAUSE = "javascript:onPlayerPause()";
+    private String JS_EVENT_PLAYINGBUFFER = "javascript:onPlayingBuffer()";
+    private String JS_EVENT_COMPLETE = "javascript:onPlayerComplete()";
+    private String JS_EVENT_PLAYERROR="javascript:onPlayerError(%s,%s)";
 
 
     public PlayerToJS(Context context, WebView webView, BaseMediaPlayer mediaPlayer) {

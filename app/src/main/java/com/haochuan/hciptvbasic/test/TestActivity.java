@@ -1,16 +1,10 @@
 package com.haochuan.hciptvbasic.test;
 
-import android.bluetooth.le.BluetoothLeScanner;
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 
 import com.haochuan.hciptvbasic.BaseWebActivity;
 import com.haochuan.hciptvbasic.R;
-import com.haochuan.hciptvbasic.Util.Logger;
-import com.haochuan.hciptvbasic.Util.ScreenSnap;
-import com.haochuan.hciptvbasic.webview.PlayerToJS;
-import com.haochuan.hciptvbasic.webview.ToolToJS;
 
 public class TestActivity extends BaseWebActivity {
 

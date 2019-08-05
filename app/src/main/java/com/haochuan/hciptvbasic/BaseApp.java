@@ -4,7 +4,6 @@ import android.app.Application;
 
 import com.liulishuo.filedownloader.FileDownloader;
 import com.yanzhenjie.nohttp.InitializationConfig;
-import com.yanzhenjie.nohttp.Logger;
 import com.yanzhenjie.nohttp.NoHttp;
 import com.yanzhenjie.nohttp.URLConnectionNetworkExecutor;
 import com.yanzhenjie.nohttp.cache.DBCacheStore;

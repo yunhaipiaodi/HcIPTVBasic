@@ -1,6 +1,5 @@
 package com.haochuan.hciptvbasic.video;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -10,7 +9,6 @@ import androidx.annotation.Nullable;
 
 import com.haochuan.hciptvbasic.R;
 import com.haochuan.hciptvbasic.Util.Logger;
-import com.shuyu.gsyvideoplayer.utils.CommonUtil;
 
 public class HCPlayer extends BaseMediaPlayer implements IVideoPlayer{
 
@@ -123,7 +121,7 @@ public class HCPlayer extends BaseMediaPlayer implements IVideoPlayer{
     }
 
     @Override
-    public void setStartTime(int time){mHcGsyVideoPlayer.setStartTime(time);};
+    public void setStartTime(int time){mHcGsyVideoPlayer.setStartTime(time);}
 
     @Override
     public void resume() {

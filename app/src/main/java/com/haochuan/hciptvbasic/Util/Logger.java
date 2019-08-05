@@ -10,8 +10,8 @@ import com.haochuan.hciptvbasic.BuildConfig;
 import com.haochuan.hciptvbasic.MainActivity;
 
 public class Logger {
-    static String  TAG = "HcIPTV";
-    static Context context;
+    private static String TAG = "HcIPTV";
+    private static Context context;
 
     public static void init(Context appContext){
         context = appContext;
@@ -49,6 +49,5 @@ public class Logger {
             baseWebActivity.loggerToJs(message);
         }
     }
-
 
 }

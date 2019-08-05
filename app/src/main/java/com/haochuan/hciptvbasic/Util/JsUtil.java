@@ -3,7 +3,6 @@ package com.haochuan.hciptvbasic.Util;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
-import android.util.Log;
 import android.webkit.WebView;
 
 public class JsUtil {

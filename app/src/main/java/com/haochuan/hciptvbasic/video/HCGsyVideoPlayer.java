@@ -54,7 +54,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer {
     @Override
     public void setStartTime(int time){
         mEmptyControlVideo.setStartTime(time);
-    };
+    }
 
     @Override
     public void resume() {

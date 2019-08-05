@@ -27,7 +27,7 @@ public class Md5Util {
         return bytesToHexString(digest.digest());
     }
 
-    public static String bytesToHexString(byte[] src) {
+    private static String bytesToHexString(byte[] src) {
         StringBuilder stringBuilder = new StringBuilder("");
         if (src == null || src.length <= 0) {
             return null;

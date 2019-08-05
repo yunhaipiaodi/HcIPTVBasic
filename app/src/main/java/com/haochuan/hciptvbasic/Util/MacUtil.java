@@ -57,7 +57,7 @@ public final class MacUtil {
      * 根据wifi信息获取本地mac
      */
     @SuppressLint("HardwareIds")
-    public static String getLocalMacAddressFromWifiInfo(Context context) {
+    private static String getLocalMacAddressFromWifiInfo(Context context) {
         WifiManager wifi = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         WifiInfo info = null;
         if (wifi != null) {
@@ -73,7 +73,7 @@ public final class MacUtil {
     /**
      * android 6.0及以上、7.0以下 获取mac地址
      */
-    public static String getMacAddress(Context context) {
+    private static String getMacAddress(Context context) {
         // 如果是6.0以下，直接通过wifimanager获取
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             String macAddress0 = getMacAddress0(context);
@@ -84,7 +84,7 @@ public final class MacUtil {
         return getMacAddress2();
     }
 
-    public static String getMacAddress2() {
+    private static String getMacAddress2() {
         String str = "";
         String macSerial = "";
         try {
@@ -166,7 +166,7 @@ public final class MacUtil {
     /**
      * 根据IP地址获取MAC地址
      */
-    public static String getMacAddress() {
+    private static String getMacAddress() {
         String strMacAddr = null;
         try {
             // 获得IpD地址
@@ -296,7 +296,7 @@ public final class MacUtil {
      *
      * @return
      */
-    public static String getLocalMacAddressFromBusybox() {
+    private static String getLocalMacAddressFromBusybox() {
         String result = "";
         String Mac = "";
         result = callCmd("busybox ifconfig", "HWaddr");

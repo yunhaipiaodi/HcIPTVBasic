@@ -1,12 +1,9 @@
 package com.haochuan.hciptvbasic.webview;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
-import android.util.TypedValue;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
-import android.widget.TextView;
 
 import com.haochuan.hciptvbasic.BuildConfig;
 import com.haochuan.hciptvbasic.Util.DownloadUtils;
@@ -25,25 +22,25 @@ public class ToolToJS {
     private ToolsUtil toolsUtil;
 
     //将遥控返回按键事件传递给前端
-    String JS_EVENT_BACK = "javascript:onBackEvent()";
+    private String JS_EVENT_BACK = "javascript:onBackEvent()";
 
     //将日志传递给js
-    String JS_EVENT_LOG = "javascript:onLog('%s')";
+    private String JS_EVENT_LOG = "javascript:onLog('%s')";
 
     //将response传递给js
-    String JS_EVENT_RESPONSE ="javascript:onWebRequestResponse('%s','%s','%s')";
+    private String JS_EVENT_RESPONSE ="javascript:onWebRequestResponse('%s','%s','%s')";
 
     //开始下载事件
-    String JS_EVENT_DOWNLOAD_START = "javascript:onDownloadStart()";
+    private String JS_EVENT_DOWNLOAD_START = "javascript:onDownloadStart()";
 
     //下载进度通知,参数progress,下载进度
-    String JS_EVENT_DOWNLOAD_PROGRESS = "javascript:onDownloadProgress(%s)";
+    private String JS_EVENT_DOWNLOAD_PROGRESS = "javascript:onDownloadProgress(%s)";
 
     //下载成功事件，参数filePath,下载路径
-    String JS_EVENT_DOWNLOAD_SUCCESS = "javascript:onDownloadSuccess('%s')";
+    private String JS_EVENT_DOWNLOAD_SUCCESS = "javascript:onDownloadSuccess('%s')";
 
     //下载失败事件，参数errorMessage,错误信息
-    String JS_EVENT_DOWNLOAD_FAIL = "javascript:onDownloadFail('%s')";
+    private String JS_EVENT_DOWNLOAD_FAIL = "javascript:onDownloadFail('%s')";
 
 
     public ToolToJS(Context context, WebView webView){
@@ -131,7 +128,7 @@ public class ToolToJS {
             @Override
             public void onDownloadProgress(int progress) {
                 JsUtil.evaluateJavascript(context,webView,
-                        String.format(JS_EVENT_DOWNLOAD_START,progress));
+                        String.format(JS_EVENT_DOWNLOAD_PROGRESS,progress));
             }
 
             @Override
@@ -192,9 +189,9 @@ public class ToolToJS {
      * */
     @JavascriptInterface
     public void clientWebRequest(String url,String paramJson,String headJson,int method,boolean ignoreResult,String tag){
-        toolsUtil.clientWebRequest(context, url, paramJson, headJson, method, ignoreResult, tag,
+        toolsUtil.clientWebRequest(url, paramJson, headJson, method, ignoreResult, tag,
                 (int what,String response,String tag1)->{
-                    Logger.d(String.format("what:%s,response:%s;tag:%s",response,tag1));
+                    Logger.d(String.format("what:%s,response:%s;tag:%s",what,response,tag1));
                     JsUtil.evaluateJavascript(context,webView,
                             String.format(JS_EVENT_RESPONSE,what,response,tag1));
                 });

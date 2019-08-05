@@ -128,7 +128,7 @@ public class EmptyControlVideoView extends StandardGSYVideoPlayer {
 
     public void setStartTime(int time){
         this.startTime = time;
-    };
+    }
 
     /*-----------------*/
 

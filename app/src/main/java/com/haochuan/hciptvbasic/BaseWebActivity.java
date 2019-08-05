@@ -7,7 +7,6 @@ package com.haochuan.hciptvbasic;
 
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.ViewGroup;
