@@ -5,6 +5,7 @@ import android.widget.Button;
 
 import com.haochuan.hciptvbasic.BaseWebActivity;
 import com.haochuan.hciptvbasic.R;
+import com.haochuan.hciptvbasic.Util.MyLocation;
 
 public class TestActivity extends BaseWebActivity {
 
@@ -62,6 +63,8 @@ public class TestActivity extends BaseWebActivity {
         Button exitBtn = findViewById(R.id.exit_btn);
         exitBtn.setOnClickListener(v -> getPlayerToJS().exit());
 
+        //显示位置
+        getLocations();
 
         /*String intentJson = new ToolToJS(this,getWebView()).getIntentJson();
         Logger.d("intentJson:" + intentJson);*/
@@ -72,6 +75,26 @@ public class TestActivity extends BaseWebActivity {
         String headJson = "{\"cookie\":\"head=123123123131fdfsfsdfs\"}";
         toolToJS.clientWebRequest(url,paramJson,headJson,2,false,"test");*/
         //toolToJS.download("http://202.99.114.74:56251/dudu_youxi/h5/gameList/apk/jiSuKuangBiao.apk");
+    }
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+        //MemoryMonitor.getInstance().start(FloatCurveView.MEMORY_TYPE_PSS);
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        //MemoryMonitor.getInstance().stop();
+    }
+
+    /*
+    * 获取位置信息
+    * */
+    private void getLocations(){
+        MyLocation myLocation = new MyLocation(this);
+        myLocation.getLocation(this);
     }
 
 

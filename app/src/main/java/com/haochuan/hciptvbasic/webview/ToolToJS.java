@@ -114,6 +114,7 @@ public class ToolToJS {
     }
 
 
+
     /*
     * 下载
     * */
@@ -175,6 +176,17 @@ public class ToolToJS {
     @JavascriptInterface
     public void uninstall(String pkgName) {
         ((Activity) context).runOnUiThread(() -> toolsUtil.uninstall(context,pkgName));
+    }
+
+    /*
+     * 退出app
+     * */
+    @JavascriptInterface
+    public void appExit(){
+        ((Activity) context).runOnUiThread(() -> {
+            android.os.Process.killProcess(android.os.Process.myPid());   //获取PID
+            System.exit(0);
+        });
     }
 
     /*---------------------------通过客户端请求接口------------------------*/

@@ -7,8 +7,11 @@ package com.haochuan.hciptvbasic;
 
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
@@ -27,6 +30,8 @@ import com.haochuan.hciptvbasic.webview.PayToJS;
 import com.haochuan.hciptvbasic.webview.PlayerToJS;
 import com.haochuan.hciptvbasic.webview.HCWebChromeClient;
 import com.haochuan.hciptvbasic.webview.ToolToJS;
+
+import java.util.List;
 
 public abstract class BaseWebActivity extends AppCompatActivity {
     private WebView webView;                                    //整个应用唯一的webview
@@ -95,6 +100,13 @@ public abstract class BaseWebActivity extends AppCompatActivity {
     @Override
     protected void onStop(){
         super.onStop();
+        boolean isForeground = isRunningForeground(this);
+        if (!isForeground) {
+            Handler handler = new Handler(getMainLooper());
+            handler.postDelayed(() -> {
+                exit();
+            }, 500);
+        }
     }
 
     @Override
@@ -218,6 +230,36 @@ public abstract class BaseWebActivity extends AppCompatActivity {
 
     public void loggerToJs(String log){
         getToolToJS().logToJs(log);
+    }
+
+    /**
+     * 判断应用是否处于前台
+     *
+     * @return <code>true</code>为前台，反之为后台
+     */
+    public boolean isRunningForeground(Context context) {
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (activityManager == null) return false;
+        List<ActivityManager.RunningAppProcessInfo> appProcessInfos = activityManager.getRunningAppProcesses();
+        // 枚举进程
+        for (ActivityManager.RunningAppProcessInfo appProcessInfo : appProcessInfos) {
+            if (appProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                if (appProcessInfo.processName.equals(context.getApplicationInfo().processName)) {
+                    Logger.d("应用处于前台状态");
+                    return true;
+                }
+            }
+        }
+        Logger.d("应用退到后台");
+        return false;
+    }
+
+    /*
+     * 退出应用
+     * */
+    public void exit() {
+        android.os.Process.killProcess(android.os.Process.myPid());   //获取PID
+        System.exit(0);
     }
 
     /*------------------------子类获取实例接口------------------------------*/

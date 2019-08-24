@@ -3,6 +3,7 @@ package com.haochuan.hciptvbasic;
 import android.app.Application;
 
 import com.liulishuo.filedownloader.FileDownloader;
+import com.tt.memorymonitorlib.MemoryMonitor;
 import com.yanzhenjie.nohttp.InitializationConfig;
 import com.yanzhenjie.nohttp.NoHttp;
 import com.yanzhenjie.nohttp.URLConnectionNetworkExecutor;
@@ -14,7 +15,8 @@ public class BaseApp extends Application {
     public void onCreate() {
         super.onCreate();
         initHttp();
-        FileDownloader.setupOnApplicationOnCreate(this);
+        FileDownloader.setupOnApplicationOnCreate(this);   //初始化文件下载插件
+        MemoryMonitor.getInstance().init(this);//初始化memory monitor
     }
 
     private void initHttp() {

@@ -11,6 +11,8 @@ public class MainActivity extends BaseWebActivity {
         super.onCreate(savedInstanceState);
     }
 
+
+
     /**-------------------BaseWebActivity重载函数 start--------------------------*/
 
     /*
