@@ -7,15 +7,21 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
+import android.webkit.JavascriptInterface;
 
+import com.haochuan.hciptvbasic.web.MyRequest;
 import com.yanzhenjie.nohttp.NoHttp;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.rest.OnResponseListener;
+import com.yanzhenjie.nohttp.rest.Request;
 import com.yanzhenjie.nohttp.rest.StringRequest;
 
 import org.json.JSONObject;
 
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -93,8 +99,8 @@ public class ToolsUtil {
      *@param ignoreResult 是否忽略结果,true,忽略;false,不忽略.
      *@param tag 透传参数，将在结果回调中一并返回，主要区别多个并发请求
      * */
-    public void clientWebRequest(String url,String paramJson,
-                                 String headJson,int method, boolean ignoreResult,
+    public void clientWebRequest(String url,int method,String paramJson,
+                                 String headJson, boolean ignoreResult,
                                  String tag,IResponseListener listener){
         if(url == null || paramJson == null || headJson == null || tag == null){
             Logger.w(String.format("参数不能为null,url:%s;paramJson:%s;headJson:%s;" +
@@ -169,6 +175,98 @@ public class ToolsUtil {
                 }
             });
         }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    public void clientWebRequest(String url, int method,
+                                 String contentType,String headJson,
+                                 String paramsBody, boolean ignoreResult,
+                                 String tag,IResponseListener listener){
+        try{
+            Logger.d(String.format("webRequest,url:%s,method:%s,contentType:%s," +
+                            "headJson:%s,paramsBody:%s,tag:%s,ignoreResult%s,",
+                    url,method,contentType,headJson,paramsBody,tag,ignoreResult?"忽略":"不忽略"));
+            RequestMethod requestMethod ;
+            switch (method){
+                case 1:
+                    requestMethod = RequestMethod.GET;
+                    break;
+                case 2:
+                    requestMethod = RequestMethod.POST;
+                    break;
+                default:
+                    requestMethod = RequestMethod.GET;
+                    break;
+            }
+            Request<String> request = new MyRequest(url, requestMethod);
+
+            //添加头部
+            if(!TextUtils.isEmpty(headJson)){
+                JSONObject headParams = new JSONObject(headJson);
+                Iterator<String> headIterators = headParams.keys();
+                while (headIterators.hasNext()){
+                    String paramKey = headIterators.next();
+                    String paramValue = headParams.getString(paramKey);
+                    request.addHeader(paramKey,paramValue);
+                }
+            }
+
+            if(TextUtils.equals(contentType,"application/x-www-form-urlencoded")){
+                JSONObject jsonObject = new JSONObject(paramsBody);
+                Iterator iterator =  jsonObject.keys();
+                StringBuilder sb = new StringBuilder();
+                int i = 0;
+                while (iterator.hasNext()){
+                    if(i>0){
+                        sb.append("&");
+                    }
+                    String key = (String)iterator.next();
+                    String value = jsonObject.getString(key);
+                    value = URLEncoder.encode(value,"UTF-8");
+                    sb.append(String.format("%s=%s",key,value));
+                    i++;
+                }
+                paramsBody = sb.toString();
+            }
+
+            if(method == 2 && !TextUtils.isEmpty(paramsBody)){
+                request.setDefineRequestBody(paramsBody,contentType);
+            }
+            NoHttp.newRequestQueue().add(100, request, new OnResponseListener<String>(){
+                @Override
+                public void onStart(int what){
+                    Logger.d("clientWebRequest，开始请求");
+                }
+
+                @Override
+                public void onSucceed(int what, com.yanzhenjie.nohttp.rest.Response<String> response){
+                    String data = response.get();
+                    String result = ignoreResult ? "{}" : data.replace("\"", "\\\"");
+                    result = result.replace("\n","");
+                    String base64Response = Base64.encodeToString(data.getBytes(),Base64.NO_WRAP);
+                    base64Response = base64Response.replace("\n","");
+                    if(ignoreResult){
+                        listener.OnResponse(0,"{}",tag);
+                    }else{
+                        listener.OnResponse(0,base64Response,tag);
+                    }
+                }
+
+                @Override
+                public void onFailed(int what, com.yanzhenjie.nohttp.rest.Response<String> response) {
+                    Logger.w("clientWebRequest，请求认证失败：" + what);
+                    listener.OnResponse(-1,"{}",tag);
+                }
+
+                @Override
+                public void onFinish(int what){
+                    Logger.d("clientWebRequest，请求认证结束");
+                }
+            });
+        }catch(Exception e){
+            Logger.e("JS传递的请求发生未知异常");
             e.printStackTrace();
         }
     }

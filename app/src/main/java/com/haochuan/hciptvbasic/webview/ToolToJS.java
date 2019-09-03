@@ -200,8 +200,28 @@ public class ToolToJS {
      *@param tag 透传参数，将在结果回调中一并返回，主要区别多个并发请求
      * */
     @JavascriptInterface
-    public void clientWebRequest(String url,String paramJson,String headJson,int method,boolean ignoreResult,String tag){
-        toolsUtil.clientWebRequest(url, paramJson, headJson, method, ignoreResult, tag,
+    public void clientWebRequest(String url,int method,String paramJson,String headJson,boolean ignoreResult,String tag){
+        toolsUtil.clientWebRequest(url,method, paramJson, headJson,  ignoreResult, tag,
+                (int what,String response,String tag1)->{
+                    Logger.d(String.format("what:%s,response:%s;tag:%s",what,response,tag1));
+                    JsUtil.evaluateJavascript(context,webView,
+                            String.format(JS_EVENT_RESPONSE,what,response,tag1));
+                });
+    }
+
+
+    /*
+     *js 通过apk客户端访问网络接口
+     *@param contentType 网络类型,详情参考网络请求的content-type
+     *@param paramJson 请求参数集,格式为json字符串
+     *@param headJson 请求头部集，格式为json字符串
+     *@param method 请求方法，1,get;2,post
+     *@param ignoreResult 是否忽略结果,true,忽略;false,不忽略.
+     *@param tag 透传参数，将在结果回调中一并返回，主要区别多个并发请求
+     * */
+    @JavascriptInterface
+    public void clientWebRequest(String url,int method,String contentType,String paramJson,String headJson,boolean ignoreResult,String tag){
+        toolsUtil.clientWebRequest(url, method, contentType, headJson,paramJson, ignoreResult, tag,
                 (int what,String response,String tag1)->{
                     Logger.d(String.format("what:%s,response:%s;tag:%s",what,response,tag1));
                     JsUtil.evaluateJavascript(context,webView,
