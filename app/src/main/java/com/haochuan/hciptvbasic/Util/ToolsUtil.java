@@ -79,15 +79,15 @@ public class ToolsUtil {
                     return getIntentJson;
                 }else{
                     Logger.d("getIntentJson, bundle is null");
-                    return "";
+                    return "{}";
                 }
             }else{
                 Logger.d("getIntentJson, intent is null");
-                return "";
+                return "{}";
             }
         }catch (Exception e){
             e.printStackTrace();
-            return "";
+            return "{}";
         }
     }
 

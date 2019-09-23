@@ -108,6 +108,12 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer {
             return 0;
         }
     }
+
+    @Override
+    public int getCurrentStatus() {
+        return mEmptyControlVideo.getCurrentStatus();
+    }
+
     @Override
     public void release(){
         mEmptyControlVideo.release();

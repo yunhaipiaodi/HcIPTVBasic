@@ -88,4 +88,9 @@ public abstract class BaseMediaPlayer extends FrameLayout {
     public abstract int getCurrentPlayPosition();
 
 
+    /*
+     * 获得当前播放状态
+     * */
+    public abstract int getCurrentStatus();
+
 }

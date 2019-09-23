@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.webkit.JavascriptInterface;
@@ -16,6 +17,14 @@ import com.haochuan.hciptvbasic.Util.Logger;
 import com.haochuan.hciptvbasic.Util.MathUtil;
 import com.haochuan.hciptvbasic.Util.ScreenSnap;
 import com.haochuan.hciptvbasic.video.BaseMediaPlayer;
+
+import org.json.JSONObject;
+
+import static com.haochuan.hciptvbasic.Util.MessageCode.EXCEPTION_ERROR;
+import static com.haochuan.hciptvbasic.Util.MessageCode.PARAM_ERROR;
+import static com.haochuan.hciptvbasic.Util.MessageCode.PLAYER_NO_INIT;
+import static com.haochuan.hciptvbasic.Util.MessageCode.PLAYER_OBJ_NULL;
+import static com.haochuan.hciptvbasic.Util.MessageCode.SUCCESS;
 
 
 public class PlayerToJS {
@@ -98,6 +107,7 @@ public class PlayerToJS {
 
     /*
     * 播放函数
+    *
      * @param x                  播放器x坐标
      * @param y                  播放器y坐标
      * @param width              播放器宽度
@@ -105,16 +115,45 @@ public class PlayerToJS {
      * @param seekTime           播放初始位置，单位 s
     * */
     @JavascriptInterface
-    public void play(String url,String seekTime, String x,String y,String width, String height){
-        videoPlay(url,seekTime,x,y,width,height);
+    public int play(String playParamJson){
+        Logger.d("调用play函数,参数:" + playParamJson);
+        try{
+            JSONObject playParam = new JSONObject(playParamJson);
+            String url = playParam.has("url")?playParam.get("url").toString():"";
+            if(TextUtils.isEmpty(url)){
+                Logger.e(PARAM_ERROR,"调用play函数，url为空，不能执行播放");
+                return PARAM_ERROR;
+            }
+            String seekTime = playParam.has("seekTime")?playParam.get("seekTime").toString():"0";
+            String x = playParam.has("x")?playParam.get("x").toString():"0";
+            String y = playParam.has("y")?playParam.get("y").toString():"0";
+            String width = playParam.has("width")?playParam.get("width").toString():"1280";
+            String height = playParam.has("height")?playParam.get("height").toString():"720";
+            return videoPlay(url,seekTime,x,y,width,height);
+        }catch (Exception e){
+            e.printStackTrace();
+            Logger.e(EXCEPTION_ERROR,"异常抛出：" + e.getMessage());
+            return EXCEPTION_ERROR;
+        }
     }
 
     /*
     * 改变播放器尺寸
+    * 参数定义同play函数
     * */
     @JavascriptInterface
-    public void change(String x,String y,String width, String height){
-        videoChange(x,y,width,height);
+    public int change(String changeParamJson){
+        try{
+            JSONObject changeParam = new JSONObject(changeParamJson);
+            String x = changeParam.has("x")?changeParam.get("x").toString():"0";
+            String y = changeParam.has("y")?changeParam.get("y").toString():"0";
+            String width = changeParam.has("width")?changeParam.get("width").toString():"1280";
+            String height = changeParam.has("height")?changeParam.get("height").toString():"720";
+            return videoChange(x,y,width,height);
+        }catch (Exception e){
+            e.printStackTrace();
+            return EXCEPTION_ERROR;
+        }
     }
 
 
@@ -122,36 +161,54 @@ public class PlayerToJS {
      * 暂停
      * */
     @JavascriptInterface
-    public void pause(){
+    public int pause(){
         if(baseMediaPlayer == null){
             Logger.e("播放器为空,不能暂停");
-            return;
+            return PLAYER_OBJ_NULL;
         }
-        baseMediaPlayer.pause();
+        try{
+            baseMediaPlayer.pause();
+            return SUCCESS;
+        }catch (Exception e){
+            e.printStackTrace();
+            return EXCEPTION_ERROR;
+        }
     }
 
     /*
      * 恢复
      * */
     @JavascriptInterface
-    public void resume(){
+    public int resume(){
         if(baseMediaPlayer == null){
             Logger.e("播放器为空,不能恢复");
-            return;
+            return PLAYER_OBJ_NULL;
         }
-        baseMediaPlayer.resume();
+        try{
+            baseMediaPlayer.resume();
+            return SUCCESS;
+        }catch (Exception e){
+            e.printStackTrace();
+            return EXCEPTION_ERROR;
+        }
     }
 
     /*
      * 快进到指定位置
      * */
     @JavascriptInterface
-    public void seek(int position){
+    public int seek(int position){
         if(baseMediaPlayer == null){
             Logger.e("播放器为空,不能拖动");
-            return;
+            return PLAYER_OBJ_NULL;
         }
-        baseMediaPlayer.seek(position);
+        try{
+            baseMediaPlayer.seek(position);
+            return SUCCESS;
+        }catch (Exception e){
+            e.printStackTrace();
+            return EXCEPTION_ERROR;
+        }
     }
 
 
@@ -159,25 +216,51 @@ public class PlayerToJS {
      * 资源释放
      * */
     @JavascriptInterface
-    public void release(){
+    public int release(){
         if(baseMediaPlayer == null){
             Logger.e("播放器为空,不能释放资源");
-            return;
+            return PLAYER_OBJ_NULL;
         }
-        baseMediaPlayer.release();
+        try{
+            baseMediaPlayer.release();
+            return SUCCESS;
+        }catch (Exception e){
+            e.printStackTrace();
+            return EXCEPTION_ERROR;
+        }
     }
 
     /*
     * 退出播放
     * */
     @JavascriptInterface
-    public void exit(){
+    public int stop(){
         if(baseMediaPlayer == null){
             Logger.e("播放器为空,不能退出");
-            return;
+            return PLAYER_OBJ_NULL;
         }
-        Activity activity = (Activity)context;
-        activity.runOnUiThread(this::destroyVideo);
+
+        try{
+            Activity activity = (Activity)context;
+            activity.runOnUiThread(this::destroyVideo);
+            return SUCCESS;
+        }catch (Exception e){
+            e.printStackTrace();
+            return EXCEPTION_ERROR;
+        }
+    }
+
+    /*
+    * 获取当前播放状态
+    * 状态说明：1，播放；2，暂停；3，播放完成停止；0，其他
+    * */
+    @JavascriptInterface
+    public int getPlayerStatus(){
+        if(baseMediaPlayer == null){
+            Logger.e("播放器为空,不能退出");
+            return PLAYER_OBJ_NULL;
+        }
+        return baseMediaPlayer.getCurrentStatus();
     }
 
     /**-------------------------------------------功能函数-----------------------------------------------*/
@@ -190,10 +273,10 @@ public class PlayerToJS {
     * @param height             播放器高度
     * @param seekTime           播放初始位置，单位 s
     * */
-    private void videoPlay(String url,String seekTime, String x,String y,String width, String height){
+    private int videoPlay(String url,String seekTime, String x,String y,String width, String height){
         if(baseMediaPlayer == null){
-            Logger.e("播放器为空,不能播放");
-            return;
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为空,不能播放");
+            return PLAYER_OBJ_NULL;
         }
         if(MathUtil.isDigitsOnly(x) && MathUtil.isDigitsOnly(y) && MathUtil.isDigitsOnly(width) && MathUtil.isDigitsOnly(height) && MathUtil.isDigitsOnly(seekTime)){
             int screenWidth = ScreenSnap.getScreenWidth(context);
@@ -211,7 +294,7 @@ public class PlayerToJS {
             }
             final int realSeekTime = transformSeekTime;
 
-            Logger.d(String.format("调用小窗口播放。转换坐标(%s, %s)，宽高(%s, %s)", transformX, transformY, transformWidth, transformHeight));
+            Logger.d(String.format("调用播放函数。转换坐标(%s, %s)，宽高(%s, %s)", transformX, transformY, transformWidth, transformHeight));
 
             Activity activity = (Activity)context;
             activity.runOnUiThread(()->{
@@ -220,9 +303,11 @@ public class PlayerToJS {
                 baseMediaPlayer.setStartTime(realSeekTime);
                 webView.requestFocus();
             });
+            return SUCCESS;
         }else{
-            Logger.w(String.format("请正确传递play函数参数：x:%s;y:%s;width:%s;height:%s;seekTime:%s",
+            Logger.e(PARAM_ERROR,String.format("请正确传递play函数参数：x:%s;y:%s;width:%s;height:%s;seekTime:%s",
                     x,y,width,height,seekTime));
+            return EXCEPTION_ERROR;
         }
     }
 
@@ -260,14 +345,15 @@ public class PlayerToJS {
      * @param width              待改变播放器宽度
      * @param height             待改变播放器高度
     * */
-    private void videoChange(String x,String y,String width, String height){
+    private int videoChange(String x,String y,String width, String height){
         if(baseMediaPlayer == null){
             Logger.w("baseMediaPlayer is null,不能调用play函数");
+            return PLAYER_OBJ_NULL;
         }
 
         if(baseMediaPlayer.getParent() == null){
             Logger.w("当前播放器没有启动,请先调用play函数启动");
-            return;
+            return PLAYER_NO_INIT;
         }
 
         if(MathUtil.isDigitsOnly(x) && MathUtil.isDigitsOnly(y) && MathUtil.isDigitsOnly(width) && MathUtil.isDigitsOnly(height)){
@@ -282,47 +368,61 @@ public class PlayerToJS {
             int fromY = (int)baseMediaPlayer.getY();
             int fromWidth = baseMediaPlayer.getWidth();
             int fromHeight = baseMediaPlayer.getHeight();
-            animChanged(fromX,toX,fromY,toY,fromWidth,toWidth,fromHeight,toHeight);
+            return animChanged(fromX,toX,fromY,toY,fromWidth,toWidth,fromHeight,toHeight);
         }else{
-            Logger.w(String.format("请正确传递change函数参数：x:%s;y:%s;width:%s;height:%s",
+            Logger.e(PARAM_ERROR,String.format("请正确传递change函数参数：x:%s;y:%s;width:%s;height:%s",
                     x,y,width,height));
+            return PARAM_ERROR;
         }
-
     }
 
     /*
     * 以动画形式改变播放器尺寸
     * */
-    private void animChanged(int fromX, int toX, int fromY, int toY, int fromWidth, int toWidth, int fromHeight, int toHeight) {
-        ValueAnimator animator = new ValueAnimator();
-        animator.setValues(
-                PropertyValuesHolder.ofFloat("x", fromX, toX),
-                PropertyValuesHolder.ofFloat("y", fromY, toY),
-                PropertyValuesHolder.ofInt("width", fromWidth, toWidth),
-                PropertyValuesHolder.ofInt("height", fromHeight, toHeight)
-        );
-        animator.setDuration(200);
-        animator.setInterpolator(new LinearInterpolator());
-        animator.addUpdateListener(valueAnimator -> {
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.width = (int) valueAnimator.getAnimatedValue("width");
-            params.height = (int) valueAnimator.getAnimatedValue("height");
+    private int animChanged(int fromX, int toX, int fromY, int toY, int fromWidth, int toWidth, int fromHeight, int toHeight) {
+        try{
+            ValueAnimator animator = new ValueAnimator();
+            animator.setValues(
+                    PropertyValuesHolder.ofFloat("x", fromX, toX),
+                    PropertyValuesHolder.ofFloat("y", fromY, toY),
+                    PropertyValuesHolder.ofInt("width", fromWidth, toWidth),
+                    PropertyValuesHolder.ofInt("height", fromHeight, toHeight)
+            );
+            animator.setDuration(200);
+            animator.setInterpolator(new LinearInterpolator());
+            animator.addUpdateListener(valueAnimator -> {
+                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                params.width = (int) valueAnimator.getAnimatedValue("width");
+                params.height = (int) valueAnimator.getAnimatedValue("height");
 
-            baseMediaPlayer.setLayoutParams(params);
+                if(baseMediaPlayer != null){
+                    Logger.w("baseMediaPlayer is null,不能调用play函数");
+                }
 
-            baseMediaPlayer.setX((Float) valueAnimator.getAnimatedValue("x"));
-            baseMediaPlayer.setY((Float) valueAnimator.getAnimatedValue("y"));
-        });
-        animator.start();
+                baseMediaPlayer.setLayoutParams(params);
+
+                baseMediaPlayer.setX((Float) valueAnimator.getAnimatedValue("x"));
+                baseMediaPlayer.setY((Float) valueAnimator.getAnimatedValue("y"));
+            });
+            animator.start();
+            return SUCCESS;
+        }catch (Exception e){
+            e.printStackTrace();
+            return EXCEPTION_ERROR;
+        }
     }
 
 
     private void destroyVideo(){
-        if(baseMediaPlayer != null && baseMediaPlayer.getParent() != null){
-            release();
-            Activity activity = (Activity)context;
-            ViewGroup viewGroup = (ViewGroup) activity.getWindow().getDecorView();
-            viewGroup.removeView(baseMediaPlayer);
+        try{
+            if(baseMediaPlayer != null && baseMediaPlayer.getParent() != null){
+                release();
+                Activity activity = (Activity)context;
+                ViewGroup viewGroup = (ViewGroup) activity.getWindow().getDecorView();
+                viewGroup.removeView(baseMediaPlayer);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 }

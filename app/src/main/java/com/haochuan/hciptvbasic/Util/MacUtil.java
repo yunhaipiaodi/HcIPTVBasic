@@ -58,16 +58,22 @@ public final class MacUtil {
      */
     @SuppressLint("HardwareIds")
     private static String getLocalMacAddressFromWifiInfo(Context context) {
-        WifiManager wifi = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        WifiInfo info = null;
-        if (wifi != null) {
-            info = wifi.getConnectionInfo();
+        try{
+            WifiManager wifi = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            WifiInfo info = null;
+            if (wifi != null) {
+                info = wifi.getConnectionInfo();
+            }
+            String mac = null;
+            if (info != null) {
+                mac = info.getMacAddress();
+            }
+            return mac;
+        }catch (Exception e){
+            e.printStackTrace();
+            return "";
         }
-        String mac = null;
-        if (info != null) {
-            mac = info.getMacAddress();
-        }
-        return mac;
+
     }
 
     /**
@@ -75,13 +81,18 @@ public final class MacUtil {
      */
     private static String getMacAddress(Context context) {
         // 如果是6.0以下，直接通过wifimanager获取
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            String macAddress0 = getMacAddress0(context);
-            if (!TextUtils.isEmpty(macAddress0)) {
-                return macAddress0;
+        try{
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                String macAddress0 = getMacAddress0(context);
+                if (!TextUtils.isEmpty(macAddress0)) {
+                    return macAddress0;
+                }
             }
+            return getMacAddress2();
+        }catch (Exception e){
+            e.printStackTrace();
+            return "";
         }
-        return getMacAddress2();
     }
 
     private static String getMacAddress2() {

@@ -41,6 +41,14 @@ public class Logger {
         messageToJs(message);
     }
 
+    public static void e(@NonNull int code, @NonNull String message){
+        message = String.format("错误代码: %s,错误信息：%s",code,message);
+        if(BuildConfig.isDebug){
+            Log.e(TAG,message);
+        }
+        messageToJs(message);
+    }
+
 
     private static void messageToJs(@NonNull String message){
         //将日志传给MainActivity,然后传给js

@@ -27,12 +27,12 @@ public class TestActivity extends BaseWebActivity {
             String y = "30";
             String width = "640";
             String height = "360";
-            getPlayerToJS().play(url,"20",x,y,width,height);
+            getPlayerToJS().play("");
         });
 
         Button changeBtn = findViewById(R.id.change_btn);
         changeBtn.setOnClickListener(v ->
-                getPlayerToJS().change("0","0","1280","720"));
+                getPlayerToJS().change(""));
 
         Button pauseBtn = findViewById(R.id.pause_btn);
         pauseBtn.setOnClickListener(v -> getPlayerToJS().pause());
@@ -61,7 +61,7 @@ public class TestActivity extends BaseWebActivity {
         });
 
         Button exitBtn = findViewById(R.id.exit_btn);
-        exitBtn.setOnClickListener(v -> getPlayerToJS().exit());
+        exitBtn.setOnClickListener(v -> getPlayerToJS().stop());
 
         //显示位置
         getLocations();

@@ -163,6 +163,11 @@ public class HCPlayer extends BaseMediaPlayer implements IVideoPlayer{
         return mHcGsyVideoPlayer.getCurrentPlayPosition();
     }
 
+    @Override
+    public int getCurrentStatus() {
+        return 0;
+    }
+
     public void setSpeed(@NonNull float speed){
         mHcGsyVideoPlayer.setSpeed(speed);
     }

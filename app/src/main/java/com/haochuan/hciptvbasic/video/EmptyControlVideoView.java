@@ -16,7 +16,7 @@ import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
 public class EmptyControlVideoView extends StandardGSYVideoPlayer {
 
     IVideoPlayer iVideoPlayerListener ;
-    private int startTime = 0;                                 //播放器开始的时间
+    private int startTime = 0;                                 //播放器开始的时间,单位毫秒
 
     public EmptyControlVideoView(Context context, Boolean fullFlag) {
         super(context, fullFlag);
@@ -76,7 +76,13 @@ public class EmptyControlVideoView extends StandardGSYVideoPlayer {
     public void onPrepared() {
         super.onPrepared();
         if(startTime > 0){
-            seekTo(startTime);
+            if(startTime >= getDuration()){
+                //如果开始时间大于或者等于视频总时长，则跳转到距离结束5秒的位置
+                seekTo(getDuration() -5000);
+            }else{
+                seekTo(startTime);
+            }
+
         }
     }
 
@@ -127,7 +133,26 @@ public class EmptyControlVideoView extends StandardGSYVideoPlayer {
     }
 
     public void setStartTime(int time){
-        this.startTime = time;
+        this.startTime = time * 1000;
+    }
+
+    public int getCurrentStatus(){
+        int currentStatus = 0;
+        switch (mCurrentState){
+            case 2:
+                currentStatus =1;
+                break;
+            case 5:
+                currentStatus =2;
+                break;
+            case 6:
+                currentStatus =3;
+                break;
+            default:
+                currentStatus =0;
+                break;
+        }
+        return currentStatus;
     }
 
     /*-----------------*/
