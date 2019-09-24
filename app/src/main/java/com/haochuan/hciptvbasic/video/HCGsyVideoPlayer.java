@@ -14,7 +14,6 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer {
 
     private EmptyControlVideoView mEmptyControlVideo;        //GSY播放器实例
 
-
     public HCGsyVideoPlayer(@NonNull Context context) {
         super(context);
         init(context);
@@ -37,10 +36,15 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer {
     private void init(Context context){
         View.inflate(context, R.layout.player_gsy_hc,this);
         mEmptyControlVideo = findViewById(R.id.empty_control_video);
+        mEmptyControlVideo.enableDebug();
     }
 
     public void setVideoPlayerListener(@NonNull IVideoPlayer iVideoPlayer){
-        mEmptyControlVideo.setVideoPlayerListener(iVideoPlayer);
+        if(mEmptyControlVideo != null){
+            mEmptyControlVideo.setVideoPlayerListener(iVideoPlayer);
+        }else{
+            Logger.w("mEmptyControlVideo is null,can`t setVideoPlayerListener");
+        }
     }
 
 
@@ -81,7 +85,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public boolean isPlaying() {
-        return mEmptyControlVideo.isInPlayingState();
+        return mEmptyControlVideo.isPlaying();
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import androidx.annotation.NonNull;
 
 import com.haochuan.hciptvbasic.R;
+import com.shuyu.gsyvideoplayer.utils.Debuger;
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
 
 /**
@@ -124,6 +125,12 @@ public class EmptyControlVideoView extends StandardGSYVideoPlayer {
         return mHadPrepared;
     }
 
+    public boolean isPlaying(){
+        return (mCurrentState >= 0 && mCurrentState != CURRENT_STATE_NORMAL
+                && mCurrentState != CURRENT_STATE_AUTO_COMPLETE
+                && mCurrentState != CURRENT_STATE_ERROR && mCurrentState != CURRENT_STATE_PAUSE);
+    }
+
     public Context getCurrentContext(){
         return getActivityContext();
     }
@@ -153,6 +160,10 @@ public class EmptyControlVideoView extends StandardGSYVideoPlayer {
                 break;
         }
         return currentStatus;
+    }
+
+    public void enableDebug(){
+        Debuger.enable();
     }
 
     /*-----------------*/

@@ -3,6 +3,7 @@
     package="com.haochuan.hciptvbasic">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
         android:name=".BaseApp"
         android:allowBackup="true"
@@ -11,14 +12,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".test.TestActivity">
+        <activity android:name=".test.TestPlayerActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".test.TestActivity">
+
         </activity>
+        <activity android:name=".MainActivity"></activity>
 
         <uses-library
             android:name="android.test.runner"

@@ -257,7 +257,6 @@ public class ToolsUtil {
                 @Override
                 public void onFailed(int what, com.yanzhenjie.nohttp.rest.Response<String> response) {
                     Logger.w("clientWebRequest，请求认证失败：" + what);
-                    listener.OnResponse(-1,"{}",tag);
                 }
 
                 @Override

@@ -37,7 +37,7 @@ public class ToolToJS {
     private String JS_EVENT_LOG = "javascript:onLog('%s')";
 
     //将response传递给js
-    private String JS_EVENT_RESPONSE ="javascript:onWebRequestResponse('%s','%s','%s')";
+    private String JS_EVENT_RESPONSE ="javascript:onWebRequestResponse('%s','%s')";
 
     //开始下载事件
     private String JS_EVENT_DOWNLOAD_START = "javascript:onDownloadStart()";
@@ -296,9 +296,9 @@ public class ToolToJS {
             String tag = requestParams.has("tag")?requestParams.get("tag").toString():"";
             toolsUtil.clientWebRequest(url, method, contentType, headJson,paramJson, ignoreResult, tag,
                     (int what,String response,String tag1)->{
-                        Logger.d(String.format("what:%s,response:%s;tag:%s",what,response,tag1));
+                        Logger.d(String.format("response:%s;tag:%s",response,tag1));
                         JsUtil.evaluateJavascript(context,webView,
-                                String.format(JS_EVENT_RESPONSE,what,response,tag1));
+                                String.format(JS_EVENT_RESPONSE,response,tag1));
                     });
             return SUCCESS;
         }catch (Exception e){

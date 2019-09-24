@@ -10,6 +10,9 @@ import androidx.annotation.Nullable;
 import com.haochuan.hciptvbasic.R;
 import com.haochuan.hciptvbasic.Util.Logger;
 
+import static com.haochuan.hciptvbasic.Util.MessageCode.PLAYER_OBJ_NULL;
+import static com.haochuan.hciptvbasic.Util.MessageCode.SUCCESS;
+
 public class HCPlayer extends BaseMediaPlayer implements IVideoPlayer{
 
     private HCGsyVideoPlayer mHcGsyVideoPlayer;
@@ -125,51 +128,99 @@ public class HCPlayer extends BaseMediaPlayer implements IVideoPlayer{
 
     @Override
     public void resume() {
-        mHcGsyVideoPlayer.resume();
+        if(mHcGsyVideoPlayer != null){
+            mHcGsyVideoPlayer.resume();
+        }else{
+            Logger.w("mHcGsyVideoPlayer is null,can`t resume");
+        }
     }
 
     @Override
     public void pause() {
-        mHcGsyVideoPlayer.pause();
+        if(mHcGsyVideoPlayer != null){
+            mHcGsyVideoPlayer.pause();
+        }else{
+            Logger.w("mHcGsyVideoPlayer is null,can`t pause");
+        }
     }
 
     @Override
     public void seek(int position) {
-        mHcGsyVideoPlayer.seek(position);
+        if(mHcGsyVideoPlayer != null){
+            mHcGsyVideoPlayer.seek(position);
+        }else{
+            Logger.w("mHcGsyVideoPlayer is null,can`t seek");
+        }
     }
 
     @Override
     public void release() {
-        mHcGsyVideoPlayer.release();
+        if(mHcGsyVideoPlayer != null){
+            mHcGsyVideoPlayer.release();
+        }else{
+            Logger.w("mHcGsyVideoPlayer is null,can`t release");
+        }
     }
 
     @Override
     public boolean isPlaying() {
-        return mHcGsyVideoPlayer.isPlaying();
+        if(mHcGsyVideoPlayer != null){
+            return mHcGsyVideoPlayer.isPlaying();
+        }else{
+            Logger.w("mHcGsyVideoPlayer is null,can`t get isPlaying state");
+            return false;
+        }
     }
 
     @Override
     public boolean isPrePared() {
-        return mHcGsyVideoPlayer.isPrePared();
+        if(mHcGsyVideoPlayer != null){
+            return mHcGsyVideoPlayer.isPrePared();
+        }else{
+            Logger.w("mHcGsyVideoPlayer is null,can`t get prepared state");
+            return false;
+        }
     }
 
     @Override
     public int getDuration() {
-        return mHcGsyVideoPlayer.getDuration();
+        if(mHcGsyVideoPlayer != null){
+            return mHcGsyVideoPlayer.getDuration();
+        }else{
+            Logger.w("mHcGsyVideoPlayer is null,can`t get duration");
+            return 0;
+        }
     }
 
     @Override
     public int getCurrentPlayPosition() {
-        return mHcGsyVideoPlayer.getCurrentPlayPosition();
+        if(mHcGsyVideoPlayer != null){
+            return mHcGsyVideoPlayer.getCurrentPlayPosition();
+        }else{
+            Logger.w("mHcGsyVideoPlayer is null,can`t get current play position");
+            return 0;
+        }
     }
 
     @Override
     public int getCurrentStatus() {
-        return 0;
+        if(mHcGsyVideoPlayer != null){
+            return mHcGsyVideoPlayer.getCurrentStatus();
+        }else{
+            Logger.w("mHcGsyVideoPlayer is null,can`t get current status");
+            return 0;
+        }
     }
 
-    public void setSpeed(@NonNull float speed){
+    public int setSpeed(@NonNull float speed){
         mHcGsyVideoPlayer.setSpeed(speed);
+        if(mHcGsyVideoPlayer != null){
+            mHcGsyVideoPlayer.setSpeed(speed);
+            return SUCCESS;
+        }else{
+            Logger.w("mHcGsyVideoPlayer is null,can`t get current status");
+            return PLAYER_OBJ_NULL;
+        }
     }
 
 
