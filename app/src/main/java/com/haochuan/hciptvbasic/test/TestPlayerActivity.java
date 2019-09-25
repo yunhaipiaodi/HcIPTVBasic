@@ -32,10 +32,16 @@ public class TestPlayerActivity extends AppCompatActivity implements IVideoPlaye
     private LinearLayout bottomContainer;
     private SeekBar videoProgressBar;
     private TextView showTimeView;
+    private LinearLayout seekContainer;
+    private TextView seekPercentView;
+    private SeekBar seekBar;
+    private TextView seekTimeView;
 
     //全局参数
     private String testUrl = "https://gzhc-sxrj.oss-cn-shenzhen.aliyuncs.com/gzhc-djbl/djbl01.mp4";
     private int duration = 0;
+    private int seekPercent = 1;
+    private long seekDelay = 2000L;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,13 @@ public class TestPlayerActivity extends AppCompatActivity implements IVideoPlaye
         bottomContainer = findViewById(R.id.layout_bottom);
         videoProgressBar = findViewById(R.id.progress_bar);
         showTimeView = findViewById(R.id.current_total);
+        seekContainer = findViewById(R.id.seek_container);
+        seekPercentView = findViewById(R.id.seek_percent);
+        seekBar = findViewById(R.id.seek_bar);
+        seekTimeView = findViewById(R.id.seek_time);
+
+        loadingBar.setMax(100);
+        loadingBar.setProgress(0);
 
         loadingBar.setMax(100);
         loadingBar.setProgress(0);
@@ -61,12 +74,12 @@ public class TestPlayerActivity extends AppCompatActivity implements IVideoPlaye
         switch (keyCode){
             case KeyEvent.KEYCODE_DPAD_LEFT:
                 if(event.getAction() == KeyEvent.ACTION_DOWN){
-                    seekForward();
+                    seek(true);
                 }
                 return true;
             case KeyEvent.KEYCODE_DPAD_RIGHT:
                 if(event.getAction() == KeyEvent.ACTION_DOWN){
-                    seekBack();
+                    seek(false);
                 }
                 return true;
             case KeyEvent.KEYCODE_DPAD_DOWN:
@@ -85,7 +98,10 @@ public class TestPlayerActivity extends AppCompatActivity implements IVideoPlaye
                 }
                 break;
             case KeyEvent.KEYCODE_BACK:
-                showExitDialog();
+                if(event.getAction() == KeyEvent.ACTION_DOWN){
+                    playOrPause();
+                    showExitDialog();
+                }
                 break;
             default:
                 break;
@@ -98,16 +114,36 @@ public class TestPlayerActivity extends AppCompatActivity implements IVideoPlaye
 
     /*------------------------------具体功能实现------------------------------*/
     //向前拖动
-    private void seekForward(){
-        hcPlayer.seek(hcPlayer.getCurrentPlayPosition() + 1000);
-        showBottomContainer();
+    private void seek(boolean back){
+
+        //移除延迟执行任务
+        hcPlayer.getRootView().removeCallbacks(delaySeekRunnable);
+
+        //显示seekContainer
+        if(seekContainer.getVisibility() != View.VISIBLE){
+            //显示进度条,并且读取当前进度
+            int currentPosition = hcPlayer.getCurrentPlayPosition();
+            int percent = percent(currentPosition,duration);
+            seekBar.setProgress(percent);
+            seekPercentView.setText(percent+" %");
+            seekTimeView.setText(timeToString(currentPosition));
+            seekContainer.setVisibility(View.VISIBLE);
+        }
+
+        //获取当前进度，根据back是否为真来决定前后拖动进度条
+        int curProgress = seekBar.getProgress();
+        int seekProgress = back ? (curProgress - seekPercent):(curProgress + seekPercent);
+        seekBar.setProgress(seekProgress);
+        seekPercentView.setText(seekProgress + " %");
+        int seekTime = duration*seekProgress/100;
+        String seekTimeStr = timeToString(seekTime);
+        Logger.d(String.format("seekTime:%s,seekTimeStr:%s",seekTime,seekTimeStr));
+        seekTimeView.setText(seekTimeStr);
+
+        //延迟执行seek任务
+        hcPlayer.getRootView().postDelayed(delaySeekRunnable,seekDelay);
     }
 
-    //向后拖动
-    private void seekBack(){
-        hcPlayer.seek(hcPlayer.getCurrentPlayPosition() - 1000);
-        showBottomContainer();
-    }
 
     //暂停或者启动
     private void playOrPause(){
@@ -131,6 +167,7 @@ public class TestPlayerActivity extends AppCompatActivity implements IVideoPlaye
         //延迟3秒后隐藏
         hideBottomContainerDelay();
     }
+
 
     //立即刷新进度和时间
     private void refreshProgressAndTimeImmed(){
@@ -247,6 +284,7 @@ public class TestPlayerActivity extends AppCompatActivity implements IVideoPlaye
 
 
     /*------------------------Runnable--------------------------*/
+    //显示底部栏任务
     private Runnable showProgressAndTimeRunnable =new Runnable() {
         @Override
         public void run() {
@@ -263,6 +301,23 @@ public class TestPlayerActivity extends AppCompatActivity implements IVideoPlaye
             videoProgressBar.setProgress(percent(currentPosition,duration));
 
             refreshProgressAndTime();
+        }
+    };
+
+    //延迟执行seek拖动任务
+    private Runnable delaySeekRunnable =new Runnable() {
+        @Override
+        public void run() {
+            //获取当前seekBar进度，转化为实际时间数，然后执行seek
+            int seekProgress = seekBar.getProgress();
+            int seekTime = duration*seekProgress/100;
+            Logger.d(String.format("duration:%s,seekProgress:%s,seekTime:%s",
+                    duration,seekProgress,seekTime));
+            hcPlayer.seek(seekTime);
+
+            //隐藏seekContainer
+            seekContainer.setVisibility(View.GONE);
+
         }
     };
 
