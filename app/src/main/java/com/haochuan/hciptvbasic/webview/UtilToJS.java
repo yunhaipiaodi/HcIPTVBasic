@@ -25,7 +25,7 @@ import static com.haochuan.hciptvbasic.Util.MessageCode.PARAM_ERROR;
 import static com.haochuan.hciptvbasic.Util.MessageCode.SUCCESS;
 
 
-public class ToolToJS {
+public class UtilToJS {
     private Context context;                        //MainActivity 句柄
     private WebView webView;
     private ToolsUtil toolsUtil;
@@ -39,20 +39,12 @@ public class ToolToJS {
     //将response传递给js
     private String JS_EVENT_RESPONSE ="javascript:onWebRequestResponse('%s','%s')";
 
-    //开始下载事件
-    private String JS_EVENT_DOWNLOAD_START = "javascript:onDownloadStart()";
 
-    //下载进度通知,参数progress,下载进度
-    private String JS_EVENT_DOWNLOAD_PROGRESS = "javascript:onDownloadProgress(%s)";
-
-    //下载成功事件，参数filePath,下载路径
-    private String JS_EVENT_DOWNLOAD_SUCCESS = "javascript:onDownloadSuccess('%s')";
-
-    //下载失败事件，参数errorMessage,错误信息
-    private String JS_EVENT_DOWNLOAD_FAIL = "javascript:onDownloadFail('%s')";
+    //下载事件
+    private String JS_EVENT_DOWNLOAD_EVENT = "javascript:onDownloadEvent(%s,'%s')";
 
 
-    public ToolToJS(Context context, WebView webView){
+    public UtilToJS(Context context, WebView webView){
         this.context = context;
         this.webView = webView;
         toolsUtil = new ToolsUtil();
@@ -117,7 +109,6 @@ public class ToolToJS {
             localParamsJson.put("version_code",BuildConfig.VERSION_CODE);
             localParamsJson.put("version_name",BuildConfig.VERSION_NAME);
             localParamsJson.put("mac",MacUtil.getMac(context) != null ? MacUtil.getMac(context) : "");
-            localParamsJson.put("intent_json",new JSONObject(toolsUtil.getIntentJson(context)));
             return localParamsJson.toString();
         }catch (Exception e){
             e.printStackTrace();
@@ -159,25 +150,22 @@ public class ToolToJS {
             DownloadUtils.download(downloadUrl, context.getPackageName() + getVersionCode(), "apk", new DownloadUtils.DownloadProgressListener() {
                 @Override
                 public void onDownloadStart(String fileName) {
-                    JsUtil.evaluateJavascript(context,webView,JS_EVENT_DOWNLOAD_START);
+                    exeDownloadEvent(1,"");
                 }
 
                 @Override
                 public void onDownloadProgress(int progress) {
-                    JsUtil.evaluateJavascript(context,webView,
-                            String.format(JS_EVENT_DOWNLOAD_PROGRESS,progress));
+                    exeDownloadEvent(2,String.valueOf(progress));
                 }
 
                 @Override
                 public void onDownloadSuccessful(String filePath) {
-                    JsUtil.evaluateJavascript(context,webView,
-                            String.format(JS_EVENT_DOWNLOAD_SUCCESS,filePath));
+                    exeDownloadEvent(3,"");
                 }
 
                 @Override
                 public void onDownloadFail(String message){
-                    JsUtil.evaluateJavascript(context,webView,
-                            String.format(JS_EVENT_DOWNLOAD_FAIL,message));
+                    exeDownloadEvent(4,message);
                 }
             });
             return SUCCESS;
@@ -185,6 +173,52 @@ public class ToolToJS {
             e.printStackTrace();
             return EXCEPTION_ERROR;
         }
+    }
+
+    /*
+     * 下载并且安装
+     * */
+    @JavascriptInterface
+    public int downLoadAndInstall(String paramsJson){
+        try{
+            JSONObject jsonObject = new JSONObject(paramsJson);
+            String downloadUrl = jsonObject.has("download_url")?jsonObject.get("download_url").toString():"";
+            if(TextUtils.isEmpty(downloadUrl)){
+                Logger.e(PARAM_ERROR,"download_url is empty,download stopped");
+                return PARAM_ERROR;
+            }
+            DownloadUtils.download(downloadUrl, context.getPackageName() + getVersionCode(), "apk", new DownloadUtils.DownloadProgressListener() {
+                @Override
+                public void onDownloadStart(String fileName) {
+                    exeDownloadEvent(1,"");
+                }
+
+                @Override
+                public void onDownloadProgress(int progress) {
+                    exeDownloadEvent(2,String.valueOf(progress));
+                }
+
+                @Override
+                public void onDownloadSuccessful(String filePath) {
+                    exeDownloadEvent(3,"");
+                    install(String.format("{\"file_path\": \"%s\"}",filePath));
+                }
+
+                @Override
+                public void onDownloadFail(String message){
+                    exeDownloadEvent(4,message);
+                }
+            });
+            return SUCCESS;
+        }catch (Exception e){
+            e.printStackTrace();
+            return EXCEPTION_ERROR;
+        }
+    }
+
+    private void exeDownloadEvent(int type,String message){
+        JsUtil.evaluateJavascript(context,webView,
+                String.format(JS_EVENT_DOWNLOAD_EVENT,type,message));
     }
 
     /*

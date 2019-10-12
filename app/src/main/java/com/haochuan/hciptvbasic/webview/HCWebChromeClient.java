@@ -18,7 +18,6 @@ public class HCWebChromeClient extends WebChromeClient {
                 + consoleMessage.lineNumber() + " of "
                 + consoleMessage.sourceId();
         Log.d(TAG,  errorMsg);
-        Logger.e("浏览器错误：" + errorMsg);
         return true;
     }
 

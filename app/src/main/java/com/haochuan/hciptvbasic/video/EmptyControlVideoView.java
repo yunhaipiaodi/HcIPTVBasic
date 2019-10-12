@@ -146,17 +146,23 @@ public class EmptyControlVideoView extends StandardGSYVideoPlayer {
     public int getCurrentStatus(){
         int currentStatus = 0;
         switch (mCurrentState){
-            case 2:
+            case 1:
                 currentStatus =1;
                 break;
-            case 5:
+            case 2:
                 currentStatus =2;
                 break;
-            case 6:
+            case 5:
                 currentStatus =3;
                 break;
+            case 3:
+                currentStatus =4;
+                break;
+            case 6:
+                currentStatus =5;
+                break;
             default:
-                currentStatus =0;
+                currentStatus =6;
                 break;
         }
         return currentStatus;

@@ -23,6 +23,8 @@ import com.haochuan.hciptvbasic.video.IVideoPlayer;
 import java.math.BigDecimal;
 import java.util.Formatter;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class TestPlayerActivity extends AppCompatActivity implements IVideoPlayer {
 
@@ -66,6 +68,8 @@ public class TestPlayerActivity extends AppCompatActivity implements IVideoPlaye
 
         hcPlayer.setIVideoPlayerListener(this);
         hcPlayer.play(testUrl);
+
+
     }
 
     @Override
@@ -326,11 +330,13 @@ public class TestPlayerActivity extends AppCompatActivity implements IVideoPlaye
 
     @Override
     public void onPreparing() {
+        Logger.d("onPlayerPreparing");
         loadingBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onPlaying() {
+        Logger.d("onPlayerPlaying");
         loadingBar.setVisibility(View.GONE);
         duration = hcPlayer.getDuration();
         Logger.d("duration:" + duration);
@@ -338,11 +344,13 @@ public class TestPlayerActivity extends AppCompatActivity implements IVideoPlaye
 
     @Override
     public void onResume() {
+        Logger.d("onPlayerResume");
         super.onResume();
     }
 
     @Override
     public void onPause() {
+        Logger.d("onPlayerPause");
         super.onPause();
     }
 
@@ -353,11 +361,13 @@ public class TestPlayerActivity extends AppCompatActivity implements IVideoPlaye
 
     @Override
     public void onPlayingBuffering() {
+        Logger.d("onPlayerBuffer");
         loadingBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onCompletion() {
+        Logger.d("onPlayerComplete");
         showExitDialog();
     }
 

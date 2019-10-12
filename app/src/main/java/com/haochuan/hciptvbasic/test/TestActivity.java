@@ -66,10 +66,10 @@ public class TestActivity extends BaseWebActivity {
         //显示位置
         getLocations();
 
-        /*String intentJson = new ToolToJS(this,getWebView()).getIntentJson();
+        /*String intentJson = new UtilToJS(this,getWebView()).getIntentJson();
         Logger.d("intentJson:" + intentJson);*/
 
-       /* ToolToJS toolToJS = new ToolToJS(this,getWebView());
+       /* UtilToJS toolToJS = new UtilToJS(this,getWebView());
         String url = "http://117.169.11.222:8018/tv/index.php";
         String paramJson = "{\"m\":\"Home\",\"c\":\"Activity\",\"a\":\"getActStatus\"}";
         String headJson = "{\"cookie\":\"head=123123123131fdfsfsdfs\"}";

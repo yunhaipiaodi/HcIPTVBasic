@@ -42,7 +42,7 @@ public class ToolsUtil {
             packageInfo = null;
             e.printStackTrace();
         }
-       return packageInfo == null;
+       return packageInfo != null;
     }
 
     public void installApk(Context context,String filePath) {
@@ -272,11 +272,15 @@ public class ToolsUtil {
 
 
 
+
+
+
     /*
     * clientWebRequest 结果response接口
     * */
     public interface IResponseListener{
         public void OnResponse(int what,String response,String tag);
     }
+
 
 }

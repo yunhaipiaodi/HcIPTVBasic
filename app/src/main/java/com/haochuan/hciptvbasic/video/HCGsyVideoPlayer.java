@@ -62,12 +62,20 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void resume() {
-        mEmptyControlVideo.onVideoResume();
+        if(isPrePared()){
+            mEmptyControlVideo.onVideoResume();
+        }else{
+            Logger.w("视频未准备，不能执行resume");
+        }
     }
 
     @Override
     public void pause() {
-        mEmptyControlVideo.onVideoPause();
+        if(isPrePared()){
+            mEmptyControlVideo.onVideoPause();
+        }else{
+            Logger.w("视频未准备，不能暂停");
+        }
     }
 
     @Override

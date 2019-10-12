@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 import com.haochuan.hciptvbasic.Util.JsUtil;
 import com.haochuan.hciptvbasic.Util.Logger;
 import com.haochuan.hciptvbasic.Util.MathUtil;
+import com.haochuan.hciptvbasic.Util.RegexUtil;
 import com.haochuan.hciptvbasic.Util.ScreenSnap;
 import com.haochuan.hciptvbasic.video.BaseMediaPlayer;
 
@@ -70,6 +71,7 @@ public class PlayerToJS {
      * 播放器继续播放事件
      * */
     public void onPlayerResume(){
+        Logger.d("onPlayerResume");
         JsUtil.evaluateJavascript(context,webView,JS_EVENT_RESUME);
     }
 
@@ -77,6 +79,7 @@ public class PlayerToJS {
      * 播放器暂停播放事件
      * */
     public void onPlayerPause(){
+        Logger.d("onPlayerPause");
         JsUtil.evaluateJavascript(context,webView,JS_EVENT_PAUSE);
     }
 
@@ -86,6 +89,7 @@ public class PlayerToJS {
      * 播放器缓冲事件
      * */
     public void onPlayingBuffer(){
+        Logger.d("onPlayerBuffer");
         JsUtil.evaluateJavascript(context,webView,JS_EVENT_PLAYINGBUFFER);
     }
 
@@ -93,6 +97,7 @@ public class PlayerToJS {
      * 播放器播放完毕事件
      * */
     public void onPlayerComplete(){
+        Logger.d("onPlayerComplete");
         JsUtil.evaluateJavascript(context,webView,JS_EVENT_COMPLETE);
     }
 
@@ -107,7 +112,9 @@ public class PlayerToJS {
 
     /*
     * 播放函数
-    *
+    *  @param url                 播放链接,type参数为1时必填
+    *  @param code                播放代码，,type参数为2时必填,该版本没用到
+    *  @param type                播放类型，改版本固定用url播放，1,url链接播放；2，传递code值播放；
      * @param x                  播放器x坐标
      * @param y                  播放器y坐标
      * @param width              播放器宽度
@@ -119,12 +126,33 @@ public class PlayerToJS {
         Logger.d("调用play函数,参数:" + playParamJson);
         try{
             JSONObject playParam = new JSONObject(playParamJson);
-            String url = playParam.has("url")?playParam.get("url").toString():"";
+            String url = "";
+            String typeStr = playParam.has("type")?playParam.get("type").toString():"1";
+            int type = 1;
+            if(TextUtils.isEmpty(typeStr)){
+                type = 1;
+            }
+            if(MathUtil.isDigitsOnly(typeStr)){
+                type = Integer.parseInt(typeStr);
+            }else{
+                Logger.e(PARAM_ERROR,"调用play函数，type参数错误，type:" + type);
+            }
+            switch (type){
+                case 1:
+                    url = playParam.has("url")?playParam.get("url").toString():"";
+                    break;
+                case 2:
+                    //该版本没有code获取url的功能，暂缺，请根据实际情况添加
+                    break;
+                default:
+                    url = playParam.has("url")?playParam.get("url").toString():"";
+                    break;
+            }
             if(TextUtils.isEmpty(url)){
                 Logger.e(PARAM_ERROR,"调用play函数，url为空，不能执行播放");
                 return PARAM_ERROR;
             }
-            String seekTime = playParam.has("seekTime")?playParam.get("seekTime").toString():"0";
+            String seekTime = playParam.has("seek_time")?playParam.get("seek_time").toString():"0";
             String x = playParam.has("x")?playParam.get("x").toString():"0";
             String y = playParam.has("y")?playParam.get("y").toString():"0";
             String width = playParam.has("width")?playParam.get("width").toString():"1280";
@@ -167,7 +195,8 @@ public class PlayerToJS {
             return PLAYER_OBJ_NULL;
         }
         try{
-            baseMediaPlayer.pause();
+            Activity activity = (Activity)context;
+            activity.runOnUiThread(()->baseMediaPlayer.pause());
             return SUCCESS;
         }catch (Exception e){
             e.printStackTrace();
@@ -185,7 +214,8 @@ public class PlayerToJS {
             return PLAYER_OBJ_NULL;
         }
         try{
-            baseMediaPlayer.resume();
+            Activity activity = (Activity)context;
+            activity.runOnUiThread(()->baseMediaPlayer.resume());
             return SUCCESS;
         }catch (Exception e){
             e.printStackTrace();
@@ -203,7 +233,8 @@ public class PlayerToJS {
             return PLAYER_OBJ_NULL;
         }
         try{
-            baseMediaPlayer.seek(position);
+            Activity activity = (Activity)context;
+            activity.runOnUiThread(()->baseMediaPlayer.seek(position));
             return SUCCESS;
         }catch (Exception e){
             e.printStackTrace();
@@ -214,6 +245,7 @@ public class PlayerToJS {
 
     /*
      * 资源释放
+     * 已去除，由客户端这边执行
      * */
     @JavascriptInterface
     public int release(){
@@ -222,7 +254,8 @@ public class PlayerToJS {
             return PLAYER_OBJ_NULL;
         }
         try{
-            baseMediaPlayer.release();
+            Activity activity = (Activity)context;
+            activity.runOnUiThread(()->baseMediaPlayer.release());
             return SUCCESS;
         }catch (Exception e){
             e.printStackTrace();
@@ -252,7 +285,7 @@ public class PlayerToJS {
 
     /*
     * 获取当前播放状态
-    * 状态说明：1，播放；2，暂停；3，播放完成停止；0，其他
+    * 状态说明：1，视频准备中；2，播放；3，暂停；4，缓冲；5，播放完成停止；
     * */
     @JavascriptInterface
     public int getPlayerStatus(){
@@ -261,6 +294,30 @@ public class PlayerToJS {
             return PLAYER_OBJ_NULL;
         }
         return baseMediaPlayer.getCurrentStatus();
+    }
+
+    /*
+    * 获得视频时长
+    * */
+    @JavascriptInterface
+    public int getDuration(){
+        if(baseMediaPlayer == null){
+            Logger.e("播放器为空,不能退出");
+            return PLAYER_OBJ_NULL;
+        }
+        return baseMediaPlayer.getDuration();
+    }
+
+    /*
+     * 获得当前播放时间
+     * */
+    @JavascriptInterface
+    public int getCurrentPlayTime(){
+        if(baseMediaPlayer == null){
+            Logger.e("播放器为空,不能退出");
+            return PLAYER_OBJ_NULL;
+        }
+        return baseMediaPlayer.getCurrentPlayPosition();
     }
 
     /**-------------------------------------------功能函数-----------------------------------------------*/
@@ -277,6 +334,10 @@ public class PlayerToJS {
         if(baseMediaPlayer == null){
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为空,不能播放");
             return PLAYER_OBJ_NULL;
+        }
+        if(!RegexUtil.isUrl(url)){
+            Logger.e(PARAM_ERROR,"调用play函数，url格式不正确，不能执行播放，请检查;url:" + url);
+            return PARAM_ERROR;
         }
         if(MathUtil.isDigitsOnly(x) && MathUtil.isDigitsOnly(y) && MathUtil.isDigitsOnly(width) && MathUtil.isDigitsOnly(height) && MathUtil.isDigitsOnly(seekTime)){
             int screenWidth = ScreenSnap.getScreenWidth(context);
@@ -321,7 +382,7 @@ public class PlayerToJS {
      * */
     private void initVideoParamsIfNoInit(BaseMediaPlayer baseMediaPlayer,int x, int y, int width, int height){
         if(baseMediaPlayer == null){
-            Logger.e("播放器为空,不能执行initVideoParamsIfNoInit函数");
+            Logger.w("播放器为空,不能执行initVideoParamsIfNoInit函数");
             return;
         }
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -347,7 +408,7 @@ public class PlayerToJS {
     * */
     private int videoChange(String x,String y,String width, String height){
         if(baseMediaPlayer == null){
-            Logger.w("baseMediaPlayer is null,不能调用play函数");
+            Logger.e(PLAYER_OBJ_NULL,"baseMediaPlayer is null,不能调用play函数");
             return PLAYER_OBJ_NULL;
         }
 
@@ -368,7 +429,11 @@ public class PlayerToJS {
             int fromY = (int)baseMediaPlayer.getY();
             int fromWidth = baseMediaPlayer.getWidth();
             int fromHeight = baseMediaPlayer.getHeight();
-            return animChanged(fromX,toX,fromY,toY,fromWidth,toWidth,fromHeight,toHeight);
+            Activity activity = (Activity)context;
+            activity.runOnUiThread(()->{
+                animChanged(fromX,toX,fromY,toY,fromWidth,toWidth,fromHeight,toHeight);
+            });
+            return SUCCESS;
         }else{
             Logger.e(PARAM_ERROR,String.format("请正确传递change函数参数：x:%s;y:%s;width:%s;height:%s",
                     x,y,width,height));
@@ -394,7 +459,6 @@ public class PlayerToJS {
                 FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 params.width = (int) valueAnimator.getAnimatedValue("width");
                 params.height = (int) valueAnimator.getAnimatedValue("height");
-
                 if(baseMediaPlayer != null){
                     Logger.w("baseMediaPlayer is null,不能调用play函数");
                 }
@@ -420,6 +484,8 @@ public class PlayerToJS {
                 Activity activity = (Activity)context;
                 ViewGroup viewGroup = (ViewGroup) activity.getWindow().getDecorView();
                 viewGroup.removeView(baseMediaPlayer);
+            }else{
+                Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,不能调用destroyVideo函数");
             }
         }catch (Exception e){
             e.printStackTrace();

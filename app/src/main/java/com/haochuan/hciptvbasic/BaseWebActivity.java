@@ -29,7 +29,7 @@ import com.haochuan.hciptvbasic.video.IVideoPlayer;
 import com.haochuan.hciptvbasic.webview.PayToJS;
 import com.haochuan.hciptvbasic.webview.PlayerToJS;
 import com.haochuan.hciptvbasic.webview.HCWebChromeClient;
-import com.haochuan.hciptvbasic.webview.ToolToJS;
+import com.haochuan.hciptvbasic.webview.UtilToJS;
 
 import java.util.List;
 
@@ -37,10 +37,10 @@ public abstract class BaseWebActivity extends AppCompatActivity {
     private WebView webView;                                    //整个应用唯一的webview
     private PlayerToJS playerToJS;                              //PlayerToJS类实例
     private PayToJS payToJS;                                    // PayToJS类实例
-    private ToolToJS toolToJS;                                  //ToolToJS实例
+    private UtilToJS utilToJS;                                  //ToolToJS实例
     String playerToJSName = PlayerToJS.class.getSimpleName();    //playerToJS类名
     String payToJSName = PayToJS.class.getSimpleName();         //payToJS类名
-    String toolToJSName = ToolToJS.class.getSimpleName();       //toolToJS类名
+    String toolToJSName = UtilToJS.class.getSimpleName();       //toolToJS类名
     //播放器
     private HCPlayer mHCPlayer = null;
 
@@ -136,7 +136,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        toolToJS.onBackPressed();
+        utilToJS.onBackPressed();
     }
 
     /*--------------------------初始化函数---------------------------*/
@@ -205,7 +205,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
 
         webView.addJavascriptInterface(playerToJS,playerToJSName);
         webView.addJavascriptInterface(payToJS,payToJSName);
-        webView.addJavascriptInterface(toolToJS,toolToJSName);
+        webView.addJavascriptInterface(utilToJS,toolToJSName);
         // 设置WebClient
         webView.setWebViewClient(new WebViewClient());
         webView.setWebChromeClient(hcWebChromeClient);
@@ -219,7 +219,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
         playerToJS = new PlayerToJS(this,webView,mHCPlayer);
     }
     private void setPayToJS(){ payToJS = new PayToJS(this,webView); }
-    private void setToolToJS(){ toolToJS = new ToolToJS(this,webView); }
+    private void setToolToJS(){ utilToJS = new UtilToJS(this,webView); }
 
     /*-----------------------------------功能函数 start----------------------------------*/
 
@@ -229,7 +229,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
      * */
 
     public void loggerToJs(String log){
-        getToolToJS().logToJs(log);
+        getUtilToJS().logToJs(log);
     }
 
     /**
@@ -290,7 +290,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
     /*
      * 获取ToolToJS实例
      * */
-    protected ToolToJS getToolToJS(){return toolToJS;}
+    protected UtilToJS getUtilToJS(){return utilToJS;}
 
 
 }

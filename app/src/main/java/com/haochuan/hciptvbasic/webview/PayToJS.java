@@ -41,6 +41,7 @@ public class PayToJS {
 
     /*
     * SDK初始化
+    * 已去除
     * */
     @JavascriptInterface
     public void sdkInit(String paramsJson){
@@ -65,7 +66,6 @@ public class PayToJS {
     public void pay(String paramsJson){
         //在这里添加支付逻辑
         Logger.d("pay");
-
     }
 
     /*
