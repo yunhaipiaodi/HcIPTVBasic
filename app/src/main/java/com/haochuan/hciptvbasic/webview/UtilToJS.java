@@ -8,6 +8,7 @@ import android.webkit.WebView;
 
 import com.haochuan.hciptvbasic.BuildConfig;
 import com.haochuan.hciptvbasic.Util.DownloadUtils;
+import com.haochuan.hciptvbasic.Util.JSONUtil;
 import com.haochuan.hciptvbasic.Util.JsUtil;
 import com.haochuan.hciptvbasic.Util.Logger;
 import com.haochuan.hciptvbasic.Util.MacUtil;
@@ -40,9 +41,6 @@ public class UtilToJS {
     private String JS_EVENT_RESPONSE ="javascript:onWebRequestResponse('%s','%s')";
 
 
-    //下载事件
-    private String JS_EVENT_DOWNLOAD_EVENT = "javascript:onDownloadEvent(%s,'%s')";
-
 
     public UtilToJS(Context context, WebView webView){
         this.context = context;
@@ -51,7 +49,6 @@ public class UtilToJS {
     }
 
     /*------------------------------------功能性函数-----------------------------------------*/
-    /*---------------------------------------------------------------------------------------*/
 
     /*
      * 将log传递给前端
@@ -69,30 +66,6 @@ public class UtilToJS {
     }
 
     /*---------------------------------获取本地参数--------------------------*/
-    /**
-     * 当前app版本号
-     */
-    @JavascriptInterface
-    public int getVersionCode() {
-        return BuildConfig.VERSION_CODE;
-    }
-
-    /**
-     * 当前app版本名
-     */
-    @JavascriptInterface
-    public String getVersionName() {
-        return BuildConfig.VERSION_NAME;
-    }
-
-
-    /**
-     * 获取Mac地址
-     */
-    @JavascriptInterface
-    public String getMac() {
-        return MacUtil.getMac(context);
-    }
 
     /*
     * 获取intent启动参数
@@ -117,164 +90,6 @@ public class UtilToJS {
     }
 
     /*-----------------------------操作APK-------------------------------------*/
-
-    /**
-     * 判定是否安装第三方应用
-     * packageName,包名
-     * 返回 0,安装；-1，未安装
-     * **/
-    @JavascriptInterface
-    public int checkAppInstalled(String paramsJson){
-        try{
-            JSONObject jsonObject = new JSONObject(paramsJson);
-            String packageName = jsonObject.has("package_name")?jsonObject.get("package_name").toString():"";
-            return toolsUtil.checkSubAppInstalled(context,packageName)?0:-1;
-        }catch (Exception e){
-            e.printStackTrace();
-            return -1;
-        }
-    }
-
-    /*
-    * 下载
-    * */
-    @JavascriptInterface
-    public int download(String paramsJson){
-        try{
-            JSONObject jsonObject = new JSONObject(paramsJson);
-            String downloadUrl = jsonObject.has("download_url")?jsonObject.get("download_url").toString():"";
-            if(TextUtils.isEmpty(downloadUrl)){
-                Logger.e(PARAM_ERROR,"download_url is empty,download stopped");
-                return PARAM_ERROR;
-            }
-            DownloadUtils.download(downloadUrl, context.getPackageName() + getVersionCode(), "apk", new DownloadUtils.DownloadProgressListener() {
-                @Override
-                public void onDownloadStart(String fileName) {
-                    exeDownloadEvent(1,"");
-                }
-
-                @Override
-                public void onDownloadProgress(int progress) {
-                    exeDownloadEvent(2,String.valueOf(progress));
-                }
-
-                @Override
-                public void onDownloadSuccessful(String filePath) {
-                    exeDownloadEvent(3,"");
-                }
-
-                @Override
-                public void onDownloadFail(String message){
-                    exeDownloadEvent(4,message);
-                }
-            });
-            return SUCCESS;
-        }catch (Exception e){
-            e.printStackTrace();
-            return EXCEPTION_ERROR;
-        }
-    }
-
-    /*
-     * 下载并且安装
-     * */
-    @JavascriptInterface
-    public int downLoadAndInstall(String paramsJson){
-        try{
-            JSONObject jsonObject = new JSONObject(paramsJson);
-            String downloadUrl = jsonObject.has("download_url")?jsonObject.get("download_url").toString():"";
-            if(TextUtils.isEmpty(downloadUrl)){
-                Logger.e(PARAM_ERROR,"download_url is empty,download stopped");
-                return PARAM_ERROR;
-            }
-            DownloadUtils.download(downloadUrl, context.getPackageName() + getVersionCode(), "apk", new DownloadUtils.DownloadProgressListener() {
-                @Override
-                public void onDownloadStart(String fileName) {
-                    exeDownloadEvent(1,"");
-                }
-
-                @Override
-                public void onDownloadProgress(int progress) {
-                    exeDownloadEvent(2,String.valueOf(progress));
-                }
-
-                @Override
-                public void onDownloadSuccessful(String filePath) {
-                    exeDownloadEvent(3,"");
-                    install(String.format("{\"file_path\": \"%s\"}",filePath));
-                }
-
-                @Override
-                public void onDownloadFail(String message){
-                    exeDownloadEvent(4,message);
-                }
-            });
-            return SUCCESS;
-        }catch (Exception e){
-            e.printStackTrace();
-            return EXCEPTION_ERROR;
-        }
-    }
-
-    private void exeDownloadEvent(int type,String message){
-        JsUtil.evaluateJavascript(context,webView,
-                String.format(JS_EVENT_DOWNLOAD_EVENT,type,message));
-    }
-
-    /*
-    * 获得下载文件MD5值
-    * */
-    @JavascriptInterface
-    public String getMD5(String paramsJson){
-        try{
-            JSONObject jsonObject = new JSONObject(paramsJson);
-            String filePath = jsonObject.has("file_path")?jsonObject.get("file_path").toString():"";
-            if(TextUtils.isEmpty(filePath)){
-                Logger.e(PARAM_ERROR,"file_path is empty,getMD5 function stopped");
-                return "";
-            }
-            return Md5Util.getFileMD5(new File(filePath));
-        }catch (Exception e){
-            e.printStackTrace();
-            return "";
-        }
-    }
-
-    /**
-     * 安装app
-     */
-    @JavascriptInterface
-    public int install(String paramsJson) {
-        try{
-            JSONObject jsonObject = new JSONObject(paramsJson);
-            String filePath = jsonObject.has("file_path")?jsonObject.get("file_path").toString():"";
-            if(TextUtils.isEmpty(filePath)){
-                Logger.e(PARAM_ERROR,"file_path is empty,install function stopped");
-                return PARAM_ERROR;
-            }
-            ((Activity) context).runOnUiThread(() -> toolsUtil.installApk(context,filePath));
-            return SUCCESS;
-        }catch (Exception e){
-            e.printStackTrace();
-            return EXCEPTION_ERROR;
-        }
-    }
-
-    /**
-     * 卸载app
-     */
-    @JavascriptInterface
-    public int uninstall(String paramsJson) {
-        try{
-            JSONObject jsonObject = new JSONObject(paramsJson);
-            String packageName = jsonObject.has("package_name")?jsonObject.get("package_name").toString():"";
-            ((Activity) context).runOnUiThread(() -> toolsUtil.uninstall(context,packageName));
-            return SUCCESS;
-        }catch (Exception e){
-            e.printStackTrace();
-            return EXCEPTION_ERROR;
-        }
-    }
 
     /*
      * 退出app
@@ -310,8 +125,8 @@ public class UtilToJS {
     public int clientWebRequest(String paramsJson){
         try{
             JSONObject requestParams = new JSONObject(paramsJson);
-            String url = requestParams.has("url")?requestParams.get("url").toString():"";
-            String methodStr = requestParams.has("method")?requestParams.get("method").toString():"1";
+            String url = JSONUtil.getString(requestParams,"url","");
+            String methodStr = JSONUtil.getString(requestParams,"method","1");
             int method = 0;
             if(MathUtil.isDigitsOnly(methodStr)){
                 method = Integer.parseInt(methodStr);
@@ -322,12 +137,12 @@ public class UtilToJS {
             }else{
                 Logger.w("clientWebRequest 请求参数method必须为数字，目前重置为0");
             }
-            String contentType = requestParams.has("content_type")?requestParams.get("content_type").toString():"application/json";
-            String headJson = requestParams.has("head_json")?requestParams.get("head_json").toString():"{}";
-            String paramJson = requestParams.has("param_json")?requestParams.get("param_json").toString():"{}";
-            String ignore = requestParams.has("ignore_result")?requestParams.get("ignore_result").toString():"0";
+            String contentType = JSONUtil.getString(requestParams,"content_type","application/json");
+            String headJson = JSONUtil.getString(requestParams,"head_json","{}");
+            String paramJson = JSONUtil.getString(requestParams,"param_json","{}");
+            String ignore = JSONUtil.getString(requestParams,"ignore_result","0");
             boolean ignoreResult = TextUtils.equals(ignore,"1");
-            String tag = requestParams.has("tag")?requestParams.get("tag").toString():"";
+            String tag = JSONUtil.getString(requestParams,"tag","");
             toolsUtil.clientWebRequest(url, method, contentType, headJson,paramJson, ignoreResult, tag,
                     (int what,String response,String tag1)->{
                         Logger.d(String.format("response:%s;tag:%s",response,tag1));

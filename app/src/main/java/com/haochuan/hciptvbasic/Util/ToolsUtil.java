@@ -9,8 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.Log;
-import android.webkit.JavascriptInterface;
 
 import com.haochuan.hciptvbasic.web.MyRequest;
 import com.yanzhenjie.nohttp.NoHttp;

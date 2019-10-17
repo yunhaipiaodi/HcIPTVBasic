@@ -12,9 +12,11 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 
+import com.haochuan.hciptvbasic.Util.JSONUtil;
 import com.haochuan.hciptvbasic.Util.JsUtil;
 import com.haochuan.hciptvbasic.Util.Logger;
 import com.haochuan.hciptvbasic.Util.MathUtil;
+import com.haochuan.hciptvbasic.Util.MessageCode;
 import com.haochuan.hciptvbasic.Util.RegexUtil;
 import com.haochuan.hciptvbasic.Util.ScreenSnap;
 import com.haochuan.hciptvbasic.video.BaseMediaPlayer;
@@ -127,7 +129,7 @@ public class PlayerToJS {
         try{
             JSONObject playParam = new JSONObject(playParamJson);
             String url = "";
-            String typeStr = playParam.has("type")?playParam.get("type").toString():"1";
+            String typeStr = JSONUtil.getString(playParam,"type","1");
             int type = 1;
             if(TextUtils.isEmpty(typeStr)){
                 type = 1;
@@ -139,24 +141,24 @@ public class PlayerToJS {
             }
             switch (type){
                 case 1:
-                    url = playParam.has("url")?playParam.get("url").toString():"";
+                    url = JSONUtil.getString(playParam,"url","");
                     break;
                 case 2:
                     //该版本没有code获取url的功能，暂缺，请根据实际情况添加
                     break;
                 default:
-                    url = playParam.has("url")?playParam.get("url").toString():"";
+                    url = JSONUtil.getString(playParam,"url","");
                     break;
             }
             if(TextUtils.isEmpty(url)){
                 Logger.e(PARAM_ERROR,"调用play函数，url为空，不能执行播放");
                 return PARAM_ERROR;
             }
-            String seekTime = playParam.has("seek_time")?playParam.get("seek_time").toString():"0";
-            String x = playParam.has("x")?playParam.get("x").toString():"0";
-            String y = playParam.has("y")?playParam.get("y").toString():"0";
-            String width = playParam.has("width")?playParam.get("width").toString():"1280";
-            String height = playParam.has("height")?playParam.get("height").toString():"720";
+            String seekTime = JSONUtil.getString(playParam,"seek_time","0");
+            String x = JSONUtil.getString(playParam,"x","0");
+            String y = JSONUtil.getString(playParam,"y","0");
+            String width = JSONUtil.getString(playParam,"width","1280");
+            String height = JSONUtil.getString(playParam,"height","720");
             return videoPlay(url,seekTime,x,y,width,height);
         }catch (Exception e){
             e.printStackTrace();
@@ -173,10 +175,10 @@ public class PlayerToJS {
     public int change(String changeParamJson){
         try{
             JSONObject changeParam = new JSONObject(changeParamJson);
-            String x = changeParam.has("x")?changeParam.get("x").toString():"0";
-            String y = changeParam.has("y")?changeParam.get("y").toString():"0";
-            String width = changeParam.has("width")?changeParam.get("width").toString():"1280";
-            String height = changeParam.has("height")?changeParam.get("height").toString():"720";
+            String x = JSONUtil.getString(changeParam,"x","0");
+            String y = JSONUtil.getString(changeParam,"y","0");
+            String width = JSONUtil.getString(changeParam,"width","1280");
+            String height = JSONUtil.getString(changeParam,"height","720");
             return videoChange(x,y,width,height);
         }catch (Exception e){
             e.printStackTrace();
@@ -227,35 +229,19 @@ public class PlayerToJS {
      * 快进到指定位置
      * */
     @JavascriptInterface
-    public int seek(int position){
+    public int seek(String paramJson){
         if(baseMediaPlayer == null){
             Logger.e("播放器为空,不能拖动");
             return PLAYER_OBJ_NULL;
         }
         try{
+            JSONObject jsonObject = new JSONObject(paramJson);
+            int position = JSONUtil.getInt(jsonObject,"time",-1);
+            if(position == -1){
+                return PARAM_ERROR;
+            }
             Activity activity = (Activity)context;
             activity.runOnUiThread(()->baseMediaPlayer.seek(position));
-            return SUCCESS;
-        }catch (Exception e){
-            e.printStackTrace();
-            return EXCEPTION_ERROR;
-        }
-    }
-
-
-    /*
-     * 资源释放
-     * 已去除，由客户端这边执行
-     * */
-    @JavascriptInterface
-    public int release(){
-        if(baseMediaPlayer == null){
-            Logger.e("播放器为空,不能释放资源");
-            return PLAYER_OBJ_NULL;
-        }
-        try{
-            Activity activity = (Activity)context;
-            activity.runOnUiThread(()->baseMediaPlayer.release());
             return SUCCESS;
         }catch (Exception e){
             e.printStackTrace();
@@ -480,8 +466,8 @@ public class PlayerToJS {
     private void destroyVideo(){
         try{
             if(baseMediaPlayer != null && baseMediaPlayer.getParent() != null){
-                release();
                 Activity activity = (Activity)context;
+                activity.runOnUiThread(()->baseMediaPlayer.release());
                 ViewGroup viewGroup = (ViewGroup) activity.getWindow().getDecorView();
                 viewGroup.removeView(baseMediaPlayer);
             }else{

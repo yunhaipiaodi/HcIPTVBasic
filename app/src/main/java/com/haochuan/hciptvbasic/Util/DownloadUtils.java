@@ -25,7 +25,7 @@ public class DownloadUtils {
         Logger.d("准备下载文件:%s");
         final String filePath = FileDownloadUtils.getDefaultSaveRootPath() + File.separator + "temp" + File.separator + fileName + "." + fileExtension;
         if (listener != null) {
-            listener.onDownloadStart(filePath);
+            listener.onDownloadStart();
         }
         FileDownloader.getImpl().create(url)
                 .setPath(filePath, false)
@@ -75,7 +75,7 @@ public class DownloadUtils {
     }
 
     public interface DownloadProgressListener {
-        void onDownloadStart(String fileName);
+        void onDownloadStart();
 
         void onDownloadProgress(int progress);
 
