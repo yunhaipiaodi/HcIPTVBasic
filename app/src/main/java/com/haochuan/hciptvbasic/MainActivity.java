@@ -3,8 +3,6 @@ package com.haochuan.hciptvbasic;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.haochuan.hciptvbasic.Util.Logger;
-
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -20,26 +18,32 @@ public class MainActivity extends BaseWebActivity {
         super.onCreate(savedInstanceState);
 
         //test
-        /*String playParamJson = "{\n" +
+        String playParamJson = "{\n" +
+                "    \"examine_id\": 200000253,\n" +
                 "    \"url\": \"https://gzhc-sxrj.oss-cn-shenzhen.aliyuncs.com/gzhc-djbl/djbl01.mp4\"\n" +
                 "}";
         int state = getPlayerToJS().getPlayerStatus();
-        Logger.d("播放器状态：" + state);
-        getPlayerToJS().play(playParamJson);
 
         new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                getPlayerToJS().play(playParamJson);
+            }
+        },10000);
+        /*new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 int state = 0;
                 switch (testCount){
                     case 0:
-                        String changeParamJson = "{\n" +
+                        *//*String changeParamJson = "{\n" +
                                 "    \"x\": 60,\n" +
                                 "    \"y\": 60,\n" +
                                 "    \"width\": 480,\n" +
                                 "    \"height\": 270\n" +
                                 "}";
-                        getPlayerToJS().change(changeParamJson);
+                        getPlayerToJS().change(changeParamJson);*//*
+
                         break;
                     case 1:
                         getPlayerToJS().pause();
@@ -52,7 +56,10 @@ public class MainActivity extends BaseWebActivity {
                         Log.d(TAG,"播放器状态：" + state);
                         break;
                     case 3:
-                        getPlayerToJS().seek(5);
+                        String param = "{\n" +
+                                "  \"time\": 5\n" +
+                                "}";
+                        getPlayerToJS().seek(param);
                         state = getPlayerToJS().getPlayerStatus();
                         Log.d(TAG,"播放器状态：" + state);
                         break;
@@ -68,19 +75,7 @@ public class MainActivity extends BaseWebActivity {
                 }
                 testCount++;
             }
-        },0,2000);*/
-        /*int requestResult = getUtilToJS().clientWebRequest("{\n" +
-                "    \"url\": \"http://117.169.11.222:8018/tv/index.php?m=Home&c=Activity&a=getActStatus\",\n" +
-                "    \"method\": 1,\n" +
-                "    \"content_type\": \"application/json\",\n" +
-                "    \"param_json\": {\n" +
-                "        \"act_id\": 123123,\n" +
-                "        \"uid\": 123123123\n" +
-                "    },\n" +
-                "    \"ignore_result\": 0,\n" +
-                "    \"tag\": \"11_huodong\"\n" +
-                "}");
-        Log.d(TAG,"requestResult:" + requestResult);*/
+        },10000,5000);*/
         //getUtilToJS().appExit();
     }
 

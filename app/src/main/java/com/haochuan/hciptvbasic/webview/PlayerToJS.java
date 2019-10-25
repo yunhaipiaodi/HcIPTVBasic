@@ -4,7 +4,6 @@ import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
@@ -12,22 +11,21 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 
-import com.haochuan.hciptvbasic.Util.JSONUtil;
-import com.haochuan.hciptvbasic.Util.JsUtil;
-import com.haochuan.hciptvbasic.Util.Logger;
-import com.haochuan.hciptvbasic.Util.MathUtil;
-import com.haochuan.hciptvbasic.Util.MessageCode;
-import com.haochuan.hciptvbasic.Util.RegexUtil;
-import com.haochuan.hciptvbasic.Util.ScreenSnap;
-import com.haochuan.hciptvbasic.video.BaseMediaPlayer;
+import com.haochuan.core.BaseMediaPlayer;
+import com.haochuan.core.Logger;
+import com.haochuan.core.util.JSONUtil;
+import com.haochuan.core.util.JsUtil;
+import com.haochuan.core.util.MathUtil;
+import com.haochuan.core.util.RegexUtil;
+import com.haochuan.core.util.ScreenSnap;
 
 import org.json.JSONObject;
 
-import static com.haochuan.hciptvbasic.Util.MessageCode.EXCEPTION_ERROR;
-import static com.haochuan.hciptvbasic.Util.MessageCode.PARAM_ERROR;
-import static com.haochuan.hciptvbasic.Util.MessageCode.PLAYER_NO_INIT;
-import static com.haochuan.hciptvbasic.Util.MessageCode.PLAYER_OBJ_NULL;
-import static com.haochuan.hciptvbasic.Util.MessageCode.SUCCESS;
+import static com.haochuan.core.util.MessageCode.EXCEPTION_ERROR;
+import static com.haochuan.core.util.MessageCode.PARAM_ERROR;
+import static com.haochuan.core.util.MessageCode.PLAYER_NO_INIT;
+import static com.haochuan.core.util.MessageCode.PLAYER_OBJ_NULL;
+import static com.haochuan.core.util.MessageCode.SUCCESS;
 
 
 public class PlayerToJS {
@@ -37,13 +35,8 @@ public class PlayerToJS {
 
 
     /*--------------------传给前端的播放器事件--------------------------*/
-    private String JS_EVENT_PREPARING = "javascript:onPlayerPreparing()";
-    private String JS_EVENT_PLAYING = "javascript:onPlayerPlaying()";
-    private String JS_EVENT_RESUME = "javascript:onPlayerResume()";
-    private String JS_EVENT_PAUSE = "javascript:onPlayerPause()";
-    private String JS_EVENT_PLAYINGBUFFER = "javascript:onPlayingBuffer()";
-    private String JS_EVENT_COMPLETE = "javascript:onPlayerComplete()";
     private String JS_EVENT_PLAYERROR="javascript:onPlayerError(%s,%s)";
+    private String JS_PLAYER_STATUS = "javascript:onPlayerStatus(%s)";
 
 
     public PlayerToJS(Context context, WebView webView, BaseMediaPlayer mediaPlayer) {
@@ -59,14 +52,14 @@ public class PlayerToJS {
      * 播放器准备事件
      * */
     public void onPlayerPreparing(){
-        JsUtil.evaluateJavascript(context,webView,JS_EVENT_PREPARING);
+        executePlayStatusEvent(1);
     }
 
     /*
      * 播放器开始播放事件
      * */
     public void onPlayerPlaying(){
-        JsUtil.evaluateJavascript(context,webView,JS_EVENT_PLAYING);
+        executePlayStatusEvent(2);
     }
 
     /*
@@ -74,7 +67,7 @@ public class PlayerToJS {
      * */
     public void onPlayerResume(){
         Logger.d("onPlayerResume");
-        JsUtil.evaluateJavascript(context,webView,JS_EVENT_RESUME);
+        executePlayStatusEvent(4);
     }
 
     /*
@@ -82,17 +75,15 @@ public class PlayerToJS {
      * */
     public void onPlayerPause(){
         Logger.d("onPlayerPause");
-        JsUtil.evaluateJavascript(context,webView,JS_EVENT_PAUSE);
+        executePlayStatusEvent(3);
     }
-
-
 
     /*
      * 播放器缓冲事件
      * */
     public void onPlayingBuffer(){
         Logger.d("onPlayerBuffer");
-        JsUtil.evaluateJavascript(context,webView,JS_EVENT_PLAYINGBUFFER);
+        executePlayStatusEvent(5);
     }
 
     /*
@@ -100,7 +91,7 @@ public class PlayerToJS {
      * */
     public void onPlayerComplete(){
         Logger.d("onPlayerComplete");
-        JsUtil.evaluateJavascript(context,webView,JS_EVENT_COMPLETE);
+        executePlayStatusEvent(6);
     }
 
     /*
@@ -159,7 +150,9 @@ public class PlayerToJS {
             String y = JSONUtil.getString(playParam,"y","0");
             String width = JSONUtil.getString(playParam,"width","1280");
             String height = JSONUtil.getString(playParam,"height","720");
-            return videoPlay(url,seekTime,x,y,width,height);
+            String examineId = JSONUtil.getString(playParam,"examine_id","");
+            String examineType = JSONUtil.getString(playParam,"examine_type","program");
+            return videoPlay(url,seekTime,x,y,width,height,examineId,examineType);
         }catch (Exception e){
             e.printStackTrace();
             Logger.e(EXCEPTION_ERROR,"异常抛出：" + e.getMessage());
@@ -306,6 +299,7 @@ public class PlayerToJS {
         return baseMediaPlayer.getCurrentPlayPosition();
     }
 
+
     /**-------------------------------------------功能函数-----------------------------------------------*/
 
     /*
@@ -316,46 +310,53 @@ public class PlayerToJS {
     * @param height             播放器高度
     * @param seekTime           播放初始位置，单位 s
     * */
-    private int videoPlay(String url,String seekTime, String x,String y,String width, String height){
-        if(baseMediaPlayer == null){
-            Logger.e(PLAYER_OBJ_NULL,"播放器对象为空,不能播放");
-            return PLAYER_OBJ_NULL;
-        }
-        if(!RegexUtil.isUrl(url)){
-            Logger.e(PARAM_ERROR,"调用play函数，url格式不正确，不能执行播放，请检查;url:" + url);
-            return PARAM_ERROR;
-        }
-        if(MathUtil.isDigitsOnly(x) && MathUtil.isDigitsOnly(y) && MathUtil.isDigitsOnly(width) && MathUtil.isDigitsOnly(height) && MathUtil.isDigitsOnly(seekTime)){
-            int screenWidth = ScreenSnap.getScreenWidth(context);
-            int screenHeight = ScreenSnap.getScreenHeight(context);
-            int transformX = (int) (Float.parseFloat(x) * screenWidth / 1280);
-            int transformY = (int) (Float.parseFloat(y) * screenHeight / 720);
-            int transformWidth = (int) (Float.parseFloat(width) * screenWidth / 1280);
-            int transformHeight = (int) (Float.parseFloat(height) * screenHeight / 720);
-
-            int transformSeekTime = Integer.parseInt(seekTime);
-            if(transformSeekTime < 0){
-                transformSeekTime = 0;
-            }else{
-                transformSeekTime *= 1000;
+    private int videoPlay(String url,String seekTime, String x,String y,String width, String height,
+                          String examineId,String examineType){
+        try{
+            if(baseMediaPlayer == null){
+                Logger.e(PLAYER_OBJ_NULL,"播放器对象为空,不能播放");
+                return PLAYER_OBJ_NULL;
             }
-            final int realSeekTime = transformSeekTime;
+            if(!RegexUtil.isUrl(url)){
+                Logger.e(PARAM_ERROR,"调用play函数，url格式不正确，不能执行播放，请检查;url:" + url);
+                return PARAM_ERROR;
+            }
+            if(MathUtil.isDigitsOnly(x) && MathUtil.isDigitsOnly(y) && MathUtil.isDigitsOnly(width) && MathUtil.isDigitsOnly(height) && MathUtil.isDigitsOnly(seekTime)){
+                int screenWidth = ScreenSnap.getScreenWidth(context);
+                int screenHeight = ScreenSnap.getScreenHeight(context);
+                int transformX = (int) (Float.parseFloat(x) * screenWidth / 1280);
+                int transformY = (int) (Float.parseFloat(y) * screenHeight / 720);
+                int transformWidth = (int) (Float.parseFloat(width) * screenWidth / 1280);
+                int transformHeight = (int) (Float.parseFloat(height) * screenHeight / 720);
 
-            Logger.d(String.format("调用播放函数。转换坐标(%s, %s)，宽高(%s, %s)", transformX, transformY, transformWidth, transformHeight));
+                int transformSeekTime = Integer.parseInt(seekTime);
+                if(transformSeekTime < 0){
+                    transformSeekTime = 0;
+                }else{
+                    transformSeekTime *= 1000;
+                }
+                final int realSeekTime = transformSeekTime;
 
-            Activity activity = (Activity)context;
-            activity.runOnUiThread(()->{
-                initVideoParamsIfNoInit(baseMediaPlayer,transformX, transformY, transformWidth, transformHeight);
-                baseMediaPlayer.play(url);
-                baseMediaPlayer.setStartTime(realSeekTime);
-                webView.requestFocus();
-            });
-            return SUCCESS;
-        }else{
-            Logger.e(PARAM_ERROR,String.format("请正确传递play函数参数：x:%s;y:%s;width:%s;height:%s;seekTime:%s",
-                    x,y,width,height,seekTime));
+                Logger.d(String.format("调用播放函数。转换坐标(%s, %s)，宽高(%s, %s)", transformX, transformY, transformWidth, transformHeight));
+
+                Activity activity = (Activity)context;
+                activity.runOnUiThread(()->{
+                    initVideoParamsIfNoInit(baseMediaPlayer,transformX, transformY, transformWidth, transformHeight);
+                    baseMediaPlayer.play(url,examineId,examineType);
+                    baseMediaPlayer.setStartTime(realSeekTime);
+                    webView.requestFocus();
+                });
+                return SUCCESS;
+            }else{
+                Logger.e(PARAM_ERROR,String.format("请正确传递play函数参数：x:%s;y:%s;width:%s;height:%s;seekTime:%s",
+                        x,y,width,height,seekTime));
+                return PARAM_ERROR;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
             return EXCEPTION_ERROR;
         }
+
     }
 
 
@@ -476,5 +477,9 @@ public class PlayerToJS {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    private void executePlayStatusEvent(int status){
+        JsUtil.evaluateJavascript(context,webView,String.format(JS_PLAYER_STATUS,status));
     }
 }

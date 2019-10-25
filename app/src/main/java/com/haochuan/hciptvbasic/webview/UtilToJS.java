@@ -6,24 +6,20 @@ import android.text.TextUtils;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
+import com.haochuan.core.Logger;
+import com.haochuan.core.util.HandlerUtil;
+import com.haochuan.hciptvbasic.BaseWebActivity;
 import com.haochuan.hciptvbasic.BuildConfig;
-import com.haochuan.hciptvbasic.Util.DownloadUtils;
-import com.haochuan.hciptvbasic.Util.JSONUtil;
-import com.haochuan.hciptvbasic.Util.JsUtil;
-import com.haochuan.hciptvbasic.Util.Logger;
-import com.haochuan.hciptvbasic.Util.MacUtil;
-import com.haochuan.hciptvbasic.Util.MathUtil;
-import com.haochuan.hciptvbasic.Util.Md5Util;
-import com.haochuan.hciptvbasic.Util.ToolsUtil;
+import com.haochuan.core.util.JSONUtil;
+import com.haochuan.core.util.JsUtil;
+import com.haochuan.core.util.MacUtil;
+import com.haochuan.core.util.MathUtil;
+import com.haochuan.core.util.ToolsUtil;
 
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.io.File;
-
-import static com.haochuan.hciptvbasic.Util.MessageCode.EXCEPTION_ERROR;
-import static com.haochuan.hciptvbasic.Util.MessageCode.PARAM_ERROR;
-import static com.haochuan.hciptvbasic.Util.MessageCode.SUCCESS;
+import static com.haochuan.core.util.MessageCode.EXCEPTION_ERROR;
+import static com.haochuan.core.util.MessageCode.SUCCESS;
 
 
 public class UtilToJS {
@@ -97,9 +93,15 @@ public class UtilToJS {
     @JavascriptInterface
     public int appExit(){
         try{
-            ((Activity) context).runOnUiThread(() -> {
-                android.os.Process.killProcess(android.os.Process.myPid());   //获取PID
-                System.exit(0);
+            HandlerUtil.runOnUiThread(() -> {
+               Activity activity =(Activity)context;
+               if(activity instanceof BaseWebActivity){
+                   BaseWebActivity baseWebActivity = (BaseWebActivity)activity;
+                   baseWebActivity.AppExit();
+               }else{
+                   android.os.Process.killProcess(android.os.Process.myPid());   //获取PID
+                   System.exit(0);
+               }
             });
             return SUCCESS;
         }catch (Exception e){

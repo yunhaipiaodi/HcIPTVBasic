@@ -5,7 +5,6 @@ import android.widget.Button;
 
 import com.haochuan.hciptvbasic.BaseWebActivity;
 import com.haochuan.hciptvbasic.R;
-import com.haochuan.hciptvbasic.Util.MyLocation;
 
 public class TestActivity extends BaseWebActivity {
 
@@ -22,17 +21,23 @@ public class TestActivity extends BaseWebActivity {
 
         Button playBtn = findViewById(R.id.play_btn);
         playBtn.setOnClickListener(v -> {
-            String url = "https://gzhc-sxrj.oss-cn-shenzhen.aliyuncs.com/gzhc-djbl/djbl01.mp4";
-            String x = "20";
-            String y = "30";
-            String width = "640";
-            String height = "360";
-            getPlayerToJS().play("");
+            String playParamJson = "{\n" +
+                    "    \"examine_id\": 200000253,\n" +
+                    "    \"url\": \"https://gzhc-sxrj.oss-cn-shenzhen.aliyuncs.com/gzhc-djbl/djbl01.mp4\"\n" +
+                    "}";
+            getPlayerToJS().play(playParamJson);
+            playBtn.requestFocus();
         });
 
         Button changeBtn = findViewById(R.id.change_btn);
+        String changeParam = "{\n" +
+                "    \"x\": 100,\n" +
+                "    \"y\": 100,\n" +
+                "    \"width\": 640,\n" +
+                "    \"height\": 360\n" +
+                "}";
         changeBtn.setOnClickListener(v ->
-                getPlayerToJS().change(""));
+                getPlayerToJS().change(changeParam));
 
         Button pauseBtn = findViewById(R.id.pause_btn);
         pauseBtn.setOnClickListener(v -> getPlayerToJS().pause());
@@ -47,7 +52,10 @@ public class TestActivity extends BaseWebActivity {
             if(seekPos > getMediaPlayer().getDuration()){
                 seekPos = getMediaPlayer().getDuration() - 1000;
             }
-            getPlayerToJS().seek(seekPos);
+            String param = "{\n" +
+                    "  \"time\": 0\n" +
+                    "}";
+            getPlayerToJS().seek(param);
         });
 
         Button backBtn = findViewById(R.id.back_btn);
@@ -57,14 +65,17 @@ public class TestActivity extends BaseWebActivity {
             if(seekPos < 0){
                 seekPos = 1000;
             }
-            getPlayerToJS().seek(seekPos);
+            String param = "{\n" +
+                    "  \"time\": 10\n" +
+                    "}";
+            getPlayerToJS().seek(param);
         });
 
         Button exitBtn = findViewById(R.id.exit_btn);
         exitBtn.setOnClickListener(v -> getPlayerToJS().stop());
 
-        //显示位置
-        getLocations();
+        Button exitAppBtn = findViewById(R.id.exit_app);
+        exitAppBtn.setOnClickListener(v -> getUtilToJS().appExit());
 
         /*String intentJson = new UtilToJS(this,getWebView()).getIntentJson();
         Logger.d("intentJson:" + intentJson);*/
@@ -89,13 +100,6 @@ public class TestActivity extends BaseWebActivity {
         //MemoryMonitor.getInstance().stop();
     }
 
-    /*
-    * 获取位置信息
-    * */
-    private void getLocations(){
-        MyLocation myLocation = new MyLocation(this);
-        myLocation.getLocation(this);
-    }
 
 
 }

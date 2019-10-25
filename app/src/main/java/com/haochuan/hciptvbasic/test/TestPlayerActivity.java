@@ -3,11 +3,8 @@ package com.haochuan.hciptvbasic.test;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
-import android.app.Application;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -15,21 +12,19 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.haochuan.core.IVideoPlayer;
+import com.haochuan.core.Logger;
+import com.haochuan.gsyvideo.HCGsyVideoPlayer;
 import com.haochuan.hciptvbasic.R;
-import com.haochuan.hciptvbasic.Util.Logger;
-import com.haochuan.hciptvbasic.video.HCPlayer;
-import com.haochuan.hciptvbasic.video.IVideoPlayer;
 
 import java.math.BigDecimal;
 import java.util.Formatter;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class TestPlayerActivity extends AppCompatActivity implements IVideoPlayer {
 
     //页面组件对象
-    private HCPlayer hcPlayer;
+    private HCGsyVideoPlayer hcPlayer;
     private ProgressBar loadingBar;
     private LinearLayout bottomContainer;
     private SeekBar videoProgressBar;
@@ -66,8 +61,8 @@ public class TestPlayerActivity extends AppCompatActivity implements IVideoPlaye
         loadingBar.setMax(100);
         loadingBar.setProgress(0);
 
-        hcPlayer.setIVideoPlayerListener(this);
-        hcPlayer.play(testUrl);
+        hcPlayer.setVideoPlayerListener(this);
+        hcPlayer.play(testUrl,"","");
 
 
     }
@@ -209,7 +204,7 @@ public class TestPlayerActivity extends AppCompatActivity implements IVideoPlaye
                 .setNegativeButton("重播", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                hcPlayer.play(testUrl);
+                hcPlayer.play(testUrl,"","");
             }
         }).setPositiveButton("退出", new DialogInterface.OnClickListener() {
             @Override

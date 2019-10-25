@@ -8,10 +8,12 @@ package com.haochuan.hciptvbasic;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
@@ -22,14 +24,19 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.haochuan.hciptvbasic.Util.Logger;
-import com.haochuan.hciptvbasic.video.BaseMediaPlayer;
-import com.haochuan.hciptvbasic.video.HCPlayer;
-import com.haochuan.hciptvbasic.video.IVideoPlayer;
+import com.haochuan.core.BaseMediaPlayer;
+import com.haochuan.core.IVideoPlayer;
+import com.haochuan.core.Logger;
+import com.haochuan.core.util.HandlerUtil;
+import com.haochuan.gsyvideo.HCGsyVideoPlayer;
 import com.haochuan.hciptvbasic.webview.PayToJS;
 import com.haochuan.hciptvbasic.webview.PlayerToJS;
 import com.haochuan.hciptvbasic.webview.HCWebChromeClient;
 import com.haochuan.hciptvbasic.webview.UtilToJS;
+import com.haochuan.systemvideo.SystemVideoPlayer;
+import com.haochuan.weilai_video.CNTVLogin;
+import com.haochuan.weilai_video.WeiLaiVideoPlayer;
+import com.haochuan.weilai_video.util.ReportCNTVLog;
 
 import java.util.List;
 
@@ -42,7 +49,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
     String payToJSName = PayToJS.class.getSimpleName();         //payToJS类名
     String toolToJSName = UtilToJS.class.getSimpleName();       //toolToJS类名
     //播放器
-    private HCPlayer mHCPlayer = null;
+    private BaseMediaPlayer mHCPlayer = null;
 
     /**-----------------------虚函数-----------------------*/
 
@@ -55,8 +62,14 @@ public abstract class BaseWebActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //初始化日志
-        Logger.init(this);
+        Logger.init(this,getWebView());
 
+        //如果是未来版本，需要先初始化其sdk
+        if(BuildConfig.player_type == 2){
+            CNTVInit();
+        }
+
+        //初始化播放器
         initPlayer();
 
         webView = new WebView(this);
@@ -64,6 +77,14 @@ public abstract class BaseWebActivity extends AppCompatActivity {
         setContentView(webView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         initWebSetting(webView);
+
+        //未来版本需要先初始化SDK成功再加载页面
+        if(BuildConfig.player_type != 2){
+            runH5();
+        }
+    }
+
+    private void runH5(){
         webView.loadUrl(getIndexURL());
     }
 
@@ -81,8 +102,9 @@ public abstract class BaseWebActivity extends AppCompatActivity {
             webView.onResume();
         }
         if(mHCPlayer !=null){
-            mHCPlayer.onResume();
+            mHCPlayer.resume();
         }
+
 
     }
 
@@ -93,7 +115,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
             webView.onPause();
         }
         if(mHCPlayer !=null){
-            mHCPlayer.onPause();
+            mHCPlayer.pause();
         }
     }
 
@@ -103,9 +125,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
         boolean isForeground = isRunningForeground(this);
         if (!isForeground) {
             Handler handler = new Handler(getMainLooper());
-            handler.postDelayed(() -> {
-                exit();
-            }, 500);
+            handler.postDelayed(() -> AppExit(), 500);
         }
     }
 
@@ -126,7 +146,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
             webView = null;
         }
         if(mHCPlayer !=null){
-            mHCPlayer.onDestroy();
+            mHCPlayer.release();
         }
         super.onDestroy();
     }
@@ -136,7 +156,14 @@ public abstract class BaseWebActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        utilToJS.onBackPressed();
+        if(CNTVLogin.getInstance().isOpenAdshow()){
+            Log.d("djbl","onBackPressed close ad");
+            ViewGroup viewGroup = (ViewGroup) getWindow().getDecorView();
+            CNTVLogin.getInstance().removeADImage(this,viewGroup);
+        }else{
+            utilToJS.onBackPressed();
+        }
+
     }
 
     /*--------------------------初始化函数---------------------------*/
@@ -144,8 +171,20 @@ public abstract class BaseWebActivity extends AppCompatActivity {
     * 初始化播放器
     * */
     private void initPlayer(){
-        mHCPlayer = new HCPlayer(this);
-        mHCPlayer.setIVideoPlayerListener(new IVideoPlayer() {
+        switch (BuildConfig.player_type){
+            case 1:
+                mHCPlayer = new SystemVideoPlayer(this);
+                break;
+            case 2:
+                mHCPlayer = new WeiLaiVideoPlayer(this);
+                break;
+            case 3:
+                mHCPlayer = new HCGsyVideoPlayer(this);
+                break;
+            default:
+                break;
+        }
+        mHCPlayer.setVideoPlayerListener(new IVideoPlayer() {
             @Override
             public void onPreparing() {
                 playerToJS.onPlayerPreparing();
@@ -183,10 +222,77 @@ public abstract class BaseWebActivity extends AppCompatActivity {
             @Override
             public void onError(int what, int extra) {
                 playerToJS.onPlayerError(what,extra);
+                if(BuildConfig.player_type == 2){
+                    CNTVPlayerErrorAlert();
+                }
             }
+
         });
     }
 
+
+
+    /*---------------------------------------未来电视方法-------------------------------------*/
+    //这部分代码只在接入未来电视播放时有，如果不是，请注释掉
+
+    /*
+    *初始化未来SDK
+    * 加载未来电视广告图片
+    * */
+    private void CNTVInit(){
+        CNTVLogin.getInstance().init(this, new CNTVLogin.OnCNTVListener() {
+            @Override
+            public void onOttLoginSuccess() {
+                runH5();
+            }
+
+            @Override
+            public void onOttLoginFail(String code, String msg) {
+                OttLoginFailAlert(code,msg);
+            }
+
+            @Override
+            public void onOttLoginError(Throwable throwable) {
+                OttLoginFailAlert("-1",throwable == null ? "发生未知异常" : throwable.getMessage());
+            }
+        });
+        ViewGroup viewGroup = (ViewGroup) getWindow().getDecorView();
+        CNTVLogin.getInstance().showAdImage(this,viewGroup);
+    }
+
+    /*
+    *ott登陆失败提示
+    * */
+    private void OttLoginFailAlert(String code,String message){
+        HandlerUtil.runOnUiThread(()->{
+            String msg = String.format("认证失败 code:%s,失败信息：%s",code,message);
+            new AlertDialog.Builder(this)
+                    .setTitle("ott认证失败")
+                    .setMessage(msg)
+                    .setPositiveButton("确定", (dialog, which) -> {
+                        dialog.dismiss();
+                        AppExit();
+                    })
+                    .show();
+        });
+    }
+
+    /*
+     * 未来电视功能：视频播放错误，提示并且退出播放
+     * */
+    private void CNTVPlayerErrorAlert(){
+        HandlerUtil.runOnUiThread(()->{
+            new AlertDialog.Builder(BaseWebActivity.this)
+                    .setTitle("提示")
+                    .setMessage("该节目已下线!")
+                    .setCancelable(false)
+                    .setPositiveButton("确定", (dialog, which) -> {
+                        playerToJS.stop();
+                    }).show();
+        });
+    }
+
+    /*---------------------------------------未来电视方法 end-------------------------------------*/
 
     @SuppressLint({"SetJavaScriptEnabled", "JavascriptInterface", "AddJavascriptInterface"})
     private void initWebSetting(WebView webView) {
@@ -223,15 +329,6 @@ public abstract class BaseWebActivity extends AppCompatActivity {
 
     /*-----------------------------------功能函数 start----------------------------------*/
 
-    /*
-     *  将日志发给前端
-     *  @param log    日志内容
-     * */
-
-    public void loggerToJs(String log){
-        getUtilToJS().logToJs(log);
-    }
-
     /**
      * 判断应用是否处于前台
      *
@@ -257,7 +354,10 @@ public abstract class BaseWebActivity extends AppCompatActivity {
     /*
      * 退出应用
      * */
-    public void exit() {
+    public void AppExit() {
+        if(BuildConfig.player_type == 2){
+            new ReportCNTVLog().reportExitLog();
+        }
         android.os.Process.killProcess(android.os.Process.myPid());   //获取PID
         System.exit(0);
     }

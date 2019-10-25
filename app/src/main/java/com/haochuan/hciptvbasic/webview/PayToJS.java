@@ -4,8 +4,8 @@ import android.content.Context;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
-import com.haochuan.hciptvbasic.Util.JsUtil;
-import com.haochuan.hciptvbasic.Util.Logger;
+import com.haochuan.core.Logger;
+import com.haochuan.core.util.JsUtil;
 
 public class PayToJS {
     private Context context;                        //MainActivity 句柄

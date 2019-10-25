@@ -4,8 +4,6 @@ import android.util.Log;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
 
-import com.haochuan.hciptvbasic.Util.Logger;
-
 
 public class HCWebChromeClient extends WebChromeClient {
 

@@ -1,0 +1,69 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion versions.compileSdk
+    defaultConfig {
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+        versionCode versions.versionCode
+        versionName versions.versionName
+        testInstrumentationRunner lib.test.test_runner
+
+        //暂时用黑龙江移动-电竞部落的未来电视数据
+        buildConfigField "String", "icntv_app_id", "\"5aa0b1a82cf0a\""
+        buildConfigField "String", "icntv_app_key", "\"7ce511f43f89232cf3291c3b001ad6c7\""
+        buildConfigField "String", "icntv_app_secret", "\"84f2343b883f2383213ebf549f56cfdf\""
+        buildConfigField "String", "icntv_app_channel", "\"2626023001\""
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility versions.Java
+        targetCompatibility versions.Java
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            buildConfigField "Boolean", "isDebug", "true"     //app全局是否调试,调试版本开启
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation lib.support.appcompat
+    testImplementation lib.test.junit
+    androidTestImplementation lib.test.runner
+    androidTestImplementation lib.test.espresso
+
+    implementation files('libs/adsdk.jar')
+    implementation files('libs/icntvplayersdk.jar')
+    implementation files('libs/logsdk.jar')
+    implementation files('libs/ottlogin.jar')
+    implementation files('libs/upgradeSDK.jar')
+    implementation files('libs/universal-image-loader-1.9.5.jar')
+    implementation project(path: ':core')
+}

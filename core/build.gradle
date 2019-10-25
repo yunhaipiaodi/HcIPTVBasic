@@ -1,0 +1,42 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion versions.compileSdk
+    defaultConfig {
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+        versionCode versions.versionCode
+        versionName versions.versionName
+        testInstrumentationRunner lib.test.test_runner
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            buildConfigField "Boolean", "isDebug", "false"     //app全局是否调试,发布版本不要开启
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            minifyEnabled false
+            buildConfigField "Boolean", "isDebug", "true"     //app全局是否调试,调试版本开启
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility versions.Java
+        targetCompatibility versions.Java
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation lib.support.appcompat
+    testImplementation lib.test.junit
+    androidTestImplementation lib.test.runner
+    androidTestImplementation lib.test.espresso
+    implementation lib.dependency_library.nohttp
+}
