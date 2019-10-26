@@ -33,7 +33,6 @@ import java.io.File;
 
 import tv.icntv.adsdk.AdSDK;
 import tv.icntv.logsdk.logSDK;
-import tv.icntv.ottlogin.MD5;
 import tv.icntv.ottlogin.loginSDK;
 import tv.newtv.upgradesdk.upgradeSDK;
 

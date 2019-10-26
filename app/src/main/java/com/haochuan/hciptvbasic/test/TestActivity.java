@@ -1,12 +1,21 @@
 package com.haochuan.hciptvbasic.test;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 
 import com.haochuan.hciptvbasic.BaseWebActivity;
 import com.haochuan.hciptvbasic.R;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class TestActivity extends BaseWebActivity {
+
+
+    private Timer timer;
+    private TimerTask timerTask;
+    private String TAG = "TestActivity";
 
     @Override
     protected String getIndexURL() {
@@ -18,15 +27,17 @@ public class TestActivity extends BaseWebActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
-
+        timer = new Timer();
         Button playBtn = findViewById(R.id.play_btn);
         playBtn.setOnClickListener(v -> {
             String playParamJson = "{\n" +
                     "    \"examine_id\": 200000253,\n" +
-                    "    \"url\": \"https://gzhc-sxrj.oss-cn-shenzhen.aliyuncs.com/gzhc-djbl/djbl01.mp4\"\n" +
+                    "    \"url\": \"https://gzhc-sxrj.oss-cn-shenzhen.aliyuncs.com/gzhc-djbl/djbl01.mp4\",\n" +
+                    "    \"seek_time\": 5\n" +
                     "}";
             getPlayerToJS().play(playParamJson);
             playBtn.requestFocus();
+            checkStatus();
         });
 
         Button changeBtn = findViewById(R.id.change_btn);
@@ -86,6 +97,44 @@ public class TestActivity extends BaseWebActivity {
         String headJson = "{\"cookie\":\"head=123123123131fdfsfsdfs\"}";
         toolToJS.clientWebRequest(url,paramJson,headJson,2,false,"test");*/
         //toolToJS.download("http://202.99.114.74:56251/dudu_youxi/h5/gameList/apk/jiSuKuangBiao.apk");
+    }
+
+    private void checkStatus(){
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                int status  = getPlayerToJS().getPlayerStatus();
+                Log.d(TAG,"播放状态：" + getStatusMsg(status));
+            }
+        };
+        timer.schedule(timerTask,0,1000);
+    }
+
+    private String getStatusMsg(int status){
+        String statusMsg = "";
+        switch (status){
+            case 1:
+                statusMsg = "视频准备中";
+                break;
+            case 2:
+                statusMsg = "播放";
+                break;
+            case 3:
+                statusMsg = "暂停";
+                break;
+            case 4:
+                statusMsg = "缓冲";
+                break;
+            case 5:
+                statusMsg = "播放完成停止播放";
+                break;
+            case 6:
+                statusMsg = "未播放";
+                break;
+            default:
+                break;
+        }
+        return statusMsg;
     }
 
     @Override

@@ -64,7 +64,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
         //初始化日志
         Logger.init(this,getWebView());
 
-        //如果是未来版本，需要先初始化其sdk
+        //如果是未来版本，需要先初始化其sdk;如果是其他版本，可以注释该段代码
         if(BuildConfig.player_type == 2){
             CNTVInit();
         }
@@ -156,6 +156,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
+        //如果是未来版本，请用这段代码
         if(CNTVLogin.getInstance().isOpenAdshow()){
             Log.d("djbl","onBackPressed close ad");
             ViewGroup viewGroup = (ViewGroup) getWindow().getDecorView();
@@ -164,6 +165,8 @@ public abstract class BaseWebActivity extends AppCompatActivity {
             utilToJS.onBackPressed();
         }
 
+        //如果是除未来其他版本，请用这段代码
+        //utilToJS.onBackPressed();
     }
 
     /*--------------------------初始化函数---------------------------*/

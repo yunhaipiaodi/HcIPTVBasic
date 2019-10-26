@@ -12,6 +12,8 @@ import com.haochuan.core.BaseMediaPlayer;
 import com.haochuan.core.IVideoPlayer;
 import com.haochuan.core.Logger;
 
+import static com.haochuan.core.util.MessageCode.PLAYER_OBJ_NULL;
+
 public class SystemVideoPlayer extends BaseMediaPlayer {
 
     //全局参数
@@ -50,6 +52,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
             iVideoPlayer.onPlaying();
             playerStatus = 2;
             mHadPrepared = true;
+            seekToStartTime();
         });
 
         videoView.setOnInfoListener((mp,what,extra) -> {
@@ -98,7 +101,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void setStartTime(int time) {
-
+        this.startTime = time;
     }
 
     @Override
@@ -135,6 +138,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
         videoView.stopPlayback();
         videoView.suspend();
         mHadPrepared = false;
+        playerStatus = 6;   //暂停中；
     }
 
     @Override
@@ -165,6 +169,25 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
     @Override
     public void setVideoPlayerListener(@NonNull IVideoPlayer iVideoPlayer) {
         this.iVideoPlayer = iVideoPlayer;
+    }
+
+    /*----------------------功能函数-----------------------------*/
+    /*
+     * 在播放器准备好后，跳转到传入的startTime处
+     * */
+    private void seekToStartTime(){
+        if(videoView == null){
+            Logger.e(PLAYER_OBJ_NULL,"videoView is null, can`t seekToStartTime");
+            return;
+        }
+        if(startTime > 0){
+            if(startTime >= getDuration()){
+                //如果开始时间大于或者等于视频总时长，则跳转到距离结束5秒的位置
+                videoView.seekTo(getDuration() -5000);
+            }else{
+                videoView.seekTo(startTime);
+            }
+        }
     }
 
 }
