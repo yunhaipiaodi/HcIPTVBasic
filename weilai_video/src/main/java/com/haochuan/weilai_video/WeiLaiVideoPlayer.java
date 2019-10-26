@@ -79,10 +79,16 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void resume() {
+        if(icntvPlayer == null){
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return;
+        }
         if(isPrePared()){
             if(!icntvPlayer.isPlaying()){
                 icntvPlayer.startVideo();
                 playerStatus = 2;   //播放中
+            }else {
+                Logger.w("当前已经在播放，不用执行resume");
             }
         }else{
             Logger.w("视频未准备，不能执行resume");
@@ -91,6 +97,10 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void pause() {
+        if(icntvPlayer == null){
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return;
+        }
         if(isPrePared()){
             if(icntvPlayer.isPlaying()){
                 icntvPlayer.pauseVideo();
@@ -103,6 +113,10 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void seek(int position) {
+        if(icntvPlayer == null){
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return;
+        }
         if(isPrePared()){
             icntvPlayer.seekTo(position);
         }else{
@@ -112,11 +126,19 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void release() {
+        if(icntvPlayer == null){
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return;
+        }
         cntvPlayerRelease();
     }
 
     @Override
     public boolean isPlaying() {
+        if(icntvPlayer == null){
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return false;
+        }
         if(isPrePared()){
             return icntvPlayer.isPlaying();
         }else{
@@ -131,6 +153,10 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public int getDuration() {
+        if(icntvPlayer == null){
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return 0;
+        }
         if(isPrePared()){
             return icntvPlayer.getDuration();
         }else{
@@ -140,6 +166,10 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public int getCurrentPlayPosition() {
+        if(icntvPlayer == null){
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return 0;
+        }
         if(isPrePared()){
             return icntvPlayer.getCurrentPosition();
         }else{
@@ -184,6 +214,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
      */
     public void cntvPlayerRelease() {
         if (icntvPlayer == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return;
         }
         if (icntvPlayer.isPlaying()) {

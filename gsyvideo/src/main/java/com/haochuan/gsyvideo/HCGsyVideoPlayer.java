@@ -11,6 +11,8 @@ import com.haochuan.core.BaseMediaPlayer;
 import com.haochuan.core.IVideoPlayer;
 import com.haochuan.core.Logger;
 
+import static com.haochuan.core.util.MessageCode.PLAYER_OBJ_NULL;
+
 
 public class HCGsyVideoPlayer extends BaseMediaPlayer{
 
@@ -55,17 +57,29 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
     /*----------------------------从父类继承 播放器功能函数----------------------------------*/
     @Override
     public void play(String url,String examineId,String examineType) {
+        if (mEmptyControlVideo == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return;
+        }
         mEmptyControlVideo.setUp(url,false,"");
         mEmptyControlVideo.startPlayLogic();
     }
 
     @Override
     public void setStartTime(int time){
+        if (mEmptyControlVideo == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return;
+        }
         mEmptyControlVideo.setStartTime(time);
     }
 
     @Override
     public void resume() {
+        if (mEmptyControlVideo == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return;
+        }
         if(isPrePared()){
             mEmptyControlVideo.onVideoResume();
         }else{
@@ -75,6 +89,10 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
 
     @Override
     public void pause() {
+        if (mEmptyControlVideo == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return;
+        }
         if(isPrePared()){
             mEmptyControlVideo.onVideoPause();
         }else{
@@ -84,6 +102,10 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
 
     @Override
     public void seek(int position) {
+        if (mEmptyControlVideo == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return;
+        }
         if(isPrePared()){
             mEmptyControlVideo.seekTo(position);
         }else{
@@ -92,21 +114,37 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
     }
 
     public void setSpeed(float speed){
+        if (mEmptyControlVideo == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return;
+        }
         mEmptyControlVideo.setSpeed(speed);
     }
 
 
     public boolean isPlaying() {
+        if (mEmptyControlVideo == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return false;
+        }
         return mEmptyControlVideo.isPlaying();
     }
 
 
     public boolean isPrePared() {
+        if (mEmptyControlVideo == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return false;
+        }
         return mEmptyControlVideo.isPrePared();
     }
 
 
     public int getDuration() {
+        if (mEmptyControlVideo == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return 0;
+        }
         if(isPrePared()){
             return mEmptyControlVideo.getDuration();
         }else{
@@ -117,6 +155,10 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
 
 
     public int getCurrentPlayPosition() {
+        if (mEmptyControlVideo == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return 0;
+        }
         if(isPrePared()){
             return mEmptyControlVideo.getCurrentPositionWhenPlaying();
         }else{
@@ -127,11 +169,19 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
 
 
     public int getCurrentStatus() {
+        if (mEmptyControlVideo == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return 6;
+        }
         return mEmptyControlVideo.getCurrentStatus();
     }
 
 
     public void release(){
+        if (mEmptyControlVideo == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return;
+        }
         mEmptyControlVideo.release();
     }
 

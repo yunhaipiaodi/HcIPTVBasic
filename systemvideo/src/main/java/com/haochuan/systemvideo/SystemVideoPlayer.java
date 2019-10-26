@@ -94,6 +94,10 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void play(String url, String examineId, String examineType) {
+        if (videoView == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return;
+        }
         videoView.setVideoPath(url);
         videoView.start();
         playerStatus = 1;   //视频准备中；
@@ -106,6 +110,10 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void resume() {
+        if (videoView == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return;
+        }
         if(isPrePared()){
             videoView.start();
             playerStatus = 2;   //播放中；
@@ -116,6 +124,10 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void pause() {
+        if (videoView == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return;
+        }
         if(isPrePared()){
             videoView.pause();
             playerStatus = 3;   //暂停中；
@@ -126,6 +138,10 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void seek(int position) {
+        if (videoView == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return;
+        }
         if(isPrePared()){
             videoView.seekTo(position);
         }else{
@@ -135,6 +151,10 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void release() {
+        if (videoView == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return;
+        }
         videoView.stopPlayback();
         videoView.suspend();
         mHadPrepared = false;
@@ -143,6 +163,10 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public boolean isPlaying() {
+        if (mediaPlayer == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return false;
+        }
         return mediaPlayer.isPlaying();
     }
 
@@ -153,11 +177,19 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public int getDuration() {
+        if (mediaPlayer == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return 0;
+        }
         return mediaPlayer.getDuration();
     }
 
     @Override
     public int getCurrentPlayPosition() {
+        if (mediaPlayer == null) {
+            Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
+            return 0;
+        }
         return mediaPlayer.getCurrentPosition();
     }
 
