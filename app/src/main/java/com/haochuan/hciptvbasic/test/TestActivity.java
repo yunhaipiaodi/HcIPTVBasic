@@ -30,10 +30,17 @@ public class TestActivity extends BaseWebActivity {
         timer = new Timer();
         Button playBtn = findViewById(R.id.play_btn);
         playBtn.setOnClickListener(v -> {
-            String playParamJson = "{\n" +
-                    "    \"examine_id\": 200000253,\n" +
+            String playParamJson =  "{\n" +
+                    "    \"type\": 1,\n" +
                     "    \"url\": \"https://gzhc-sxrj.oss-cn-shenzhen.aliyuncs.com/gzhc-djbl/djbl01.mp4\",\n" +
-                    "    \"seek_time\": 5\n" +
+                    "    \"code\": 88,\n" +
+                    "    \"seek_time\": 3,\n" +
+                    "    \"x\": 32,\n" +
+                    "    \"y\": 64,\n" +
+                    "    \"width\": 320,\n" +
+                    "    \"height\": 180,\n" +
+                    "    \"examine_id\": 200000253,\n" +
+                    "    \"examine_type\": \"program\"\n" +
                     "}";
             getPlayerToJS().play(playParamJson);
             playBtn.requestFocus();

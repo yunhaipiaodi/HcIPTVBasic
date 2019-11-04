@@ -4,6 +4,7 @@ import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.net.DhcpInfo;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
@@ -148,8 +149,8 @@ public class PlayerToJS {
             String seekTime = JSONUtil.getString(playParam,"seek_time","0");
             String x = JSONUtil.getString(playParam,"x","0");
             String y = JSONUtil.getString(playParam,"y","0");
-            String width = JSONUtil.getString(playParam,"width","1280");
-            String height = JSONUtil.getString(playParam,"height","720");
+            String width = JSONUtil.getString(playParam,"width","0");
+            String height = JSONUtil.getString(playParam,"height","0");
             String examineId = JSONUtil.getString(playParam,"examine_id","");
             String examineType = JSONUtil.getString(playParam,"examine_type","program");
             return videoPlay(url,seekTime,x,y,width,height,examineId,examineType);
@@ -321,20 +322,33 @@ public class PlayerToJS {
                 Logger.e(PARAM_ERROR,"调用play函数，url格式不正确，不能执行播放，请检查;url:" + url);
                 return PARAM_ERROR;
             }
+
+
             if(MathUtil.isDigitsOnly(x) && MathUtil.isDigitsOnly(y) && MathUtil.isDigitsOnly(width) && MathUtil.isDigitsOnly(height) && MathUtil.isDigitsOnly(seekTime)){
+
+                //判断x，y是否小于零
+                int Dx = Integer.parseInt(x);
+                int Dy = Integer.parseInt(y);
+                x = (Dx < 0?"0":x);
+                y = (Dy < 0?"0":y);
+
+
+
                 int screenWidth = ScreenSnap.getScreenWidth(context);
                 int screenHeight = ScreenSnap.getScreenHeight(context);
                 int transformX = (int) (Float.parseFloat(x) * screenWidth / 1280);
                 int transformY = (int) (Float.parseFloat(y) * screenHeight / 720);
-                int transformWidth = (int) (Float.parseFloat(width) * screenWidth / 1280);
-                int transformHeight = (int) (Float.parseFloat(height) * screenHeight / 720);
+                int transformWidth = (int) (Float.parseFloat(String.valueOf(width)) * screenWidth / 1280);
+                int transformHeight = (int) (Float.parseFloat(String.valueOf(height)) * screenHeight / 720);
 
                 int transformSeekTime = Integer.parseInt(seekTime);
+                transformSeekTime = transformSeekTime < 0 ? 0 :transformSeekTime;
                 if(transformSeekTime < 0){
                     transformSeekTime = 0;
                 }else{
                     transformSeekTime *= 1000;
                 }
+
                 final int realSeekTime = transformSeekTime;
 
                 Logger.d(String.format("调用播放函数。转换坐标(%s, %s)，宽高(%s, %s)", transformX, transformY, transformWidth, transformHeight));

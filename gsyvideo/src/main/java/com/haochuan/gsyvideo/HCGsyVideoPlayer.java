@@ -33,8 +33,6 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
         init(context);
     }
 
-
-
     /*
     * 初始化
     * */

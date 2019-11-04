@@ -18,9 +18,17 @@ public class MainActivity extends BaseWebActivity {
         super.onCreate(savedInstanceState);
 
         //test
-        String playParamJson = "{\n" +
+        /*String playParamJson = "{\n" +
+                "    \"type\": 1,\n" +
+                "    \"url\": \"https://gzhc-sxrj.oss-cn-shenzhen.aliyuncs.com/gzhc-djbl/djbl01.mp4\",\n" +
+                "    \"code\": 88,\n" +
+                "    \"seek_time\": 3,\n" +
+                "    \"x\": 32,\n" +
+                "    \"y\": 64,\n" +
+                "    \"width\": 320,\n" +
+                "    \"height\": 180,\n" +
                 "    \"examine_id\": 200000253,\n" +
-                "    \"url\": \"https://gzhc-sxrj.oss-cn-shenzhen.aliyuncs.com/gzhc-djbl/djbl01.mp4\"\n" +
+                "    \"examine_type\": \"program\"\n" +
                 "}";
         int state = getPlayerToJS().getPlayerStatus();
 
@@ -29,7 +37,7 @@ public class MainActivity extends BaseWebActivity {
             public void run() {
                 getPlayerToJS().play(playParamJson);
             }
-        },10000);
+        },10000);*/
         /*new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
