@@ -8,7 +8,7 @@ import java.util.TimerTask;
 
 
 public class MainActivity extends BaseWebActivity {
-    private String mBasicUrl = "http://10.255.25.176:8091/sxrj/loading.html";    //入口地址
+    private String mBasicUrl = "http://120.78.169.79:8090/h5/game_apk/html/video_play.html";    //入口地址
 
     private int testCount = 0;
     private String TAG = "status";
@@ -18,39 +18,39 @@ public class MainActivity extends BaseWebActivity {
         super.onCreate(savedInstanceState);
 
         //test
-        /*String playParamJson = "{\n" +
+       /* String playParamJson = "{\n" +
                 "    \"type\": 1,\n" +
                 "    \"url\": \"https://gzhc-sxrj.oss-cn-shenzhen.aliyuncs.com/gzhc-djbl/djbl01.mp4\",\n" +
                 "    \"code\": 88,\n" +
                 "    \"seek_time\": 3,\n" +
-                "    \"x\": 32,\n" +
-                "    \"y\": 64,\n" +
-                "    \"width\": 320,\n" +
-                "    \"height\": 180,\n" +
+                "    \"x\": 0,\n" +
+                "    \"y\": 0,\n" +
+                "    \"width\": 1280,\n" +
+                "    \"height\": 720,\n" +
                 "    \"examine_id\": 200000253,\n" +
                 "    \"examine_type\": \"program\"\n" +
                 "}";
         int state = getPlayerToJS().getPlayerStatus();
-
-        new Timer().schedule(new TimerTask() {
+        getPlayerToJS().play(playParamJson);*/
+        /*new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 getPlayerToJS().play(playParamJson);
             }
-        },10000);*/
-        /*new Timer().schedule(new TimerTask() {
+        },10000);
+        new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 int state = 0;
                 switch (testCount){
                     case 0:
-                        *//*String changeParamJson = "{\n" +
+                        String changeParamJson = "{\n" +
                                 "    \"x\": 60,\n" +
                                 "    \"y\": 60,\n" +
                                 "    \"width\": 480,\n" +
                                 "    \"height\": 270\n" +
                                 "}";
-                        getPlayerToJS().change(changeParamJson);*//*
+                        getPlayerToJS().change(changeParamJson);
 
                         break;
                     case 1:

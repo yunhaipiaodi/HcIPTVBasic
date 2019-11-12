@@ -20,7 +20,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
     private VideoView videoView;   //系统播放器对象
     private IVideoPlayer iVideoPlayer; //播放器事件监控
     private MediaPlayer mediaPlayer;
-    private int playerStatus = 0;
+    private int playerStatus = 6;
     protected boolean mHadPrepared = false;                 //Prepared
     private int startTime = 0;//播放器开始的时间,单位毫秒
 

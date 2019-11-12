@@ -14,7 +14,7 @@ android {
             abiFilters 'armeabi', 'armeabi-v7a', 'x86'
         }
 
-        buildConfigField "int", "player_type", "2"; //播放器类型；1，原生；2，未来；3，GsyPlayer
+        buildConfigField "int", "player_type", "3"; //播放器类型；1，原生；2，未来；3，GsyPlayer
     }
 
 
@@ -60,8 +60,8 @@ dependencies {
     testImplementation lib.test.junit
     androidTestImplementation lib.test.runner
     androidTestImplementation lib.test.espresso
-    implementation project(':gsyvideo')
     implementation project(path: ':core')
-    implementation project(path: ':weilai_video')
     implementation project(path: ':systemvideo')
+    implementation project(path: ':weilai_video')
+    implementation project(path: ':gsyvideo')
 }

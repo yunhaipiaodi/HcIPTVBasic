@@ -29,7 +29,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
     private FrameLayout icntvPlayerContainer = null;    //cntv播放器容器
     private IVideoPlayer iVideoPlayer;
     protected boolean mHadPrepared = false;                 //Prepared
-    private int playerStatus = 0;
+    private int playerStatus = 6;
     private int startTime = 0;                                 //播放器开始的时间,单位毫秒
 
 

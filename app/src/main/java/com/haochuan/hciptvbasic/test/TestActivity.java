@@ -32,7 +32,7 @@ public class TestActivity extends BaseWebActivity {
         playBtn.setOnClickListener(v -> {
             String playParamJson =  "{\n" +
                     "    \"type\": 1,\n" +
-                    "    \"url\": \"https://gzhc-sxrj.oss-cn-shenzhen.aliyuncs.com/gzhc-djbl/djbl01.mp4\",\n" +
+                    "    \"url\": \"http://202.99.114.93/88888891/16/20190807/270766111/270766111.ts\",\n" +
                     "    \"code\": 88,\n" +
                     "    \"seek_time\": 3,\n" +
                     "    \"x\": 32,\n" +

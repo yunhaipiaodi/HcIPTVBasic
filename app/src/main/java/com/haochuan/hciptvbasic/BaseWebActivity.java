@@ -166,7 +166,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
         }
 
         //如果是除未来其他版本，请用这段代码
-        //utilToJS.onBackPressed();
+        utilToJS.onBackPressed();
     }
 
     /*--------------------------初始化函数---------------------------*/
@@ -322,6 +322,8 @@ public abstract class BaseWebActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(BuildConfig.isDebug);
         }
+
+        webView.requestFocus();
     }
 
     private void setPlayerToJS(){

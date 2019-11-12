@@ -149,8 +149,8 @@ public class PlayerToJS {
             String seekTime = JSONUtil.getString(playParam,"seek_time","0");
             String x = JSONUtil.getString(playParam,"x","0");
             String y = JSONUtil.getString(playParam,"y","0");
-            String width = JSONUtil.getString(playParam,"width","0");
-            String height = JSONUtil.getString(playParam,"height","0");
+            String width = JSONUtil.getString(playParam,"width","1280");
+            String height = JSONUtil.getString(playParam,"height","720");
             String examineId = JSONUtil.getString(playParam,"examine_id","");
             String examineType = JSONUtil.getString(playParam,"examine_type","program");
             return videoPlay(url,seekTime,x,y,width,height,examineId,examineType);

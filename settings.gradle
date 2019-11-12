@@ -1,1 +1,1 @@
-include ':app', ':gsyvideo', ':core', ':weilai_video', ':systemvideo'
+include ':app',  ':core', ':systemvideo',':weilai_video', ':gsyvideo'

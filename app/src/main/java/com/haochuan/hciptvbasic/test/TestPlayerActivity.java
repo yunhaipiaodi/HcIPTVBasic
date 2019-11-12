@@ -12,9 +12,9 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.haochuan.core.BaseMediaPlayer;
 import com.haochuan.core.IVideoPlayer;
 import com.haochuan.core.Logger;
-import com.haochuan.gsyvideo.HCGsyVideoPlayer;
 import com.haochuan.hciptvbasic.R;
 
 import java.math.BigDecimal;
@@ -24,7 +24,7 @@ import java.util.Locale;
 public class TestPlayerActivity extends AppCompatActivity implements IVideoPlayer {
 
     //页面组件对象
-    private HCGsyVideoPlayer hcPlayer;
+    private BaseMediaPlayer hcPlayer;
     private ProgressBar loadingBar;
     private LinearLayout bottomContainer;
     private SeekBar videoProgressBar;
