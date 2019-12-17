@@ -151,7 +151,11 @@ public class CNTVLogin {
         if (adInitResult) { //初始化成功
             //获取广告数据
             StringBuffer sb = new StringBuffer();
-            AdSDK.getInstance().getAD("open", null, null, null, null, null, sb);
+            int getAdResult = AdSDK.getInstance().getAD("open", null, null, null, null, null, sb);
+            if(getAdResult != 0){
+                Logger.d("获取广告数据失败,失败code:" + getAdResult);
+                return;
+            }
             String adJsonStr = sb.toString();
             //adJsonStr = "{\"adspaces\":{\"open\":[{\"ext\":\"\",\"pos\":\"\",\"materials\":[{\"file_path\":\"http://image.adott.ottcn.com/images/icntvad/201909/1568106992_65299039243b6a6183b587b4851d7429.jpg\",\"event_content\":\"\",\"event_type\":\"null\",\"file_inject\":\"public\",\"file_md5\":\"6fa6570323d69389a55a7a626def67d7\",\"file_name\":\"0f9c28ec662c4bd8e59acccdefcecc4.jpg\",\"name\":\"联合产品-apk开屏测试素材\",\"file_source\":\"network\",\"id\":\"764\",\"type\":\"image\",\"file_size\":230687,\"play_time\":6}],\"mid\":549,\"aid\":\"25\"}]},\"status\":1}";
             if(TextUtils.isEmpty(adJsonStr)){
@@ -163,7 +167,6 @@ public class CNTVLogin {
             Logger.d(String.format("获取到的广告数据json字符串：%s", adJsonStr));
 
             if (AdDataUtil.getStatus(adJsonStr) == 1) {  //成功获取数据
-                LocalStore.getInstance().putHasAd(context,true);
                 String openAdJson = AdDataUtil.getOpenAdJson(adJsonStr);
                 if(!TextUtils.isEmpty(openAdJson)){     //json中包含open对象
                     LocalStore.getInstance().putOpenAdJson(context,openAdJson); //将openAdJson先存储起来
