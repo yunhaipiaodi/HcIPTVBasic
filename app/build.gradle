@@ -13,8 +13,8 @@ android {
             //APP的build.gradle设置支持的SO库架构
             abiFilters 'armeabi', 'armeabi-v7a', 'x86'
         }
-
-        buildConfigField "int", "player_type", "3"; //播放器类型；1，原生；2，未来；3，GsyPlayer
+        flavorDimensions "default"
+        buildConfigField "int", "player_type", "1"; //播放器类型；1，原生；2，未来；3，GsyPlayer
     }
 
 
@@ -48,6 +48,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors {
+//        ShuXiangRenJia{
+//            applicationId "com.hc.yn.sxrj"
+//            manifestPlaceholders = [app_name:"书香人家演示" ,icon: "@drawable/icon_sxrj"]
+//            resValue("string" , "baseUrl","http://202.99.114.152:24001/sxrj_apk_yanshi/index.html")
+//        }
+    }
+    android.applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${applicationId}_${buildType.name}_${releaseTime()}_${versionName}.apk"
+        }
+    }
 
 }
 
@@ -64,4 +76,8 @@ dependencies {
     implementation project(path: ':systemvideo')
     implementation project(path: ':weilai_video')
     implementation project(path: ':gsyvideo')
+}
+
+def releaseTime() {
+    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("UTC"))
 }
