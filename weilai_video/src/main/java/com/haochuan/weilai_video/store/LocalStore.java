@@ -29,17 +29,6 @@ public class LocalStore {
         return instance;
     }
 
-    public void putHasAd(Context context,boolean hasAd){
-        context.getSharedPreferences(shareName,Context.MODE_PRIVATE)
-                .edit()
-                .putBoolean(HAS_AD,hasAd)
-                .commit();
-    }
-
-    public boolean getHasAd(Context context){
-        return context.getSharedPreferences(shareName,Context.MODE_PRIVATE)
-                .getBoolean(HAS_AD, false);
-    }
 
     public void putOpenAdJson(Context context,String openAdJson) {
         context.getSharedPreferences(shareName,Context.MODE_PRIVATE)
