@@ -2,6 +2,8 @@ package com.haochuan.core.util;
 
 import android.util.Log;
 
+import com.haochuan.core.Logger;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -14,26 +16,27 @@ public final class FileUtil {
      */
     private static String TAG = "FileUtil";
     public static boolean createFile(String filePath) {
+        Logger.d("FileUtil,createFile(),filePath:" + filePath);
         File file = new File(filePath);
         if (!file.exists()) {
             if (!file.getParentFile().exists()) {
                 boolean mkDirsResult = makeDirs(file.getParent());
                 if (!mkDirsResult) {
-                    Log.d(TAG, "create File[" + filePath + "] fail because it's parent dir created failed");
+                    Logger.d( "create File[" + filePath + "] fail because it's parent dir created failed");
                     return false;
                 }
             }
             try {
                 boolean createFileResult = file.createNewFile();
-                Log.d(TAG, "create File[" + filePath + "] result " + createFileResult);
+                Logger.d("create File[" + filePath + "] result " + createFileResult);
                 return createFileResult;
             } catch (IOException e) {
-                Log.e(TAG, "create File[" + filePath + "]cause exception : " + e.getLocalizedMessage());
+                Logger.d("create File[" + filePath + "]cause exception : " + e.getLocalizedMessage());
                 e.printStackTrace();
                 return false;
             }
         } else {
-            Log.d(TAG, "File[" + filePath + "] had exists!");
+            Logger.d("File[" + filePath + "] had exists!");
             return true;
         }
     }
@@ -45,13 +48,14 @@ public final class FileUtil {
      * @return Return true to create a successful one.
      */
     public static boolean makeDirs(String dirPath) {
+        Logger.d("FileUtil,makeDirs(),dirPath:" + dirPath);
         File folder = new File(dirPath);
         if (!folder.exists()) {
             boolean mkDirsResult = folder.mkdirs();
-            Log.d(TAG, "makeDirs[" + dirPath + "] result " + mkDirsResult);
+            Logger.d( "makeDirs[" + dirPath + "] result " + mkDirsResult);
             return mkDirsResult;
         }
-        Log.d(TAG, "Dirs[" + dirPath + "] had exists!");
+        Logger.d("Dirs[" + dirPath + "] had exists!");
         return true;
     }
 
@@ -62,13 +66,14 @@ public final class FileUtil {
      * @return Returning true indicates that the file was deleted successfully or the file does not exist.
      */
     public static boolean delete(String filePath) {
+        Logger.d("FileUtil,delete(),filePath:" + filePath);
         File file = new File(filePath);
         if (file.exists()) {
             boolean deleteFileResult = file.delete();
-            Log.d(TAG, "deleted File[" + filePath + "] result " + deleteFileResult);
+            Logger.d("deleted File[" + filePath + "] result " + deleteFileResult);
             return deleteFileResult;
         }
-        Log.d(TAG, "File[" + filePath + "] is not exists");
+        Logger.d("File[" + filePath + "] is not exists");
         return true;
     }
 
@@ -80,6 +85,7 @@ public final class FileUtil {
      * @return Return true to indicate that the file or all files in the file directory are deleted successfully.
      */
     public static boolean deleteForce(String filePath) {
+        Logger.d("FileUtil,deleteForce(),filePath:" + filePath);
         File file = new File(filePath);
         if (file.exists()) {
             File[] childFiles = file.listFiles();
@@ -107,6 +113,7 @@ public final class FileUtil {
      * @return Returning true indicates that the file was named successfully.
      */
     public static boolean rename(String filePath, String newName) {
+        Logger.d(String.format("FileUtil,rename('%s','%s')",filePath,newName));
         File file = new File(filePath);
         File newFile = new File(file.getParent(), newName);
         boolean renameFileResult = file.renameTo(newFile);

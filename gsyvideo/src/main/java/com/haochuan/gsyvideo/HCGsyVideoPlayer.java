@@ -37,6 +37,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
     * 初始化
     * */
     private void init(Context context){
+        Logger.d("HCGsyVideoPlayer,init()");
         View.inflate(context, R.layout.player_gsy_hc,this);
         mEmptyControlVideo = findViewById(R.id.empty_control_video);
         mEmptyControlVideo.enableDebug();
@@ -44,6 +45,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
 
     @Override
     public void setVideoPlayerListener(@NonNull IVideoPlayer iVideoPlayer){
+        Logger.d("HCGsyVideoPlayer,setVideoPlayerListener()");
         if(mEmptyControlVideo != null){
             mEmptyControlVideo.setVideoPlayerListener(iVideoPlayer);
         }else{
@@ -55,6 +57,8 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
     /*----------------------------从父类继承 播放器功能函数----------------------------------*/
     @Override
     public void play(String url,String examineId,String examineType) {
+        Logger.d(String.format("HCGsyVideoPlayer,play(%s,%s,%s)",
+                url,examineId,examineType));
         if (mEmptyControlVideo == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return;
@@ -65,6 +69,8 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
 
     @Override
     public void setStartTime(int time){
+        Logger.d(String.format("HCGsyVideoPlayer,setStartTime(%s)",
+                time));
         if (mEmptyControlVideo == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return;
@@ -74,6 +80,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
 
     @Override
     public void resume() {
+        Logger.d("HCGsyVideoPlayer,resume()");
         if (mEmptyControlVideo == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return;
@@ -87,6 +94,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
 
     @Override
     public void pause() {
+        Logger.d("HCGsyVideoPlayer,pause()");
         if (mEmptyControlVideo == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return;
@@ -100,6 +108,8 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
 
     @Override
     public void seek(int position) {
+        Logger.d(String.format("HCGsyVideoPlayer,seek(%s)",
+                position));
         if (mEmptyControlVideo == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return;
@@ -112,6 +122,8 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
     }
 
     public void setSpeed(float speed){
+        Logger.d(String.format("HCGsyVideoPlayer,setSpeed(%s)",
+                speed));
         if (mEmptyControlVideo == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return;
@@ -121,6 +133,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
 
 
     public boolean isPlaying() {
+        Logger.d("HCGsyVideoPlayer,isPlaying()");
         if (mEmptyControlVideo == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return false;
@@ -130,6 +143,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
 
 
     public boolean isPrePared() {
+        Logger.d("HCGsyVideoPlayer,isPrePared()");
         if (mEmptyControlVideo == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return false;
@@ -139,6 +153,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
 
 
     public int getDuration() {
+        Logger.d("HCGsyVideoPlayer,getDuration()");
         if (mEmptyControlVideo == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return 0;
@@ -153,6 +168,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
 
 
     public int getCurrentPlayPosition() {
+        Logger.d("HCGsyVideoPlayer,getCurrentPlayPosition()");
         if (mEmptyControlVideo == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return 0;
@@ -167,6 +183,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
 
 
     public int getCurrentStatus() {
+        Logger.d("HCGsyVideoPlayer,getCurrentStatus()");
         if (mEmptyControlVideo == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return 6;
@@ -176,6 +193,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
 
 
     public void release(){
+        Logger.d("HCGsyVideoPlayer,release()");
         if (mEmptyControlVideo == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return;

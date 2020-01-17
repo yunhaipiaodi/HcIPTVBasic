@@ -37,23 +37,15 @@ import tv.icntv.ottlogin.loginSDK;
 import tv.newtv.upgradesdk.upgradeSDK;
 
 public class CNTVLogin {
-    private static CNTVLogin instance;
     private boolean isOpenAdshow = false;  //当前是否开屏广告中
     private int adShowTime = 0;     //广告显示时间
 
     //显示广告图片组件
-    ImageView adImageView;
-    TextView adTimeTextView;
-
-
-    public static CNTVLogin getInstance() {
-        if (instance == null) {
-            instance = new CNTVLogin();
-        }
-        return instance;
-    }
+    private ImageView adImageView;
+    private TextView adTimeTextView;
 
     public void init(Context context,OnCNTVListener listener) {
+        Logger.d("CNTVLogin,init()");
         new Thread(()->{
             Activity activity = (Activity)context;
             try{
@@ -80,6 +72,7 @@ public class CNTVLogin {
     * ott登陆成功
     * */
     private void ottLoginSuccess(Context context,OnCNTVListener listener){
+        Logger.d("CNTVLogin,ottLoginSuccess()");
         //ott登陆成功后，开始以下动作
         StringBuffer tf = new StringBuffer();
 
@@ -122,6 +115,7 @@ public class CNTVLogin {
      * ott登陆失败
      * */
     private void ottLoginFail(String loginRet,OnCNTVListener listener){
+        Logger.d(String.format("CNTVLogin,ottLoginFail(%s)",loginRet));
         // 认证失败，上报错误日志，提示框展示
         loginSDK.getInstance().logUpload();
         // 失败后上报认证错误日志，用于远程问题定位 String msg = loginSDK.getInstance().loginStatusToMsg(loginRet);
@@ -136,6 +130,8 @@ public class CNTVLogin {
     *初始化日志
     * */
     private void initLog(String extVersionType,String extVersionCode, String serverLog, String deviceID, String mac){
+        Logger.d(String.format("CNTVLogin,initLog(%s,%s,%s,%s,%s)",
+                extVersionType,extVersionCode,serverLog,deviceID,mac));
         if(logSDK.getInstance().sdkInit(serverLog, deviceID, mac, BuildConfig.icntv_app_channel, BuildConfig.icntv_app_key)){
            new ReportCNTVLog().reportHomeLog(extVersionType,extVersionCode);
         }
@@ -145,7 +141,7 @@ public class CNTVLogin {
     * 初始化广告
     * */
     private void initAD(Context context, String serverAD, String deviceId, String platformID){
-        Logger.d(String.format("广告初始化：serverAD: %s ,deviceId: %s ,platformID: %s",serverAD,deviceId,platformID));
+        Logger.d(String.format("CNTVLogin,initLog(),serverAD: %s ,deviceId: %s ,platformID: %s",serverAD,deviceId,platformID));
         //开始初始化广告SDK组件
         boolean adInitResult = AdSDK.getInstance().init(serverAD, deviceId, BuildConfig.icntv_app_key, BuildConfig.icntv_app_channel, null, context);
         if (adInitResult) { //初始化成功
@@ -194,6 +190,7 @@ public class CNTVLogin {
     * 删除广告图片和openAdJson信息
     * */
     private void deleteAdImageAndOpenAdJson(Context context) {
+        Logger.d("WeiLaiVideoPlayer,deleteAdImageAndOpenAdJson()");
         LocalStore.getInstance().putOpenAdJson(context,"");
         String adImagePath = LocalStore.getInstance().getAdImagePath(context);
         if (TextUtils.isEmpty(adImagePath)) {
@@ -207,6 +204,7 @@ public class CNTVLogin {
     * 下载图片
     * */
     private void downloadAdImage(Context context,String adImageUrl){
+        Logger.d(String.format("CNTVLogin,downloadAdImage('%s')",adImageUrl));
         String folder = context.getCacheDir().getPath() + File.separator + "ad";
         String filename = String.valueOf(adImageUrl.hashCode());
 
@@ -227,6 +225,7 @@ public class CNTVLogin {
     * 初始化升级
     * */
     private void initUpgrade(Context context,String server, OnCNTVListener listener){
+        Logger.d(String.format("CNTVLogin,initUpgrade('%s')",server));
         if(upgradeSDK.getInstance().init(0)) {
             updateVersionOnUiThread(context,server, listener);
         }
@@ -236,14 +235,20 @@ public class CNTVLogin {
     * 检查是否有升级并升级
     * */
     private void updateVersionOnUiThread(Context context,String server, OnCNTVListener listener) {
+        Logger.d(String.format("CNTVLogin,updateVersionOnUiThread('%s')",server));
         HandlerUtil.runOnUiThread(()->updateVersion(context,server, listener));
     }
 
     private void updateVersion(Context context,String server, OnCNTVListener listener) {
         try {
+            Logger.d(String.format("CNTVLogin,updateVersion('%s')",server));
             StringBuffer sb = new StringBuffer();
             int responseCode = upgradeSDK.getInstance().J_getAppUpgradeInfo(server,BuildConfig.icntv_app_key, BuildConfig.icntv_app_channel,
                     String.valueOf(BuildConfig.VERSION_CODE), sb);
+            if(responseCode != 0){
+                Logger.e("获取未来SDK升级信息失败，返回");
+                return;
+            }
             Logger.d(String.format("app更新信息：%s", sb.toString()));
             JSONObject json = new JSONObject(sb.toString());
             String upgradeAddr = JSONUtil.getString(json,"packageAddr","");
@@ -262,6 +267,7 @@ public class CNTVLogin {
             DownloadInstallApk(context,upgradeAddr,md5);
         } catch (Exception e) {
             e.printStackTrace();
+            listener.onOttLoginFail("-100","未来更新失败");
         }
     }
 
@@ -269,6 +275,7 @@ public class CNTVLogin {
      * 下载并安装apk
      * */
     private void DownloadInstallApk(Context context,String url,String md5){
+        Logger.d(String.format("CNTVLogin,DownloadInstallApk('%s,%s')",url,md5));
         String folder = context.getCacheDir().getPath() + File.separator + "ad";
         String filename = getFileNameFromUrl(url);
 
@@ -294,11 +301,13 @@ public class CNTVLogin {
     }
 
     private String getFileNameFromUrl(String url){
+        Logger.d(String.format("CNTVLogin,getFileNameFromUrl('%s')",url));
         String [] splitArray = url.split("/");
         return splitArray[splitArray.length - 1];
     }
 
     private void apkInstall(Context context,File apkFile){
+        Logger.d("CNTVLogin,apkInstall()");
         Intent intent = new Intent(Intent.ACTION_VIEW);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -317,6 +326,7 @@ public class CNTVLogin {
     * 显示开屏广告图片
     * */
     public void showAdImage(Context context,ViewGroup viewGroup){
+        Logger.d("CNTVLogin,showAdImage()");
         String adImagePath = LocalStore.getInstance().getAdImagePath(context);
         if(TextUtils.isEmpty(adImagePath)){
             Logger.d("没有找到广告图片路径，退出");
@@ -359,12 +369,16 @@ public class CNTVLogin {
     /*
     * 当前是否在显示开屏广告
     * */
-    public boolean isOpenAdshow(){return isOpenAdshow;}
+    public boolean isOpenAdshow(){
+        Logger.d("CNTVLogin,isOpenAdshow()");
+        return isOpenAdshow;
+    }
 
     /*
     * 将广告显示移除
     * */
     public void removeADImage(Context context,ViewGroup viewGroup){
+        Logger.d("CNTVLogin,removeADImage()");
         if(adImageView == null || adTimeTextView == null){
             return;
         }
@@ -379,6 +393,7 @@ public class CNTVLogin {
     *
     * */
     public void reportAd(Context context) {
+        Logger.d("CNTVLogin,reportAd()");
         String openAdJson = LocalStore.getInstance().getOpenAdJson(context);
         if (TextUtils.isEmpty(openAdJson)) {
             return;

@@ -6,12 +6,13 @@ import android.util.AttributeSet;
 import androidx.annotation.NonNull;
 
 import com.haochuan.core.IVideoPlayer;
+import com.haochuan.core.Logger;
 import com.shuyu.gsyvideoplayer.utils.Debuger;
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
 
 /**
  * 无任何控制ui的播放
- * Created by 许林 on 2017/8/6.
+ * Created by 许林 on 2019/8/6.
  */
 
 public class EmptyControlVideoView extends StandardGSYVideoPlayer {
@@ -59,6 +60,7 @@ public class EmptyControlVideoView extends StandardGSYVideoPlayer {
     @Override
     protected void changeUiToPreparingShow() {
         super.changeUiToPreparingShow();
+        Logger.d("EmptyControlVideoView,changeUiToPreparingShow()");
         if(iVideoPlayerListener != null){
             iVideoPlayerListener.onPreparing();
         }
@@ -67,6 +69,7 @@ public class EmptyControlVideoView extends StandardGSYVideoPlayer {
     @Override
     protected void changeUiToPlayingShow() {
         super.changeUiToPlayingShow();
+        Logger.d("EmptyControlVideoView,changeUiToPlayingShow()");
         if(iVideoPlayerListener != null){
             iVideoPlayerListener.onPlaying();
         }
@@ -76,6 +79,7 @@ public class EmptyControlVideoView extends StandardGSYVideoPlayer {
     @Override
     public void onPrepared() {
         super.onPrepared();
+        Logger.d("EmptyControlVideoView,onPrepared()");
         if(startTime > 0){
             if(startTime >= getDuration()){
                 //如果开始时间大于或者等于视频总时长，则跳转到距离结束5秒的位置
@@ -88,7 +92,8 @@ public class EmptyControlVideoView extends StandardGSYVideoPlayer {
 
     @Override
     protected void changeUiToPauseShow() {
-       super.changeUiToPauseShow();
+        super.changeUiToPauseShow();
+        Logger.d("EmptyControlVideoView,changeUiToPauseShow()");
         if(iVideoPlayerListener != null){
             iVideoPlayerListener.onPause();
         }
@@ -97,6 +102,7 @@ public class EmptyControlVideoView extends StandardGSYVideoPlayer {
     @Override
     protected void changeUiToPlayingBufferingShow() {
         super.changeUiToPlayingBufferingShow();
+        Logger.d("EmptyControlVideoView,changeUiToPlayingBufferingShow()");
         if(iVideoPlayerListener != null){
             iVideoPlayerListener.onPlayingBuffering();
         }
@@ -104,7 +110,8 @@ public class EmptyControlVideoView extends StandardGSYVideoPlayer {
 
     @Override
     protected void changeUiToCompleteShow() {
-       super.changeUiToCompleteShow();
+        super.changeUiToCompleteShow();
+        Logger.d("EmptyControlVideoView,changeUiToCompleteShow()");
         if(iVideoPlayerListener != null){
             iVideoPlayerListener.onCompletion();
         }
@@ -113,6 +120,7 @@ public class EmptyControlVideoView extends StandardGSYVideoPlayer {
     @Override
     public void onError(int what, int extra){
         super.changeUiToError();
+        Logger.d(String.format("EmptyControlVideoView,onError(%s,%s)",what,extra));
         if(iVideoPlayerListener != null){
             iVideoPlayerListener.onError(what,extra);
         }
@@ -121,10 +129,12 @@ public class EmptyControlVideoView extends StandardGSYVideoPlayer {
 
     /**---------------------功能函数------------------*/
     public boolean isPrePared(){
+        Logger.d("EmptyControlVideoView,isPrePared()");
         return mHadPrepared;
     }
 
     public boolean isPlaying(){
+        Logger.d("EmptyControlVideoView,isPlaying()");
         return (mCurrentState >= 0 && mCurrentState != CURRENT_STATE_NORMAL
                 && mCurrentState != CURRENT_STATE_AUTO_COMPLETE
                 && mCurrentState != CURRENT_STATE_ERROR && mCurrentState != CURRENT_STATE_PAUSE);
@@ -135,14 +145,17 @@ public class EmptyControlVideoView extends StandardGSYVideoPlayer {
     }
 
     public void setVideoPlayerListener(@NonNull IVideoPlayer iVideoPlayer){
+        Logger.d("EmptyControlVideoView,setVideoPlayerListener()");
         this.iVideoPlayerListener = iVideoPlayer;
     }
 
     public void setStartTime(int time){
+        Logger.d(String.format("EmptyControlVideoView,setStartTime(%s)",time));
         this.startTime = time * 1000;
     }
 
     public int getCurrentStatus(){
+        Logger.d("EmptyControlVideoView,getCurrentStatus()");
         int currentStatus = 6;
         switch (mCurrentState){
             case 1:

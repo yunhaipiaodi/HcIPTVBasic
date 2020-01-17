@@ -40,6 +40,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
     }
 
     private void init(Context context){
+        Logger.d("SystemVideoPlayer,init()");
         View videoGroup = View.inflate(getContext(), R.layout.layout_system_video, this);
         videoView = videoGroup.findViewById(R.id.sys_video);
         initVideoView();
@@ -47,6 +48,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
     }
 
     private void initVideoView(){
+        Logger.d("SystemVideoPlayer,initVideoView()");
         videoView.setOnPreparedListener((mp) ->{
             mediaPlayer = mp;
             iVideoPlayer.onPlaying();
@@ -94,6 +96,8 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void play(String url, String examineId, String examineType) {
+        Logger.d(String.format("SystemVideoPlayer,play(%s,%s,%s)",
+                url,examineId,examineType));
         if (videoView == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return;
@@ -105,11 +109,14 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void setStartTime(int time) {
+        Logger.d(String.format("SystemVideoPlayer,setStartTime(%s)",
+                time));
         this.startTime = time;
     }
 
     @Override
     public void resume() {
+        Logger.d("SystemVideoPlayer,resume()");
         if (videoView == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return;
@@ -124,6 +131,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void pause() {
+        Logger.d("SystemVideoPlayer,pause()");
         if (videoView == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return;
@@ -138,6 +146,8 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void seek(int position) {
+        Logger.d(String.format("SystemVideoPlayer,seek(%s)",
+                position));
         if (videoView == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return;
@@ -151,6 +161,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void release() {
+        Logger.d("SystemVideoPlayer,release()");
         if (videoView == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return;
@@ -163,6 +174,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public boolean isPlaying() {
+        Logger.d("SystemVideoPlayer,isPlaying()");
         if (mediaPlayer == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return false;
@@ -172,11 +184,13 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public boolean isPrePared() {
+        Logger.d("SystemVideoPlayer,isPrePared()");
         return mHadPrepared;
     }
 
     @Override
     public int getDuration() {
+        Logger.d("SystemVideoPlayer,getDuration()");
         if (mediaPlayer == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return 0;
@@ -186,6 +200,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public int getCurrentPlayPosition() {
+        Logger.d("SystemVideoPlayer,getCurrentPlayPosition()");
         if (mediaPlayer == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return 0;
@@ -195,11 +210,13 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public int getCurrentStatus() {
+        Logger.d("SystemVideoPlayer,getCurrentStatus()");
         return playerStatus;
     }
 
     @Override
     public void setVideoPlayerListener(@NonNull IVideoPlayer iVideoPlayer) {
+        Logger.d("SystemVideoPlayer,setVideoPlayerListener()");
         this.iVideoPlayer = iVideoPlayer;
     }
 
@@ -208,6 +225,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
      * 在播放器准备好后，跳转到传入的startTime处
      * */
     private void seekToStartTime(){
+        Logger.d("SystemVideoPlayer,seekToStartTime()");
         if(videoView == null){
             Logger.e(PLAYER_OBJ_NULL,"videoView is null, can`t seekToStartTime");
             return;

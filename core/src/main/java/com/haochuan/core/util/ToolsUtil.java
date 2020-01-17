@@ -26,6 +26,7 @@ import java.util.Set;
 public class ToolsUtil {
 
     public boolean checkSubAppInstalled(Context context, String pkgName) {
+        Logger.d(String.format("ToolsUtil,checkSubAppInstalled(%s)", pkgName));
         if(context == null){
             Logger.e("checkSubAppInstalled() context is null,不能执行");
             return false;
@@ -44,6 +45,7 @@ public class ToolsUtil {
     }
 
     public void installApk(Context context,String filePath) {
+        Logger.d(String.format("ToolsUtil,installApk('%s')", filePath));
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(Uri.parse("file://" + filePath), "application/vnd.android.package-archive");
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//4.0以上系统弹出安装成功打开界面
@@ -51,6 +53,7 @@ public class ToolsUtil {
     }
 
     public void uninstall(Context context,String pkgName){
+        Logger.d(String.format("ToolsUtil,uninstall(%s)", pkgName));
         Uri uri = Uri.fromParts("package", pkgName, null);
         Intent intent = new Intent(Intent.ACTION_DELETE, uri);
         context.startActivity(intent);
@@ -100,6 +103,8 @@ public class ToolsUtil {
     public void clientWebRequest(String url,int method,String paramJson,
                                  String headJson, boolean ignoreResult,
                                  String tag,IResponseListener listener){
+        Logger.d(String.format("ToolsUtil,clientWebRequest('%s',%s,'%s','%s',%s,%s)",
+                url,method,paramJson,headJson,ignoreResult,tag));
         if(url == null || paramJson == null || headJson == null || tag == null){
             Logger.w(String.format("参数不能为null,url:%s;paramJson:%s;headJson:%s;" +
                             "method:%s;ignoreResult:%s;tag:%s",url,paramJson,headJson,method,ignoreResult?"忽略结果":"不忽略结果",tag));
@@ -183,7 +188,7 @@ public class ToolsUtil {
                                  String paramsBody, boolean ignoreResult,
                                  String tag,IResponseListener listener){
         try{
-            Logger.d(String.format("webRequest,url:%s,method:%s,contentType:%s," +
+            Logger.d(String.format("ToolsUtil,webRequest(),url:%s,method:%s,contentType:%s," +
                             "headJson:%s,paramsBody:%s,tag:%s,ignoreResult%s,",
                     url,method,contentType,headJson,paramsBody,tag,ignoreResult?"忽略":"不忽略"));
             RequestMethod requestMethod ;
@@ -267,11 +272,6 @@ public class ToolsUtil {
             e.printStackTrace();
         }
     }
-
-
-
-
-
 
     /*
     * clientWebRequest 结果response接口

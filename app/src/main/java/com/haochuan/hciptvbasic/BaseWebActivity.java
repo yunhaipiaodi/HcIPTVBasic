@@ -48,6 +48,8 @@ public abstract class BaseWebActivity extends AppCompatActivity {
     String playerToJSName = PlayerToJS.class.getSimpleName();    //playerToJS类名
     String payToJSName = PayToJS.class.getSimpleName();         //payToJS类名
     String toolToJSName = UtilToJS.class.getSimpleName();       //toolToJS类名
+
+    private CNTVLogin cntvLogin;
     //播放器
     private BaseMediaPlayer mHCPlayer = null;
 
@@ -82,6 +84,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
         if(BuildConfig.player_type != 2){
             runH5();
         }
+        cntvLogin = new CNTVLogin();
     }
 
     private void runH5(){
@@ -125,7 +128,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
         boolean isForeground = isRunningForeground(this);
         if (!isForeground) {
             Handler handler = new Handler(getMainLooper());
-            handler.postDelayed(() -> AppExit(), 500);
+            handler.postDelayed(this::AppExit, 500);
         }
     }
 
@@ -157,10 +160,10 @@ public abstract class BaseWebActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         //如果是未来版本，请用这段代码
-        if(CNTVLogin.getInstance().isOpenAdshow()){
+        if(cntvLogin.isOpenAdshow()){
             Log.d("djbl","onBackPressed close ad");
             ViewGroup viewGroup = (ViewGroup) getWindow().getDecorView();
-            CNTVLogin.getInstance().removeADImage(this,viewGroup);
+            cntvLogin.removeADImage(this,viewGroup);
         }else{
             utilToJS.onBackPressed();
         }
@@ -174,7 +177,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
     * 初始化播放器
     * */
     private void initPlayer(){
-        Logger.d("initPlayer()");
+        Logger.d("BaseWebActivity,initPlayer()");
         switch (BuildConfig.player_type){
             case 1:
                 mHCPlayer = new SystemVideoPlayer(this);
@@ -244,8 +247,8 @@ public abstract class BaseWebActivity extends AppCompatActivity {
     * 加载未来电视广告图片
     * */
     private void CNTVInit(){
-        Logger.d("CNTVInit()");
-        CNTVLogin.getInstance().init(this, new CNTVLogin.OnCNTVListener() {
+        Logger.d("BaseWebActivity,CNTVInit()");
+        cntvLogin.init(this, new CNTVLogin.OnCNTVListener() {
             @Override
             public void onOttLoginSuccess() {
                 runH5();
@@ -262,14 +265,14 @@ public abstract class BaseWebActivity extends AppCompatActivity {
             }
         });
         ViewGroup viewGroup = (ViewGroup) getWindow().getDecorView();
-        CNTVLogin.getInstance().showAdImage(this,viewGroup);
+        cntvLogin.showAdImage(this,viewGroup);
     }
 
     /*
     *ott登陆失败提示
     * */
     private void OttLoginFailAlert(String code,String message){
-        Logger.d(String.format("OttLoginFailAlert(%s,%s)",code,message));
+        Logger.d(String.format("BaseWebActivity,OttLoginFailAlert(%s,%s)",code,message));
         HandlerUtil.runOnUiThread(()->{
             String msg = String.format("认证失败 code:%s,失败信息：%s",code,message);
             new AlertDialog.Builder(this)
@@ -287,7 +290,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
      * 未来电视功能：视频播放错误，提示并且退出播放
      * */
     private void CNTVPlayerErrorAlert(){
-        Logger.d("CNTVPlayerErrorAlert()");
+        Logger.d("BaseWebActivity,CNTVPlayerErrorAlert()");
         HandlerUtil.runOnUiThread(()->{
             new AlertDialog.Builder(BaseWebActivity.this)
                     .setTitle("提示")
@@ -303,7 +306,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
 
     @SuppressLint({"SetJavaScriptEnabled", "JavascriptInterface", "AddJavascriptInterface"})
     private void initWebSetting(WebView webView) {
-        Logger.d("initWebSetting()");
+        Logger.d("BaseWebActivity,initWebSetting()");
         try{
             WebSettings webSettings = webView.getSettings();
             // 由H5端适配屏幕，具体参考文档：https://developer.chrome.com/multidevice/webview/pixelperfect
@@ -349,7 +352,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
      * @return <code>true</code>为前台，反之为后台
      */
     public boolean isRunningForeground(Context context) {
-        Logger.d("isRunningForeground()");
+        Logger.d("BaseWebActivity,isRunningForeground()");
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         if (activityManager == null) return false;
         List<ActivityManager.RunningAppProcessInfo> appProcessInfos = activityManager.getRunningAppProcesses();
@@ -370,7 +373,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
      * 退出应用
      * */
     public void AppExit() {
-        Logger.d("AppExit()");
+        Logger.d("BaseWebActivity,AppExit()");
         if(BuildConfig.player_type == 2){
             new ReportCNTVLog().reportExitLog();
         }
