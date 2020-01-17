@@ -4,7 +4,6 @@ import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.net.DhcpInfo;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
@@ -53,6 +52,7 @@ public class PlayerToJS {
      * 播放器准备事件
      * */
     public void onPlayerPreparing(){
+        Logger.d("PlayerToJS,onPlayerPreparing()");
         executePlayStatusEvent(1);
     }
 
@@ -60,6 +60,7 @@ public class PlayerToJS {
      * 播放器开始播放事件
      * */
     public void onPlayerPlaying(){
+        Logger.d("PlayerToJS,onPlayerPlaying()");
         executePlayStatusEvent(2);
     }
 
@@ -67,7 +68,7 @@ public class PlayerToJS {
      * 播放器继续播放事件
      * */
     public void onPlayerResume(){
-        Logger.d("onPlayerResume");
+        Logger.d("PlayerToJS,onPlayerResume()");
         executePlayStatusEvent(4);
     }
 
@@ -75,7 +76,7 @@ public class PlayerToJS {
      * 播放器暂停播放事件
      * */
     public void onPlayerPause(){
-        Logger.d("onPlayerPause");
+        Logger.d("PlayerToJS,onPlayerPause()");
         executePlayStatusEvent(3);
     }
 
@@ -83,7 +84,7 @@ public class PlayerToJS {
      * 播放器缓冲事件
      * */
     public void onPlayingBuffer(){
-        Logger.d("onPlayerBuffer");
+        Logger.d("PlayerToJS,onPlayerBuffer()");
         executePlayStatusEvent(5);
     }
 
@@ -91,7 +92,7 @@ public class PlayerToJS {
      * 播放器播放完毕事件
      * */
     public void onPlayerComplete(){
-        Logger.d("onPlayerComplete");
+        Logger.d("PlayerToJS,onPlayerComplete()");
         executePlayStatusEvent(6);
     }
 
@@ -99,6 +100,7 @@ public class PlayerToJS {
      * 播放器播放错误事件
      * */
     public void onPlayerError(int what, int extra){
+        Logger.d(String.format("PlayerToJS,onPlayerError(%s,%s)",what,extra));
         JsUtil.evaluateJavascript(context,webView,String.format(JS_EVENT_PLAYERROR,what,extra));
     }
 
@@ -117,7 +119,7 @@ public class PlayerToJS {
     * */
     @JavascriptInterface
     public int play(String playParamJson){
-        Logger.d("调用play函数,参数:" + playParamJson);
+        Logger.d("PlayerToJS,play(),playParamJson:" + playParamJson);
         try{
             JSONObject playParam = new JSONObject(playParamJson);
             String url = "";
@@ -167,6 +169,7 @@ public class PlayerToJS {
     * */
     @JavascriptInterface
     public int change(String changeParamJson){
+        Logger.d("PlayerToJS,change(),changeParamJson:" + changeParamJson);
         try{
             JSONObject changeParam = new JSONObject(changeParamJson);
             String x = JSONUtil.getString(changeParam,"x","0");
@@ -186,6 +189,7 @@ public class PlayerToJS {
      * */
     @JavascriptInterface
     public int pause(){
+        Logger.d("PlayerToJS,pause()");
         if(baseMediaPlayer == null){
             Logger.e("播放器为空,不能暂停");
             return PLAYER_OBJ_NULL;
@@ -205,6 +209,7 @@ public class PlayerToJS {
      * */
     @JavascriptInterface
     public int resume(){
+        Logger.d("PlayerToJS,resume()");
         if(baseMediaPlayer == null){
             Logger.e("播放器为空,不能恢复");
             return PLAYER_OBJ_NULL;
@@ -224,6 +229,7 @@ public class PlayerToJS {
      * */
     @JavascriptInterface
     public int seek(String paramJson){
+        Logger.d("PlayerToJS,seek(),paramJson:" + paramJson);
         if(baseMediaPlayer == null){
             Logger.e("播放器为空,不能拖动");
             return PLAYER_OBJ_NULL;
@@ -248,6 +254,7 @@ public class PlayerToJS {
     * */
     @JavascriptInterface
     public int stop(){
+        Logger.d("PlayerToJS,stop()");
         if(baseMediaPlayer == null){
             Logger.e("播放器为空,不能退出");
             return PLAYER_OBJ_NULL;
@@ -269,6 +276,7 @@ public class PlayerToJS {
     * */
     @JavascriptInterface
     public int getPlayerStatus(){
+        Logger.d("PlayerToJS,getPlayerStatus()");
         if(baseMediaPlayer == null){
             Logger.e("播放器为空,不能退出");
             return PLAYER_OBJ_NULL;
@@ -281,6 +289,7 @@ public class PlayerToJS {
     * */
     @JavascriptInterface
     public int getDuration(){
+        Logger.d("PlayerToJS,getDuration()");
         if(baseMediaPlayer == null){
             Logger.e("播放器为空,不能退出");
             return PLAYER_OBJ_NULL;
@@ -293,6 +302,7 @@ public class PlayerToJS {
      * */
     @JavascriptInterface
     public int getCurrentPlayTime(){
+        Logger.d("PlayerToJS,getCurrentPlayTime()");
         if(baseMediaPlayer == null){
             Logger.e("播放器为空,不能退出");
             return PLAYER_OBJ_NULL;
@@ -313,6 +323,8 @@ public class PlayerToJS {
     * */
     private int videoPlay(String url,String seekTime, String x,String y,String width, String height,
                           String examineId,String examineType){
+        Logger.d(String.format("PlayerToJS,videoPlay(%s,%s,%s,%s,%s,%s,%s,%s)",url,seekTime,x,y,
+                width,height,examineId,examineType));
         try{
             if(baseMediaPlayer == null){
                 Logger.e(PLAYER_OBJ_NULL,"播放器对象为空,不能播放");
@@ -382,6 +394,8 @@ public class PlayerToJS {
      * @param height             播放器高度
      * */
     private void initVideoParamsIfNoInit(BaseMediaPlayer baseMediaPlayer,int x, int y, int width, int height){
+        Logger.d(String.format("PlayerToJS,initVideoParamsIfNoInit(%s,%s,%s,%s)",x,y,
+                width,height));
         if(baseMediaPlayer == null){
             Logger.w("播放器为空,不能执行initVideoParamsIfNoInit函数");
             return;
@@ -408,6 +422,8 @@ public class PlayerToJS {
      * @param height             待改变播放器高度
     * */
     private int videoChange(String x,String y,String width, String height){
+        Logger.d(String.format("PlayerToJS,videoChange(%s,%s,%s,%s)",x,y,
+                width,height));
         if(baseMediaPlayer == null){
             Logger.e(PLAYER_OBJ_NULL,"baseMediaPlayer is null,不能调用play函数");
             return PLAYER_OBJ_NULL;
@@ -447,6 +463,8 @@ public class PlayerToJS {
     * */
     private int animChanged(int fromX, int toX, int fromY, int toY, int fromWidth, int toWidth, int fromHeight, int toHeight) {
         try{
+            Logger.d(String.format("PlayerToJS,animChanged(%s,%s,%s,%s,%s,%s,%s,%s)",fromX,toX,fromY,toY,
+                    fromWidth,toWidth,fromHeight,toHeight));
             ValueAnimator animator = new ValueAnimator();
             animator.setValues(
                     PropertyValuesHolder.ofFloat("x", fromX, toX),
@@ -480,6 +498,7 @@ public class PlayerToJS {
 
     private void destroyVideo(){
         try{
+            Logger.d("PlayerToJS,destroyVideo()");
             if(baseMediaPlayer != null && baseMediaPlayer.getParent() != null){
                 Activity activity = (Activity)context;
                 activity.runOnUiThread(()->baseMediaPlayer.release());
@@ -494,6 +513,7 @@ public class PlayerToJS {
     }
 
     private void executePlayStatusEvent(int status){
+        Logger.d(String.format("PlayerToJS,executePlayStatusEvent()",status));
         JsUtil.evaluateJavascript(context,webView,String.format(JS_PLAYER_STATUS,status));
     }
 }

@@ -174,6 +174,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
     * 初始化播放器
     * */
     private void initPlayer(){
+        Logger.d("initPlayer()");
         switch (BuildConfig.player_type){
             case 1:
                 mHCPlayer = new SystemVideoPlayer(this);
@@ -243,6 +244,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
     * 加载未来电视广告图片
     * */
     private void CNTVInit(){
+        Logger.d("CNTVInit()");
         CNTVLogin.getInstance().init(this, new CNTVLogin.OnCNTVListener() {
             @Override
             public void onOttLoginSuccess() {
@@ -267,6 +269,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
     *ott登陆失败提示
     * */
     private void OttLoginFailAlert(String code,String message){
+        Logger.d(String.format("OttLoginFailAlert(%s,%s)",code,message));
         HandlerUtil.runOnUiThread(()->{
             String msg = String.format("认证失败 code:%s,失败信息：%s",code,message);
             new AlertDialog.Builder(this)
@@ -284,6 +287,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
      * 未来电视功能：视频播放错误，提示并且退出播放
      * */
     private void CNTVPlayerErrorAlert(){
+        Logger.d("CNTVPlayerErrorAlert()");
         HandlerUtil.runOnUiThread(()->{
             new AlertDialog.Builder(BaseWebActivity.this)
                     .setTitle("提示")
@@ -299,31 +303,36 @@ public abstract class BaseWebActivity extends AppCompatActivity {
 
     @SuppressLint({"SetJavaScriptEnabled", "JavascriptInterface", "AddJavascriptInterface"})
     private void initWebSetting(WebView webView) {
-        WebSettings webSettings = webView.getSettings();
-        // 由H5端适配屏幕，具体参考文档：https://developer.chrome.com/multidevice/webview/pixelperfect
-        webSettings.setUseWideViewPort(true);
-        webSettings.setLoadWithOverviewMode(true);
-        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-        // 设置JS交互
-        webSettings.setJavaScriptEnabled(true);
+        Logger.d("initWebSetting()");
+        try{
+            WebSettings webSettings = webView.getSettings();
+            // 由H5端适配屏幕，具体参考文档：https://developer.chrome.com/multidevice/webview/pixelperfect
+            webSettings.setUseWideViewPort(true);
+            webSettings.setLoadWithOverviewMode(true);
+            webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+            // 设置JS交互
+            webSettings.setJavaScriptEnabled(true);
 
-        HCWebChromeClient hcWebChromeClient = new HCWebChromeClient();
-        setPlayerToJS();
-        setPayToJS();
-        setToolToJS();
+            HCWebChromeClient hcWebChromeClient = new HCWebChromeClient();
+            setPlayerToJS();
+            setPayToJS();
+            setToolToJS();
 
-        webView.addJavascriptInterface(playerToJS,playerToJSName);
-        webView.addJavascriptInterface(payToJS,payToJSName);
-        webView.addJavascriptInterface(utilToJS,toolToJSName);
-        // 设置WebClient
-        webView.setWebViewClient(new WebViewClient());
-        webView.setWebChromeClient(hcWebChromeClient);
-        // 设置是否开启web内容调试，具体调试方式查看：https://developers.google.com/web/tools/chrome-devtools/remote-debugging/?utm_source=dcc&utm_medium=redirect&utm_campaign=2016q3
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            WebView.setWebContentsDebuggingEnabled(BuildConfig.isDebug);
+            webView.addJavascriptInterface(playerToJS,playerToJSName);
+            webView.addJavascriptInterface(payToJS,payToJSName);
+            webView.addJavascriptInterface(utilToJS,toolToJSName);
+            // 设置WebClient
+            webView.setWebViewClient(new WebViewClient());
+            webView.setWebChromeClient(hcWebChromeClient);
+            // 设置是否开启web内容调试，具体调试方式查看：https://developers.google.com/web/tools/chrome-devtools/remote-debugging/?utm_source=dcc&utm_medium=redirect&utm_campaign=2016q3
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                WebView.setWebContentsDebuggingEnabled(BuildConfig.isDebug);
+            }
+
+            webView.requestFocus();
+        }catch (Exception e){
+            e.printStackTrace();
         }
-
-        webView.requestFocus();
     }
 
     private void setPlayerToJS(){
@@ -340,6 +349,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
      * @return <code>true</code>为前台，反之为后台
      */
     public boolean isRunningForeground(Context context) {
+        Logger.d("isRunningForeground()");
         ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         if (activityManager == null) return false;
         List<ActivityManager.RunningAppProcessInfo> appProcessInfos = activityManager.getRunningAppProcesses();
@@ -360,6 +370,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
      * 退出应用
      * */
     public void AppExit() {
+        Logger.d("AppExit()");
         if(BuildConfig.player_type == 2){
             new ReportCNTVLog().reportExitLog();
         }

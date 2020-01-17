@@ -125,6 +125,7 @@ public class UtilToJS {
      * */
     @JavascriptInterface
     public int clientWebRequest(String paramsJson){
+        Logger.d("clientWebRequest(),paramsJson" + paramsJson);
         try{
             JSONObject requestParams = new JSONObject(paramsJson);
             String url = JSONUtil.getString(requestParams,"url","");
