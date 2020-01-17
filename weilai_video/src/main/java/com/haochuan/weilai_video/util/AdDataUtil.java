@@ -11,6 +11,7 @@ import org.json.JSONObject;
 public class AdDataUtil {
     public static int getStatus(String json){
         try{
+            Logger.d(String.format("AdDataUtil,getStatus('%s')",json));
             return JSONUtil.getInt(new JSONObject(json),"status",0);
         }catch (Exception e){
             e.printStackTrace();
@@ -20,6 +21,7 @@ public class AdDataUtil {
     }
     public static  String getOpenAdJson(String json){
         try{
+            Logger.d(String.format("AdDataUtil,getOpenAdJson('%s')",json));
             JSONObject jsonObject = new JSONObject(json);
             JSONObject adspacesJson = JSONUtil.getJsonObject(jsonObject,"adspaces");
             if(adspacesJson == null){
@@ -44,6 +46,7 @@ public class AdDataUtil {
 
     public static  String getMid(String openAdJson){
         try{
+            Logger.d(String.format("AdDataUtil,getMid('%s')",openAdJson));
             JSONObject jsonObject = new JSONObject(openAdJson);
             return JSONUtil.getString(jsonObject,"mid","");
         }catch (Exception e){
@@ -54,6 +57,7 @@ public class AdDataUtil {
 
     public static  String getAid(String openAdJson){
         try{
+            Logger.d(String.format("AdDataUtil,getAid('%s')",openAdJson));
             JSONObject jsonObject = new JSONObject(openAdJson);
             return JSONUtil.getString(jsonObject,"aid","");
         }catch (Exception e){
@@ -62,8 +66,9 @@ public class AdDataUtil {
         }
     }
 
-    public static  String getMaterialFirst(String openAdJson){
+    private static  String getMaterialFirst(String openAdJson){
         try{
+            Logger.d(String.format("AdDataUtil,getMaterialFirst('%s')",openAdJson));
             JSONObject jsonObject = new JSONObject(openAdJson);
             JSONArray materialArray = JSONUtil.getJsonArray(jsonObject,"materials");
             if(materialArray == null){
@@ -83,6 +88,7 @@ public class AdDataUtil {
 
     public static  String getAdImageUrl(String openAdJson){
         try{
+            Logger.d(String.format("AdDataUtil,getAdImageUrl('%s')",openAdJson));
             String materialJson = getMaterialFirst(openAdJson);
             if(TextUtils.isEmpty(materialJson)){
                 Logger.e("getAdImageUrl,material is not exist ,return");
@@ -98,6 +104,7 @@ public class AdDataUtil {
 
     public static  int getAdShowTime(String openAdJson){
         try{
+            Logger.d(String.format("AdDataUtil,getAdShowTime('%s')",openAdJson));
             String materialJson = getMaterialFirst(openAdJson);
             if(TextUtils.isEmpty(materialJson)){
                 Logger.e("getAdShowTime,material is not exist ,return");
@@ -113,6 +120,7 @@ public class AdDataUtil {
 
     public static  String getMaterialId(String openAdJson){
         try{
+            Logger.d(String.format("AdDataUtil,getMaterialId('%s')",openAdJson));
             String materialJson = getMaterialFirst(openAdJson);
             if(TextUtils.isEmpty(materialJson)){
                 Logger.e("getMaterialId,material is not exist ,return");

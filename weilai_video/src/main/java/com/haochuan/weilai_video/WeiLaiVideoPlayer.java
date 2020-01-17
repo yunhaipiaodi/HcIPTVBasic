@@ -1,9 +1,7 @@
 package com.haochuan.weilai_video;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -13,9 +11,6 @@ import androidx.annotation.Nullable;
 import com.haochuan.core.BaseMediaPlayer;
 import com.haochuan.core.IVideoPlayer;
 import com.haochuan.core.Logger;
-import com.haochuan.core.util.JSONUtil;
-
-import org.json.JSONObject;
 
 import tv.icntv.been.IcntvPlayerInfo;
 import tv.icntv.icntvplayersdk.IcntvPlayer;
@@ -48,11 +43,11 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
         init(context);
     }
 
-
     /*
      * 初始化
      * */
     private void init(Context context){
+        Logger.d("WeiLaiVideoPlayer,init()");
         View.inflate(context, R.layout.player_wl,this);
         icntvPlayerContainer = findViewById(R.id.video_view);
     }
@@ -62,23 +57,29 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
     * */
     @Override
     public void setVideoPlayerListener(@NonNull IVideoPlayer iVideoPlayer){
+        Logger.d("WeiLaiVideoPlayer,setVideoPlayerListener()");
        this.iVideoPlayer = iVideoPlayer;
     }
 
-
+    /*-------------------------BaseMediaPlayer继承函数----------------------*/
 
     @Override
     public void play(String url,String examineId,String examineType) {
+        Logger.d(String.format("WeiLaiVideoPlayer,play(%s,%s,%s)",
+                url,examineId,examineType));
         initIcntvPlayer(url,examineId,examineType);
     }
 
     @Override
     public void setStartTime(int time) {
+        Logger.d(String.format("WeiLaiVideoPlayer,setStartTime(%s)",
+                time));
         this.startTime = time;
     }
 
     @Override
     public void resume() {
+        Logger.d("WeiLaiVideoPlayer,resume()");
         if(icntvPlayer == null){
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return;
@@ -97,6 +98,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void pause() {
+        Logger.d("WeiLaiVideoPlayer,pause()");
         if(icntvPlayer == null){
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return;
@@ -113,6 +115,8 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void seek(int position) {
+        Logger.d(String.format("WeiLaiVideoPlayer,seek(%s)",
+                position));
         if(icntvPlayer == null){
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return;
@@ -126,6 +130,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public void release() {
+        Logger.d("WeiLaiVideoPlayer,release()");
         if(icntvPlayer == null){
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return;
@@ -135,6 +140,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public boolean isPlaying() {
+        Logger.d("WeiLaiVideoPlayer,isPlaying()");
         if(icntvPlayer == null){
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return false;
@@ -148,11 +154,13 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public boolean isPrePared() {
+        Logger.d("WeiLaiVideoPlayer,isPrePared()");
         return mHadPrepared;
     }
 
     @Override
     public int getDuration() {
+        Logger.d("WeiLaiVideoPlayer,getDuration()");
         if(icntvPlayer == null){
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return 0;
@@ -166,6 +174,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public int getCurrentPlayPosition() {
+        Logger.d("WeiLaiVideoPlayer,getCurrentPlayPosition()");
         if(icntvPlayer == null){
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return 0;
@@ -179,6 +188,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
 
     @Override
     public int getCurrentStatus() {
+        Logger.d("WeiLaiVideoPlayer,getCurrentStatus()");
         return playerStatus;
     }
 
@@ -190,6 +200,8 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
     * */
     private void initIcntvPlayer(String url,String examineId,String examineType){
         try{
+            Logger.d(String.format("WeiLaiVideoPlayer,initIcntvPlayer(%s,%s,%s)",
+                    url,examineId,examineType));
             IcntvPlayerInfo icntvPlayerInfo = new IcntvPlayerInfo();    //播放器所需传入参数实例
             icntvPlayerInfo.setPlayUrl(url);
             icntvPlayerInfo.setApp_id(BuildConfig.icntv_app_id);
@@ -213,6 +225,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
      * 销毁CNTV播放器
      */
     public void cntvPlayerRelease() {
+        Logger.d("WeiLaiVideoPlayer,cntvPlayerRelease()");
         if (icntvPlayer == null) {
             Logger.e(PLAYER_OBJ_NULL,"播放器对象为null,退出执行");
             return;
@@ -230,6 +243,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
     * 在播放器准备好后，跳转到传入的startTime处
     * */
     private void seekToStartTime(){
+        Logger.d("WeiLaiVideoPlayer,seekToStartTime()");
         if(icntvPlayer == null){
             Logger.e(PLAYER_OBJ_NULL,"icntvPlayer is null, can`t seekToStartTime");
             return;
@@ -248,6 +262,8 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
     * 处理未来播放器错误
     * */
     private void handleError(int i, int i1, String s){
+        Logger.d(String.format("WeiLaiVideoPlayer,handleError(%s,%s,%s)",
+                i,i1,s));
         String cnTvError = "";
         switch (i) {
             case 1001:

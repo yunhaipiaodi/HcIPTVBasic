@@ -1,5 +1,7 @@
 package com.haochuan.core.util;
 
+import com.haochuan.core.Logger;
+
 import java.util.regex.Pattern;
 
 public class RegexUtil {
@@ -7,6 +9,7 @@ public class RegexUtil {
      * 判断字符串是否为正确的url
      * */
     public static boolean isUrl(String url){
+        Logger.d("RegexUtil isUrl(),url:" + url);
         if (null == url || "".equals(url)) {
             return false;
         }
@@ -18,6 +21,7 @@ public class RegexUtil {
      * 判断字符串是否为正确的包名或者类名
      * */
     public static boolean isPackageName(String name){
+        Logger.d("RegexUtil isPackageName(),name:" + name);
         if (null == name || "".equals(name)) {
             return false;
         }

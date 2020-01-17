@@ -50,6 +50,7 @@ public class UtilToJS {
      * 将log传递给前端
      * */
     public void logToJs(String log){
+        Logger.d("UtilToJS,logToJs(),log:" + log);
         JsUtil.evaluateJavascript(context,webView,
                 String.format(JS_EVENT_LOG,log));
     }
@@ -58,6 +59,7 @@ public class UtilToJS {
      * webView对象获取"返回"按键事件
      * */
     public void onBackPressed(){
+        Logger.d("UtilToJS,onBackPressed()");
         JsUtil.evaluateJavascript(context,webView, JS_EVENT_BACK);
     }
 
@@ -68,12 +70,14 @@ public class UtilToJS {
     * */
     @JavascriptInterface
     public String getIntentJson(){
+        Logger.d("UtilToJS,getIntentJson()");
         return toolsUtil.getIntentJson(context);
     }
 
     @JavascriptInterface
     public String getLocalParamsByJson(){
         try{
+            Logger.d("UtilToJS,getLocalParamsByJson()");
             JSONObject localParamsJson = new JSONObject();
             localParamsJson.put("version_code",BuildConfig.VERSION_CODE);
             localParamsJson.put("version_name",BuildConfig.VERSION_NAME);
@@ -94,6 +98,7 @@ public class UtilToJS {
     public int appExit(){
         try{
             HandlerUtil.runOnUiThread(() -> {
+                Logger.d("UtilToJS,appExit()");
                Activity activity =(Activity)context;
                if(activity instanceof BaseWebActivity){
                    BaseWebActivity baseWebActivity = (BaseWebActivity)activity;
@@ -125,8 +130,8 @@ public class UtilToJS {
      * */
     @JavascriptInterface
     public int clientWebRequest(String paramsJson){
-        Logger.d("clientWebRequest(),paramsJson" + paramsJson);
         try{
+            Logger.d("clientWebRequest(),paramsJson" + paramsJson);
             JSONObject requestParams = new JSONObject(paramsJson);
             String url = JSONUtil.getString(requestParams,"url","");
             String methodStr = JSONUtil.getString(requestParams,"method","1");

@@ -84,7 +84,7 @@ public class DownloadServer {
      * @param fileName,下载文件名称
      * */
     public void download(Context context, String downloadUrl, String fileFolder, String fileName, DownloadServerListener listener){
-        Logger.d(String.format("DownloadServer,download(%s,%s,%s)",downloadUrl,fileFolder,fileName));
+        Logger.d(String.format("DownloadServer,download('%s','%s','%s')",downloadUrl,fileFolder,fileName));
         downloadRequest = new DownloadRequest(downloadUrl, RequestMethod.GET, fileFolder,
                 fileName, true, true);
         downloadRequest.setCancelSign(context);
@@ -123,7 +123,7 @@ public class DownloadServer {
     * 取消单个下载
     * */
     public void cancelBySign(Object sign) {
-        Logger.d(String.format("DownloadServer,cancelBySign(%s)",sign));
+        Logger.d(String.format("DownloadServer,,cancelBySign(%s)",sign));
         mDownloadQueue.cancelBySign(sign);
     }
 

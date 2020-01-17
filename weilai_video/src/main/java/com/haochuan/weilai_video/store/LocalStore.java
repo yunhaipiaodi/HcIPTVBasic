@@ -1,13 +1,12 @@
 package com.haochuan.weilai_video.store;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import com.haochuan.core.Logger;
 
-import java.nio.file.FileAlreadyExistsException;
 
 
 /**
- * Created by yunhaipiaodi on 2017/9/26.
+ * Created by yunhaipiaodi on 2019/9/26.
  */
 @SuppressWarnings("unused")
 public class LocalStore {
@@ -31,6 +30,7 @@ public class LocalStore {
 
 
     public void putOpenAdJson(Context context,String openAdJson) {
+        Logger.d(String.format("LocalStore,putOpenAdJson('%s')",openAdJson));
         context.getSharedPreferences(shareName,Context.MODE_PRIVATE)
                 .edit()
                 .putString(KEY_OPEN_AD,openAdJson)
@@ -38,11 +38,13 @@ public class LocalStore {
     }
 
     public String getOpenAdJson(Context context) {
+        Logger.d("LocalStore,getOpenAdJson()");
         return context.getSharedPreferences(shareName,Context.MODE_PRIVATE)
                 .getString(KEY_OPEN_AD, "");
     }
 
     public void putAdPlayTime(Context context,int adPlayTime) {
+        Logger.d(String.format("LocalStore,putAdPlayTime('%s')",adPlayTime));
         context.getSharedPreferences(shareName,Context.MODE_PRIVATE)
                 .edit()
                 .putInt(AD_PLAY_TIME,adPlayTime)
@@ -50,11 +52,13 @@ public class LocalStore {
     }
 
     public int getAdPlayTime(Context context) {
+        Logger.d("LocalStore,getAdPlayTime()");
         return context.getSharedPreferences(shareName,Context.MODE_PRIVATE)
                 .getInt(AD_PLAY_TIME, 0);
     }
 
     public void putAdImagePath(Context context,String adImagePath) {
+        Logger.d(String.format("LocalStore,putAdImagePath('%s')",adImagePath));
         context.getSharedPreferences(shareName,Context.MODE_PRIVATE)
                 .edit()
                 .putString(AD_IMAGE_PATH,adImagePath)
@@ -62,6 +66,7 @@ public class LocalStore {
     }
 
     public String getAdImagePath(Context context) {
+        Logger.d("LocalStore,getAdImagePath()");
         return context.getSharedPreferences(shareName,Context.MODE_PRIVATE)
                 .getString(AD_IMAGE_PATH, "");
     }

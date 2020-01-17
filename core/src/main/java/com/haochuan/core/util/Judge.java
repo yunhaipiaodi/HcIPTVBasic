@@ -1,6 +1,6 @@
 package com.haochuan.core.util;
 
-public class Juge {
+public class Judge {
     //判断当前是不是纯IP地址
     public static boolean isPureIp(String url){
         url = url.replace("http://","");
