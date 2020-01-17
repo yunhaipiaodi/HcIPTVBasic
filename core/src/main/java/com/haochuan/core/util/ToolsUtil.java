@@ -188,7 +188,7 @@ public class ToolsUtil {
                                  String paramsBody, boolean ignoreResult,
                                  String tag,IResponseListener listener){
         try{
-            Logger.d(String.format("ToolsUtil,clientWebRequest(),url:%s,method:%s,contentType:%s," +
+            Logger.d(String.format("ToolsUtil,webRequest(),url:%s,method:%s,contentType:%s," +
                             "headJson:%s,paramsBody:%s,tag:%s,ignoreResult%s,",
                     url,method,contentType,headJson,paramsBody,tag,ignoreResult?"忽略":"不忽略"));
             RequestMethod requestMethod ;
