@@ -2,6 +2,7 @@ package com.haochuan.core.util;
 
 import android.content.Context;
 
+import com.haochuan.core.Logger;
 import com.yanzhenjie.nohttp.Headers;
 import com.yanzhenjie.nohttp.InitializationConfig;
 import com.yanzhenjie.nohttp.NoHttp;
@@ -18,6 +19,7 @@ import com.yanzhenjie.nohttp.download.DownloadRequest;
  * @email jewelbao88@gmail.com
  * @gitsite https://github.com/jewelbao
  * @since 2019/1/10
+ * 下载配置
  */
 public class DownloadServer {
 
@@ -35,6 +37,9 @@ public class DownloadServer {
         return instance;
     }
 
+    /*
+    * 全局配置NoHttp,请在Application中调用
+    * */
     public void initHttp(Context context){
         InitializationConfig config = InitializationConfig.newBuilder(context)
                 // 全局连接服务器超时时间，单位毫秒，默认10s。
@@ -65,11 +70,21 @@ public class DownloadServer {
         mDownloadQueue = NoHttp.newDownloadQueue();
     }
 
+    /*
+    * 通过DownloadRequest对象发起下载
+    * */
     public void download(int what, DownloadRequest mRequest, DownloadListener mListener) {
         mDownloadQueue.add(what, mRequest, mListener);
     }
 
+    /*
+     * 指定下载链接和下载文件存入文件目录进行下载
+     * @param downloadUrl,下载地址
+     * @param fileFolder,下载文件存入文件目录
+     * @param fileName,下载文件名称
+     * */
     public void download(Context context, String downloadUrl, String fileFolder, String fileName, DownloadServerListener listener){
+        Logger.d(String.format("DownloadServer,download(%s,%s,%s)",downloadUrl,fileFolder,fileName));
         downloadRequest = new DownloadRequest(downloadUrl, RequestMethod.GET, fileFolder,
                 fileName, true, true);
         downloadRequest.setCancelSign(context);
@@ -104,13 +119,17 @@ public class DownloadServer {
     }
 
 
-
-
-
+    /*
+    * 取消单个下载
+    * */
     public void cancelBySign(Object sign) {
+        Logger.d(String.format("DownloadServer,cancelBySign(%s)",sign));
         mDownloadQueue.cancelBySign(sign);
     }
 
+    /*
+     * 取消全部下载
+     * */
     public void cancelAll() {
         mDownloadQueue.cancelAll();
     }

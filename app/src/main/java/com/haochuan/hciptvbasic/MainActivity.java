@@ -2,6 +2,8 @@ package com.haochuan.hciptvbasic;
 
 import android.os.Bundle;
 
+import com.haochuan.core.Logger;
+
 
 public class MainActivity extends BaseWebActivity {
     private String mBasicUrl = "http://120.78.169.79:8090/h5/game_apk/html/video_play.html";    //入口地址
@@ -23,6 +25,7 @@ public class MainActivity extends BaseWebActivity {
     * */
     @Override
     protected String getIndexURL() {
+        Logger.d("getIndexURL(),mBasicUrl:"+mBasicUrl);
         return mBasicUrl;
     }
 

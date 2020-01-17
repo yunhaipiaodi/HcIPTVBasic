@@ -46,7 +46,7 @@ public class PayToJS {
     @JavascriptInterface
     public void sdkInit(String paramsJson){
         //在这里添加SDK初始化逻辑
-        Logger.d("sdkInit");
+        Logger.d("sdkInit(),paramsJson:" + paramsJson);
     }
 
     /*
@@ -55,7 +55,7 @@ public class PayToJS {
     @JavascriptInterface
     public void auth(String paramsJson){
         //在这里添加鉴权逻辑
-        Logger.d("auth");
+        Logger.d("auth(),paramsJson:" + paramsJson);
     }
 
 
@@ -65,7 +65,7 @@ public class PayToJS {
     @JavascriptInterface
     public void pay(String paramsJson){
         //在这里添加支付逻辑
-        Logger.d("pay");
+        Logger.d("pay(),paramsJson:" + paramsJson);
     }
 
     /*
@@ -74,7 +74,7 @@ public class PayToJS {
     @JavascriptInterface
     public String getUserId(){
         //这这里添加获取用户ID逻辑
-        Logger.d("getUserId");
+        Logger.d("getUserId()");
         return "";
     }
 
@@ -85,6 +85,7 @@ public class PayToJS {
      * 参数：0，成功；-1，失败
      */
     public void onSDKInitResult(int code){
+        Logger.d(String.format("onSDKInitResult(%s)",code));
         JsUtil.evaluateJavascript(context,webView, String.format(JS_EVENT_SDK_INIT_RESULT,code));
     }
 
@@ -93,6 +94,7 @@ public class PayToJS {
      * 参数：json字符串
      */
     public void onAuthResult(String paramJson){
+        Logger.d("onAuthResult(),paramJson:" + paramJson);
         JsUtil.evaluateJavascript(context,webView, String.format(JS_EVENT_SDK_INIT_RESULT,paramJson));
     }
 
@@ -101,6 +103,7 @@ public class PayToJS {
      * 参数：json字符串
      * */
     public void onPayResult(String paramJson){
+        Logger.d("onPayResult(),paramJson:" + paramJson);
         JsUtil.evaluateJavascript(context,webView, String.format(JS_EVENT_SDK_INIT_RESULT,paramJson));
     }
 }
