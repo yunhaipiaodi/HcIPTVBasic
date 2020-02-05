@@ -43,11 +43,15 @@ public class CNTVLogin {
     //显示广告图片组件
     private ImageView adImageView;
     private TextView adTimeTextView;
+    private ViewGroup viewGroup;
+
+    private OnCNTVListener mListener;
 
     public void init(Context context,OnCNTVListener listener) {
         Logger.d("CNTVLogin,init()");
         new Thread(()->{
             Activity activity = (Activity)context;
+            viewGroup = (ViewGroup) activity.getWindow().getDecorView();
             try{
                //第一步，先ott登陆
                 boolean initResult = loginSDK.getInstance().sdkInit(loginSDK.TYPE_COMMON, BuildConfig.icntv_app_channel, BuildConfig.icntv_app_key, BuildConfig.icntv_app_secret, context);
@@ -73,6 +77,8 @@ public class CNTVLogin {
     * */
     private void ottLoginSuccess(Context context,OnCNTVListener listener){
         Logger.d("CNTVLogin,ottLoginSuccess()");
+
+        mListener = listener;
         //ott登陆成功后，开始以下动作
         StringBuffer tf = new StringBuffer();
 
@@ -108,7 +114,11 @@ public class CNTVLogin {
         String serverAppUpdate = tf.toString();
         initUpgrade(context ,serverAppUpdate, listener);
 
-        HandlerUtil.runOnUiThread(listener::onOttLoginSuccess);
+        /*一开始显示开屏广告图片是和CNTVLogin系列初始化进程并行执行的，这就导致
+        开屏广告显示期间，前端页面已经加载完毕，这时操作遥控，会播放视频同时广告并没有关闭；
+        所以将显示开屏广告图片转移到CNTVLogin初始化序列化中，只有广告关闭后，才开始加载前端页面*/
+        HandlerUtil.runOnUiThread(()->showAdImage(context));
+        //HandlerUtil.runOnUiThread(listener::onOttLoginSuccess);
     }
 
     /*
@@ -325,11 +335,13 @@ public class CNTVLogin {
     /*
     * 显示开屏广告图片
     * */
-    public void showAdImage(Context context,ViewGroup viewGroup){
+    public void showAdImage(Context context){
         Logger.d("CNTVLogin,showAdImage()");
         String adImagePath = LocalStore.getInstance().getAdImagePath(context);
         if(TextUtils.isEmpty(adImagePath)){
             Logger.d("没有找到广告图片路径，退出");
+            //通知BaseWebActivityCNTVLogin执行完毕，加载页面
+            HandlerUtil.runOnUiThread(mListener::onOttLoginSuccess);
             return;
         }
         adShowTime = LocalStore.getInstance().getAdPlayTime(context);
@@ -356,7 +368,7 @@ public class CNTVLogin {
             public void run() {
                 if (adShowTime <= 0) {
                     Log.d("djbl","time to close ad");
-                    removeADImage(context,viewGroup);
+                    removeADImage(context);
                 } else {
                     adShowTime--;
                     adTimeTextView.setText(String.format("广告剩余%s秒",adShowTime));
@@ -377,9 +389,11 @@ public class CNTVLogin {
     /*
     * 将广告显示移除
     * */
-    public void removeADImage(Context context,ViewGroup viewGroup){
+    public void removeADImage(Context context){
         Logger.d("CNTVLogin,removeADImage()");
         if(adImageView == null || adTimeTextView == null){
+            //通知BaseWebActivityCNTVLogin执行完毕，加载页面
+            HandlerUtil.runOnUiThread(mListener::onOttLoginSuccess);
             return;
         }
         adImageView.setImageDrawable(null);
@@ -387,6 +401,8 @@ public class CNTVLogin {
         viewGroup.removeView(adTimeTextView);
         reportAd(context);
         isOpenAdshow = false;
+        //通知BaseWebActivityCNTVLogin执行完毕，加载页面
+        HandlerUtil.runOnUiThread(mListener::onOttLoginSuccess);
     }
 
     /*
