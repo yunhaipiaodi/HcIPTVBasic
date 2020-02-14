@@ -88,6 +88,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
             if(!icntvPlayer.isPlaying()){
                 icntvPlayer.startVideo();
                 playerStatus = 4;   //播放中
+                iVideoPlayer.onResume();
             }else {
                 Logger.w("当前已经在播放，不用执行resume");
             }
@@ -107,6 +108,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
             if(icntvPlayer.isPlaying()){
                 icntvPlayer.pauseVideo();
                 playerStatus = 3;   //暂停中
+                iVideoPlayer.onPause();
             }
         }else{
             Logger.w("视频未准备，不能暂停");
@@ -136,6 +138,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
             return;
         }
         cntvPlayerRelease();
+        iVideoPlayer.onDestroy();
     }
 
     @Override

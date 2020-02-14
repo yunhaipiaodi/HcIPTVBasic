@@ -124,6 +124,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
         if(isPrePared()){
             videoView.start();
             playerStatus = 4;   //播放中；
+            iVideoPlayer.onResume();
         }else{
             Logger.w("视频未准备好，不能继续播放");
         }
@@ -139,6 +140,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
         if(isPrePared()){
             videoView.pause();
             playerStatus = 3;   //暂停中；
+            iVideoPlayer.onPause();
         }else{
             Logger.w("视频未准备好，不能暂停");
         }
@@ -170,6 +172,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
         videoView.suspend();
         mHadPrepared = false;
         playerStatus = 6;   //暂停中；
+        iVideoPlayer.onDestroy();
     }
 
     @Override

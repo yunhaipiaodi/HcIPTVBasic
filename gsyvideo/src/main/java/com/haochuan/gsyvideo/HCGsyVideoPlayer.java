@@ -17,6 +17,7 @@ import static com.haochuan.core.util.MessageCode.PLAYER_OBJ_NULL;
 public class HCGsyVideoPlayer extends BaseMediaPlayer{
 
     private EmptyControlVideoView mEmptyControlVideo;        //GSY播放器实例
+    private IVideoPlayer iVideoPlayer; //播放器事件监控
 
     public HCGsyVideoPlayer(@NonNull Context context) {
         super(context);
@@ -46,6 +47,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
     @Override
     public void setVideoPlayerListener(@NonNull IVideoPlayer iVideoPlayer){
         Logger.d("HCGsyVideoPlayer,setVideoPlayerListener()");
+        this.iVideoPlayer = iVideoPlayer;
         if(mEmptyControlVideo != null){
             mEmptyControlVideo.setVideoPlayerListener(iVideoPlayer);
         }else{
@@ -87,6 +89,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
         }
         if(isPrePared()){
             mEmptyControlVideo.onVideoResume();
+            iVideoPlayer.onResume();
         }else{
             Logger.w("视频未准备，不能执行resume");
         }
@@ -101,6 +104,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
         }
         if(isPrePared()){
             mEmptyControlVideo.onVideoPause();
+            iVideoPlayer.onPause();
         }else{
             Logger.w("视频未准备，不能暂停");
         }
@@ -199,6 +203,7 @@ public class HCGsyVideoPlayer extends BaseMediaPlayer{
             return;
         }
         mEmptyControlVideo.release();
+        iVideoPlayer.onDestroy();
     }
 
 }
