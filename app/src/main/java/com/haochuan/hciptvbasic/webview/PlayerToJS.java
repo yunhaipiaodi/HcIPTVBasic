@@ -18,6 +18,7 @@ import com.haochuan.core.util.JsUtil;
 import com.haochuan.core.util.MathUtil;
 import com.haochuan.core.util.RegexUtil;
 import com.haochuan.core.util.ScreenSnap;
+import com.haochuan.weilai_video.WeiLaiVideoPlayer;
 
 import org.json.JSONObject;
 
@@ -310,7 +311,24 @@ public class PlayerToJS {
         return baseMediaPlayer.getCurrentPlayPosition();
     }
 
-
+    /*
+     * 获得未来播放器是否在广告期间
+     * */
+    @JavascriptInterface
+    public int getCNTVPlayerAding(){
+        Logger.d("PlayerToJS,getCNTVPlayerAding()");
+        int result = 0; //1,广告期间；0，非广告期间
+        if(baseMediaPlayer == null){
+            Logger.e("播放器为空,不能退出");
+            result = 0;
+        }
+        if(baseMediaPlayer instanceof WeiLaiVideoPlayer){
+            WeiLaiVideoPlayer weiLaiVideoPlayer
+                    =(WeiLaiVideoPlayer)baseMediaPlayer;
+            result = weiLaiVideoPlayer.isAding()?1:0;
+        }
+        return result;
+    }
     /**-------------------------------------------功能函数-----------------------------------------------*/
 
     /*

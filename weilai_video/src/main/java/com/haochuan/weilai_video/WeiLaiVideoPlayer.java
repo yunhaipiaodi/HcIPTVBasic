@@ -262,6 +262,12 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
     }
 
     /*
+     * 判断未来播放器是否在广告期间
+     * */
+    public boolean isAding(){return icntvPlayer!=null?icntvPlayer.isADPlaying():false;}
+
+
+    /*
     * 处理未来播放器错误
     * */
     private void handleError(int i, int i1, String s){
