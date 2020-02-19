@@ -229,9 +229,10 @@ public abstract class BaseWebActivity extends AppCompatActivity {
             @Override
             public void onError(int what, int extra) {
                 playerToJS.onPlayerError(what,extra);
-                if(BuildConfig.player_type == 2){
+                //取消提示框显示，改由前端页面实现
+               /* if(BuildConfig.player_type == 2){
                     CNTVPlayerErrorAlert();
-                }
+                }*/
             }
 
         });
