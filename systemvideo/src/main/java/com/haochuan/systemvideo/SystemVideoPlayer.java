@@ -63,12 +63,12 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
                 case MediaPlayer.MEDIA_INFO_BUFFERING_START:
                     // MediaPlayer暂时暂停内部播放以缓冲更多数据。
                     iVideoPlayer.onPlayingBuffering();
-                    playerStatus = 4;
+                    playerStatus = 5;
                     break;
                 case MediaPlayer.MEDIA_INFO_BUFFERING_END:
                     // 填充缓冲区后，MediaPlayer正在恢复播放。
                     iVideoPlayer.onPlaying();
-                    playerStatus = 2;
+                    playerStatus = 4;
                     break;
                 default:
                     break;
@@ -88,7 +88,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
             mediaPlayer = mp;
             iVideoPlayer.onCompletion();
             mHadPrepared = false;
-            playerStatus = 5;
+            playerStatus = 6;
         });
     }
 
@@ -123,7 +123,8 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
         }
         if(isPrePared()){
             videoView.start();
-            playerStatus = 2;   //播放中；
+            playerStatus = 4;   //播放中；
+            iVideoPlayer.onResume();
         }else{
             Logger.w("视频未准备好，不能继续播放");
         }
@@ -139,6 +140,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
         if(isPrePared()){
             videoView.pause();
             playerStatus = 3;   //暂停中；
+            iVideoPlayer.onPause();
         }else{
             Logger.w("视频未准备好，不能暂停");
         }
@@ -170,6 +172,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
         videoView.suspend();
         mHadPrepared = false;
         playerStatus = 6;   //暂停中；
+        iVideoPlayer.onDestroy();
     }
 
     @Override

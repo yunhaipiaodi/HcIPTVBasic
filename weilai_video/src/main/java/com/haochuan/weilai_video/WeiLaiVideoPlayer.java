@@ -87,7 +87,8 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
         if(isPrePared()){
             if(!icntvPlayer.isPlaying()){
                 icntvPlayer.startVideo();
-                playerStatus = 2;   //播放中
+                playerStatus = 4;   //播放中
+                iVideoPlayer.onResume();
             }else {
                 Logger.w("当前已经在播放，不用执行resume");
             }
@@ -107,6 +108,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
             if(icntvPlayer.isPlaying()){
                 icntvPlayer.pauseVideo();
                 playerStatus = 3;   //暂停中
+                iVideoPlayer.onPause();
             }
         }else{
             Logger.w("视频未准备，不能暂停");
@@ -136,6 +138,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
             return;
         }
         cntvPlayerRelease();
+        iVideoPlayer.onDestroy();
     }
 
     @Override
@@ -259,6 +262,12 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
     }
 
     /*
+     * 判断未来播放器是否在广告期间
+     * */
+    public boolean isAding(){return icntvPlayer!=null?icntvPlayer.isADPlaying():false;}
+
+
+    /*
     * 处理未来播放器错误
     * */
     private void handleError(int i, int i1, String s){
@@ -296,19 +305,19 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
         @Override
         public void onCompletion() {
             iVideoPlayer.onCompletion();
-            playerStatus = 5;
+            playerStatus = 6;
         }
 
         @Override
         public void onBufferStart(String s) {
             iVideoPlayer.onPlayingBuffering();
-            playerStatus = 4;
+            playerStatus = 5;
         }
 
         @Override
         public void onBufferEnd(String s) {
             iVideoPlayer.onPlaying();
-            playerStatus = 2;
+            playerStatus = 4;
         }
 
         @Override

@@ -7,7 +7,6 @@ import com.haochuan.core.Logger;
 
 public class MainActivity extends BaseWebActivity {
     private String mBasicUrl = "http://120.78.169.79:8090/h5/game_apk/html/video_play.html";    //入口地址
-
     private int testCount = 0;
     private String TAG = "status";
 

@@ -67,6 +67,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
         Logger.init(this,getWebView());
 
         //如果是未来版本，需要先初始化其sdk;如果是其他版本，可以注释该段代码
+        cntvLogin = new CNTVLogin();
         if(BuildConfig.player_type == 2){
             CNTVInit();
         }
@@ -84,7 +85,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
         if(BuildConfig.player_type != 2){
             runH5();
         }
-        cntvLogin = new CNTVLogin();
+
     }
 
     private void runH5(){
@@ -162,8 +163,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
         //如果是未来版本，请用这段代码
         if(cntvLogin.isOpenAdshow()){
             Log.d("djbl","onBackPressed close ad");
-            ViewGroup viewGroup = (ViewGroup) getWindow().getDecorView();
-            cntvLogin.removeADImage(this,viewGroup);
+            cntvLogin.removeADImage(this);
         }else{
             utilToJS.onBackPressed();
         }
@@ -229,9 +229,10 @@ public abstract class BaseWebActivity extends AppCompatActivity {
             @Override
             public void onError(int what, int extra) {
                 playerToJS.onPlayerError(what,extra);
-                if(BuildConfig.player_type == 2){
+                //取消提示框显示，改由前端页面实现
+               /* if(BuildConfig.player_type == 2){
                     CNTVPlayerErrorAlert();
-                }
+                }*/
             }
 
         });
@@ -264,8 +265,6 @@ public abstract class BaseWebActivity extends AppCompatActivity {
                 OttLoginFailAlert("-1",throwable == null ? "发生未知异常" : throwable.getMessage());
             }
         });
-        ViewGroup viewGroup = (ViewGroup) getWindow().getDecorView();
-        cntvLogin.showAdImage(this,viewGroup);
     }
 
     /*
