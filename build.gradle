@@ -42,7 +42,8 @@ buildscript {
             //其他依赖组件
             dependency_library            :[
                     nohttp  : 'com.yanzhenjie.nohttp:nohttp:1.1.11',
-                    GSYVideoPlayer  : 'com.shuyu:GSYVideoPlayer:7.0.2',
+                    gson :'com.google.code.gson:gson:2.8.6',
+                    GSYVideoPlayer  : 'com.shuyu:GSYVideoPlayer:7.0.2'
             ],
     ]
 

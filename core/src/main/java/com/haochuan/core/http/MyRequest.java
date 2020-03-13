@@ -1,4 +1,4 @@
-package com.haochuan.core.util;
+package com.haochuan.core.http;
 
 import com.yanzhenjie.nohttp.Headers;
 import com.yanzhenjie.nohttp.RequestMethod;

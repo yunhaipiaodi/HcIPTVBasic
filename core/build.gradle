@@ -38,5 +38,6 @@ dependencies {
     testImplementation lib.test.junit
     androidTestImplementation lib.test.runner
     androidTestImplementation lib.test.espresso
-    implementation lib.dependency_library.nohttp
+    api lib.dependency_library.nohttp
+    api lib.dependency_library.gson
 }

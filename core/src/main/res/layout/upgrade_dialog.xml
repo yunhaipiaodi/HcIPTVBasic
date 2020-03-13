@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparent">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <ImageView
+            android:id="@+id/iv_update"
+            android:layout_width="300dp"
+            android:layout_height="150dp"
+            android:background="@drawable/bg_msg_dialog" />
+
+        <TextView
+            android:id="@+id/update_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:text="检测到更新,下载中..."
+            android:textColor="#333333"
+            android:textSize="20sp" />
+
+        <ProgressBar
+            android:id="@+id/progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="192dp"
+            android:layout_height="14dp"
+            android:layout_below="@+id/update_title"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:max="100"
+            android:progress="0"
+            android:progressDrawable="@drawable/update_progress"
+            android:visibility="visible" />
+
+
+        <ImageView
+            android:id="@+id/close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iv_update"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/icon_close" />
+    </RelativeLayout>
+
+
+</RelativeLayout>
