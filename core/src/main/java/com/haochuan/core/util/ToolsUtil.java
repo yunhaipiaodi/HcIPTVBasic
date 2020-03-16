@@ -8,6 +8,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Base64;
 
@@ -291,6 +292,16 @@ public class ToolsUtil {
         mActivityManager.getMemoryInfo(mi);
         //返回的内存单位为字节
         return mi.availMem;
+    }
+
+    //检测SD卡是否挂载
+    public static boolean isStorageAvailable() {
+        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+    }
+
+    //获取SD卡根目录路径
+    public String getFolderPath() {
+        return Environment.getExternalStorageDirectory().getAbsolutePath();
     }
 
     /*
