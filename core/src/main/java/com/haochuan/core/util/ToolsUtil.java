@@ -25,6 +25,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.net.URLEncoder;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class ToolsUtil {
@@ -294,21 +295,26 @@ public class ToolsUtil {
         return mi.availMem;
     }
 
-    //检测SD卡是否挂载
-    public static boolean isStorageAvailable() {
-        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+    //获取当前应用程序包名
+    public static String getAppProcessName(Context context) {
+        //当前应用pid
+        int pid = android.os.Process.myPid();
+        //任务管理类
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        //遍历所有应用
+        List<ActivityManager.RunningAppProcessInfo> infos = manager.getRunningAppProcesses();
+        for (ActivityManager.RunningAppProcessInfo info : infos) {
+            if (info.pid == pid)//得到当前应用
+                return info.processName;//返回包名
+        }
+        return "";
     }
 
-    //获取SD卡根目录路径
-    public String getFolderPath() {
-        return Environment.getExternalStorageDirectory().getAbsolutePath();
-    }
 
     /*
      * clientWebRequest 结果response接口
      * */
     public interface IResponseListener {
-        public void OnResponse(int what, String response, String tag);
+        public void OnResponse(int code, String response, String tag);
     }
-
 }

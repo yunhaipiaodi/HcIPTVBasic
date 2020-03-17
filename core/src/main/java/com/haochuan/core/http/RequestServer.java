@@ -1,8 +1,13 @@
 package com.haochuan.core.http;
 
+import android.text.TextUtils;
+
 import com.google.gson.Gson;
 import com.haochuan.core.Logger;
+import com.haochuan.core.http.bean.ApkSettingBean;
+import com.haochuan.core.http.bean.ResponseBean;
 import com.haochuan.core.http.bean.UpdateResponseBean;
+import com.yanzhenjie.nohttp.FileBinary;
 import com.yanzhenjie.nohttp.NoHttp;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.error.NetworkError;
@@ -13,6 +18,8 @@ import com.yanzhenjie.nohttp.rest.RequestQueue;
 import com.yanzhenjie.nohttp.rest.Response;
 import com.yanzhenjie.nohttp.rest.SimpleResponseListener;
 import com.yanzhenjie.nohttp.rest.StringRequest;
+
+import java.io.File;
 
 /**
  * Created by ncx on 2020/3/10
@@ -28,9 +35,14 @@ public class RequestServer {
     public static final String OTHER_MESSAGE_CODE = "0x999";
 
 
-    private static final String HOST = "http://150.138.11.180:6401/";
+    //这个IP需要视具体项目修改
+    private static final String HOST = "http://sxsj.reading.sdteleiptv.com:6401/";
 
     private static final String UPDATE_VERSION = HOST + "apk/up_version";
+
+    private static final String UPLOAD_LOG_FILE = HOST + "apk/save_apk_log";
+
+    private static final String GET_APK_SETTING = HOST + "apk/get_apk_setting";
 
     private static RequestServer instance;
 
@@ -89,14 +101,18 @@ public class RequestServer {
     }
 
     //获取版本更新
-    public void updateVersion(int versionCode, ResponseListener<UpdateResponseBean> listener) {
+    public void updateVersion(int versionCode, String userId, ResponseListener<UpdateResponseBean> listener) {
         StringRequest request = new StringRequest(UPDATE_VERSION, RequestMethod.GET);
+        //当前版本号
+        request.add("versionCode", versionCode);
+        //userId用于指定用户升级
+        request.add("userId", userId);
         queue.add(1, request, new SimpleResponseListener<String>() {
             @Override
             public void onSucceed(int what, Response<String> response) {
                 super.onSucceed(what, response);
                 String responseStr = response.get();
-                if (responseStr != null) {
+                if (!TextUtils.isEmpty(responseStr)) {
                     UpdateResponseBean bean = UpdateResponseBean.objectFromData(responseStr);
                     if (bean.getCode() == 0) {
                         if (bean.getData() != null) {
@@ -118,11 +134,80 @@ public class RequestServer {
                 if (response != null) {
                     String code = requestFailedCode(response.getException());
                     String message = requestFailedMessage(response.getException());
-                    Logger.d("onFailed:" + code + "," + message);
+                    Logger.d("updateVersion,onFailed:" + code + "," + message);
                     listener.onFailure(code, message);
                 }
             }
         });
     }
 
+    //查询是否需要上传日志文件
+    public void getApkSetting(String uid, ResponseListener<ApkSettingBean> listener) {
+        StringRequest request = new StringRequest(GET_APK_SETTING, RequestMethod.GET);
+        request.add("uid", uid);
+        queue.add(2, request, new SimpleResponseListener<String>() {
+            @Override
+            public void onSucceed(int what, Response<String> response) {
+                super.onSucceed(what, response);
+                String responseStr = response.get();
+                if (!TextUtils.isEmpty(responseStr)) {
+                    ApkSettingBean bean = ApkSettingBean.objectFromData(responseStr);
+                    if (bean.getCode() == 0) {
+                        listener.onSuccess(bean);
+                    } else {
+                        listener.onFailure(OTHER_MESSAGE_CODE, OTHER_MESSAGE);
+                    }
+                } else {
+                    listener.onFailure(OTHER_MESSAGE_CODE, OTHER_MESSAGE);
+                }
+            }
+
+            @Override
+            public void onFailed(int what, Response<String> response) {
+                super.onFailed(what, response);
+                if (response != null) {
+                    String code = requestFailedCode(response.getException());
+                    String message = requestFailedMessage(response.getException());
+                    Logger.d("queryUploadType,onFailed:" + code + "," + message);
+                    listener.onFailure(code, message);
+                }
+            }
+        });
+    }
+
+    //上传日志文件
+    public void uploadLogFile(String fileName, ResponseListener<ResponseBean> listener) {
+        try {
+            File file = new File(fileName);
+            if (!file.exists()) return;
+            StringRequest request = new StringRequest(UPLOAD_LOG_FILE, RequestMethod.POST);
+            request.add("file", new FileBinary(file));
+            queue.add(3, request, new SimpleResponseListener<String>() {
+                @Override
+                public void onSucceed(int what, Response<String> response) {
+                    super.onSucceed(what, response);
+                    String responseStr = response.get();
+                    if (!TextUtils.isEmpty(responseStr)) {
+                        Logger.d("uploadLogFile responseStr:" + responseStr);
+                    } else {
+                        listener.onFailure(OTHER_MESSAGE_CODE, OTHER_MESSAGE);
+                    }
+                }
+
+                @Override
+                public void onFailed(int what, Response<String> response) {
+                    super.onFailed(what, response);
+                    if (response != null) {
+                        String code = requestFailedCode(response.getException());
+                        String message = requestFailedMessage(response.getException());
+                        Logger.d("uploadLogFile,onFailed:" + code + "," + message);
+                        listener.onFailure(code, message);
+                    }
+                }
+
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

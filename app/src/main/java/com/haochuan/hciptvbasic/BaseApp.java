@@ -12,9 +12,12 @@ import com.yanzhenjie.nohttp.cookie.DBCookieStore;
 
 
 public class BaseApp extends Application {
+    public static Context mContext;
+
     @Override
     public void onCreate() {
         super.onCreate();
+        mContext = getApplicationContext();
         initHttp(this);
     }
 
@@ -43,5 +46,9 @@ public class BaseApp extends Application {
         NoHttp.initialize(config);
         Logger.setDebug(true);
         Logger.setTag("NoHttp");
+    }
+
+    public static Context getAppContext() {
+        return mContext;
     }
 }
