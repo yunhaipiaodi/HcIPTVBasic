@@ -30,6 +30,7 @@ public class UpgradeDialog extends DialogFragment implements View.OnClickListene
 
     private static final int UPDATE_PROGRESS = 0x123;
 
+    //更新UI的Handler
     private Handler mHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
@@ -83,9 +84,11 @@ public class UpgradeDialog extends DialogFragment implements View.OnClickListene
         return dialog;
     }
 
+    //暴露给外部进行进度更新的方法
     public void changeProgress(int progressValue) {
         Message message = Message.obtain();
         message.what = UPDATE_PROGRESS;
+        //传入进度值
         message.arg1 = progressValue;
         mHandler.sendMessage(message);
     }

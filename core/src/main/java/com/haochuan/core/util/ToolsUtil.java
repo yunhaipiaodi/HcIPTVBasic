@@ -297,6 +297,7 @@ public class ToolsUtil {
 
     //获取当前应用程序包名
     public static String getAppProcessName(Context context) {
+        //因为派生出去的项目都会修改对应的ApplicationId,所以用BuildConfig获取包名是不准的
         //当前应用pid
         int pid = android.os.Process.myPid();
         //任务管理类

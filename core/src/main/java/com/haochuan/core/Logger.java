@@ -132,6 +132,7 @@ public class Logger {
     private static void writeLogToFile(String logType, String tag, String text) {
         FileOutputStream fos = null;
         try {
+            //拼接需要写入的文本
             String logStr = getCurrentDate() + " /" + logType + " /" + tag + ": " + text + "\n";
             //第二个参数表示接着之前的文本写入,不会覆盖
             fos = new FileOutputStream(els.getStringData(ELS.LOG_FILE_NAME),true);
@@ -150,7 +151,7 @@ public class Logger {
     }
 
     private static String getCurrentDate() {
-        //获取当前日期
+        //获取当前格式化的日期
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(System.currentTimeMillis());
     }

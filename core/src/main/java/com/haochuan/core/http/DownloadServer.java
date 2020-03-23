@@ -10,9 +10,7 @@ import com.yanzhenjie.nohttp.download.DownloadQueue;
 import com.yanzhenjie.nohttp.download.DownloadRequest;
 
 /**
- * @author jewel
- * @email jewelbao88@gmail.com
- * @gitsite https://github.com/jewelbao
+ * 下载文件单例
  * @since 2019/1/10
  */
 public class DownloadServer {
@@ -87,6 +85,7 @@ public class DownloadServer {
         }
     }
 
+    //关闭队列,在使用的地方记得及时调用该方法关闭,以防内存泄漏
     public void stop() {
         if (mDownloadQueue != null) {
             mDownloadQueue.stop();

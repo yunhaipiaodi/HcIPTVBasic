@@ -19,9 +19,21 @@ public class ELS {
     //上一次使用应用的日志文件上传开关
     public static final String LAST_LOG_SWITCH = "last_log_switch";
     //上一次日志文件的名称
-//    public static final String LAST_LOG_FILE_NAME = "last_log_file_name";
 
-    //存储log文件相关的信息
+    public static ELS getInstance(Context mContext) {
+        if (mPref == null)
+            synchronized (ELS.class) {
+                if (mPref == null)
+                    mPref = new ELS(mContext);
+            }
+        return mPref;
+    }
+
+    private ELS(Context context) {
+        mSharePrefer = context.getSharedPreferences(ELS, Context.MODE_PRIVATE);
+        mEditor = mSharePrefer.edit();
+    }
+
     public void saveLogInfo() {
         mEditor.putBoolean(LAST_LOG_SWITCH, true);
         mEditor.apply();
@@ -83,21 +95,6 @@ public class ELS {
 
     public float getFloatData(String key) {
         return mSharePrefer.getFloat(key, 0);
-    }
-
-
-    public static ELS getInstance(Context mContext) {
-        if (mPref == null)
-            synchronized (ELS.class) {
-                if (mPref == null)
-                    mPref = new ELS(mContext);
-            }
-        return mPref;
-    }
-
-    private ELS(Context context) {
-        mSharePrefer = context.getSharedPreferences(ELS, Context.MODE_PRIVATE);
-        mEditor = mSharePrefer.edit();
     }
 
     /**

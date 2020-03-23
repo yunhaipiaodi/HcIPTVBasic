@@ -23,7 +23,7 @@ import java.io.File;
 
 /**
  * Created by ncx on 2020/3/10
- * 接口统一请求类
+ * 接口统一请求单例
  */
 public class RequestServer {
     public static final String UNKNOW_ERROR = "0x001";
