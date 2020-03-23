@@ -13,6 +13,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -27,6 +28,11 @@ import androidx.core.content.ContextCompat;
 import com.haochuan.core.BaseMediaPlayer;
 import com.haochuan.core.IVideoPlayer;
 import com.haochuan.core.Logger;
+import com.haochuan.core.http.RequestServer;
+import com.haochuan.core.http.ResponseListener;
+import com.haochuan.core.http.bean.ApkSettingBean;
+import com.haochuan.core.http.bean.ResponseBean;
+import com.haochuan.core.util.ELS;
 import com.haochuan.core.util.HandlerUtil;
 import com.haochuan.gsyvideo.HCGsyVideoPlayer;
 import com.haochuan.hciptvbasic.webview.PayToJS;
@@ -52,6 +58,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
     private CNTVLogin cntvLogin;
     //播放器
     private BaseMediaPlayer mHCPlayer = null;
+    protected ELS els;
 
     /**-----------------------虚函数-----------------------*/
 
@@ -62,11 +69,56 @@ public abstract class BaseWebActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        els = ELS.getInstance(this);
+        String uid = "";
+        //访问接口确定是否需要上传日志
+        if (!TextUtils.isEmpty(uid)) {
+            RequestServer.getInstance().getApkSetting(uid, new ResponseListener<ApkSettingBean>() {
+                @Override
+                public void onSuccess(ApkSettingBean response) {
+                    Logger.d("getApkSetting:" + response.toString());
+                    List<ApkSettingBean.DataBean> dataList = response.getData();
+                    for (ApkSettingBean.DataBean data : dataList) {
+                        //遍历寻找对应配置
+                        if ("open_apk_log_status".equals(data.getSetting_name())) {
+                            if ("1".equals(data.getSetting_value())) {
+                                Logger.setLogNeedWriteToFile(true);
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(String code, String message) {
+                }
+            });
+        }
+
+        //每次启动应用时,检查一下上一次使用是否要上传日志,
+        // 因为在应用关闭时上传文件可能导致内存内泄漏或上传失败,所以放在应用启动时上传
+        if (els.getBoolData(ELS.LAST_LOG_SWITCH)) {
+            String lasLogFileName = els.getStringData(ELS.LOG_FILE_NAME);
+            Logger.d("uploadLogFile lasLogFileName:" + lasLogFileName);
+            if (!TextUtils.isEmpty(lasLogFileName)) {
+                RequestServer.getInstance().uploadLogFile(lasLogFileName,
+                        new ResponseListener<ResponseBean>() {
+                            @Override
+                            public void onSuccess(ResponseBean response) {
+                                Logger.d("uploadLogFile:" + response.toString());
+                            }
+
+                            @Override
+                            public void onFailure(String code, String message) {
+                            }
+                        });
+            }
+        }
 
         //初始化日志
         Logger.init(this,getWebView());
 
-        //如果是未来版本，需要先初始化其sdk;如果是其他版本，可以注释该段代码
+        //如果是未来版本，需要先初始化其sdk;如果是其他版本，可以
+        // 注释该段代码
         cntvLogin = new CNTVLogin();
         if(BuildConfig.player_type == 2){
             CNTVInit();
