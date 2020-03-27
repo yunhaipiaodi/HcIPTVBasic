@@ -15,6 +15,7 @@
     <color name="pressedblue">#FFE9E9E9</color>
     <color name="red">#FF441D</color>
     <color name="gray">#FFEBEBEB</color>
+    <color name="btn_blue_bg">#829cff</color>
     <color name="orange">#ffFF6D00</color>
     <color name="background_gray">#b0000000</color>
     <color name="background_transparent">#00000000</color>

@@ -2,11 +2,13 @@ package com.haochuan.core.http.bean;
 
 import com.google.gson.Gson;
 
+import java.io.Serializable;
+
 /**
  * Created by ncx on 2020/3/11
  * 更新接口返回数据实体类
  */
-public class UpdateResponseBean {
+public class UpdateResponseBean implements Serializable {
 
     //code为0表示请求成功
     private int code;

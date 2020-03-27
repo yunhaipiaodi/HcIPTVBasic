@@ -21,9 +21,25 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="30dp"
-            android:text="检测到更新,下载中..."
+            android:text="检测到更新,是否更新?"
             android:textColor="#333333"
             android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/btn_ok"
+            android:layout_width="126dp"
+            android:layout_height="35dp"
+            android:layout_below="@+id/update_title"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/btn_ok_sel"
+            android:gravity="center"
+            android:nextFocusUp="@id/close"
+            android:nextFocusDown="@id/close"
+            android:text="去升级"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:visibility="visible" />
 
         <ProgressBar
             android:id="@+id/progress"
@@ -36,17 +52,18 @@
             android:max="100"
             android:progress="0"
             android:progressDrawable="@drawable/update_progress"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
-
-        <ImageView
+        <ImageButton
             android:id="@+id/close"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/iv_update"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
-            android:background="@drawable/icon_close" />
+            android:background="@drawable/icon_close_sel"
+            android:nextFocusUp="@id/btn_ok"
+            android:nextFocusDown="@id/btn_ok" />
     </RelativeLayout>
 
 

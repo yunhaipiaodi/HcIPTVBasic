@@ -1,5 +1,6 @@
 package com.haochuan.core.http;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
@@ -7,7 +8,10 @@ import com.haochuan.core.Logger;
 import com.haochuan.core.http.bean.ApkSettingBean;
 import com.haochuan.core.http.bean.ResponseBean;
 import com.haochuan.core.http.bean.UpdateResponseBean;
+import com.haochuan.core.util.ELS;
+import com.haochuan.core.util.ToolsUtil;
 import com.yanzhenjie.nohttp.FileBinary;
+import com.yanzhenjie.nohttp.Headers;
 import com.yanzhenjie.nohttp.NoHttp;
 import com.yanzhenjie.nohttp.RequestMethod;
 import com.yanzhenjie.nohttp.error.NetworkError;
@@ -20,10 +24,12 @@ import com.yanzhenjie.nohttp.rest.SimpleResponseListener;
 import com.yanzhenjie.nohttp.rest.StringRequest;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 /**
  * Created by ncx on 2020/3/10
- * 接口统一请求单例
+ * 接口统一请求类
  */
 public class RequestServer {
     public static final String UNKNOW_ERROR = "0x001";
@@ -35,7 +41,7 @@ public class RequestServer {
     public static final String OTHER_MESSAGE_CODE = "0x999";
 
 
-    //这个IP需要视具体项目修改
+    //    private static final String HOST = "http://150.138.11.180:6401/";
     private static final String HOST = "http://sxsj.reading.sdteleiptv.com:6401/";
 
     private static final String UPDATE_VERSION = HOST + "apk/up_version";
@@ -101,7 +107,8 @@ public class RequestServer {
     }
 
     //获取版本更新
-    public void updateVersion(int versionCode, String userId, ResponseListener<UpdateResponseBean> listener) {
+    public void updateVersion(Context mContext, int versionCode, String userId,
+                              ResponseListener<UpdateResponseBean> listener) {
         StringRequest request = new StringRequest(UPDATE_VERSION, RequestMethod.GET);
         //当前版本号
         request.add("versionCode", versionCode);
@@ -116,6 +123,16 @@ public class RequestServer {
                     UpdateResponseBean bean = UpdateResponseBean.objectFromData(responseStr);
                     if (bean.getCode() == 0) {
                         if (bean.getData() != null) {
+                            if (bean.getData().getUpload_type() != 1) {
+                                //upload_type为1才更新
+                                listener.onFailure(OTHER_MESSAGE_CODE, "upload_type不为1,无需更新");
+                                return;
+                            }
+                            if (bean.getData().getVersion_code() <= ToolsUtil.getVersionCode(mContext)) {
+                                //接口返回版本比本地版本高才更新
+                                listener.onFailure(OTHER_MESSAGE_CODE, "当前版本和后台版本一直,无需更新");
+                                return;
+                            }
                             listener.onSuccess(bean);
                         } else {
                             listener.onFailure(OTHER_MESSAGE_CODE, OTHER_MESSAGE);
