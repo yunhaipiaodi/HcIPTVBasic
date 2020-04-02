@@ -83,6 +83,9 @@ public abstract class BaseWebActivity extends AppCompatActivity {
                         if ("open_apk_log_status".equals(data.getSetting_name())) {
                             if ("1".equals(data.getSetting_value())) {
                                 Logger.setLogNeedWriteToFile(true);
+                                els.saveBoolData(ELS.LAST_LOG_SWITCH, true);
+                            } else {
+                                els.saveBoolData(ELS.LAST_LOG_SWITCH, false);
                             }
                         }
                     }
@@ -90,6 +93,7 @@ public abstract class BaseWebActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(String code, String message) {
+                    els.saveBoolData(ELS.LAST_LOG_SWITCH, false);
                 }
             });
         }

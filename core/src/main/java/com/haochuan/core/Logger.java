@@ -135,7 +135,7 @@ public class Logger {
             //拼接需要写入的文本
             String logStr = getCurrentDate() + " /" + logType + " /" + tag + ": " + text + "\n";
             //第二个参数表示接着之前的文本写入,不会覆盖
-            fos = new FileOutputStream(els.getStringData(ELS.LOG_FILE_NAME),true);
+            fos = new FileOutputStream(els.getStringData(ELS.LOG_FILE_NAME), true);
             fos.write(logStr.getBytes());
         } catch (Exception e) {
             e.printStackTrace();
