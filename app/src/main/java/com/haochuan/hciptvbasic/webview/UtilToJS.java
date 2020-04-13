@@ -95,7 +95,7 @@ public class UtilToJS {
      * 退出app
      * */
     @JavascriptInterface
-    public int appExit(){
+    public void appExit(){
         try{
             HandlerUtil.runOnUiThread(() -> {
                 Logger.d("UtilToJS,appExit()");
@@ -108,10 +108,8 @@ public class UtilToJS {
                    System.exit(0);
                }
             });
-            return SUCCESS;
         }catch (Exception e){
             e.printStackTrace();
-            return EXCEPTION_ERROR;
         }
     }
 
