@@ -16,6 +16,7 @@ import com.haochuan.core.Logger;
 import com.haochuan.core.util.JSONUtil;
 import com.haochuan.core.util.JsUtil;
 import com.haochuan.core.util.MathUtil;
+import com.haochuan.core.util.MediaStatusCode;
 import com.haochuan.core.util.RegexUtil;
 import com.haochuan.core.util.ScreenSnap;
 import com.haochuan.weilai_video.WeiLaiVideoPlayer;
@@ -54,7 +55,7 @@ public class PlayerToJS {
      * */
     public void onPlayerPreparing(){
         Logger.d("PlayerToJS,onPlayerPreparing()");
-        executePlayStatusEvent(1);
+        executePlayStatusEvent(MediaStatusCode.PREPARE);
     }
 
     /*
@@ -62,7 +63,7 @@ public class PlayerToJS {
      * */
     public void onPlayerPlaying(){
         Logger.d("PlayerToJS,onPlayerPlaying()");
-        executePlayStatusEvent(2);
+        executePlayStatusEvent(MediaStatusCode.PLAY);
     }
 
     /*
@@ -70,7 +71,7 @@ public class PlayerToJS {
      * */
     public void onPlayerResume(){
         Logger.d("PlayerToJS,onPlayerResume()");
-        executePlayStatusEvent(4);
+        executePlayStatusEvent(MediaStatusCode.PLAY);
     }
 
     /*
@@ -78,7 +79,7 @@ public class PlayerToJS {
      * */
     public void onPlayerPause(){
         Logger.d("PlayerToJS,onPlayerPause()");
-        executePlayStatusEvent(3);
+        executePlayStatusEvent(MediaStatusCode.PAUSE);
     }
 
     /*
@@ -86,7 +87,7 @@ public class PlayerToJS {
      * */
     public void onPlayingBuffer(){
         Logger.d("PlayerToJS,onPlayerBuffer()");
-        executePlayStatusEvent(5);
+        executePlayStatusEvent(MediaStatusCode.BUFFER);
     }
 
     /*
@@ -94,7 +95,7 @@ public class PlayerToJS {
      * */
     public void onPlayerComplete(){
         Logger.d("PlayerToJS,onPlayerComplete()");
-        executePlayStatusEvent(6);
+        executePlayStatusEvent(MediaStatusCode.COMPLETE);
     }
 
     /*

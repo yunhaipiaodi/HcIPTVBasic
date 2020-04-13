@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import com.haochuan.core.BaseMediaPlayer;
 import com.haochuan.core.IVideoPlayer;
 import com.haochuan.core.Logger;
+import com.haochuan.core.util.MediaStatusCode;
 
 import tv.icntv.been.IcntvPlayerInfo;
 import tv.icntv.icntvplayersdk.IcntvPlayer;
@@ -24,7 +25,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
     private FrameLayout icntvPlayerContainer = null;    //cntv播放器容器
     private IVideoPlayer iVideoPlayer;
     protected boolean mHadPrepared = false;                 //Prepared
-    private int playerStatus = 6;
+    private int playerStatus = MediaStatusCode.STOP;
     private int startTime = 0;                                 //播放器开始的时间,单位毫秒
 
 
@@ -87,7 +88,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
         if(isPrePared()){
             if(!icntvPlayer.isPlaying()){
                 icntvPlayer.startVideo();
-                playerStatus = 4;   //播放中
+                playerStatus = MediaStatusCode.PLAY;   //播放中
                 iVideoPlayer.onResume();
             }else {
                 Logger.w("当前已经在播放，不用执行resume");
@@ -107,7 +108,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
         if(isPrePared()){
             if(icntvPlayer.isPlaying()){
                 icntvPlayer.pauseVideo();
-                playerStatus = 3;   //暂停中
+                playerStatus = MediaStatusCode.PAUSE;   //暂停中
                 iVideoPlayer.onPause();
             }
         }else{
@@ -217,7 +218,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
             }
             icntvPlayer = new IcntvPlayer(getContext(), icntvPlayerContainer, icntvPlayerInfo, iICntvPlayInterface);
             iVideoPlayer.onPreparing();
-            playerStatus = 1;   //视频准备中；
+            playerStatus = MediaStatusCode.PREPARE;   //视频准备中；
         }catch (Exception e){
             e.printStackTrace();
             Logger.e(e.getMessage());
@@ -239,7 +240,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
         icntvPlayer.release();
         icntvPlayer = null;
         mHadPrepared = false;
-        playerStatus = 6;
+        playerStatus = MediaStatusCode.STOP;
     }
 
     /*
@@ -298,32 +299,32 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
         public void onPrepared() {
             mHadPrepared = true;
             iVideoPlayer.onPlaying();
-            playerStatus = 2;
+            playerStatus = MediaStatusCode.PLAY;
             seekToStartTime();
         }
 
         @Override
         public void onCompletion() {
             iVideoPlayer.onCompletion();
-            playerStatus = 6;
+            playerStatus = MediaStatusCode.COMPLETE;
         }
 
         @Override
         public void onBufferStart(String s) {
             iVideoPlayer.onPlayingBuffering();
-            playerStatus = 5;
+            playerStatus = MediaStatusCode.BUFFER;
         }
 
         @Override
         public void onBufferEnd(String s) {
             iVideoPlayer.onPlaying();
-            playerStatus = 4;
+            playerStatus = MediaStatusCode.PLAY;
         }
 
         @Override
         public void onError(int i, int i1, String s) {
             mHadPrepared = false;
-            playerStatus = 6;
+            playerStatus = MediaStatusCode.STOP;
             handleError(i,i1,s);
         }
 
@@ -331,7 +332,7 @@ public class WeiLaiVideoPlayer extends BaseMediaPlayer {
         public void onTimeout() {
             iVideoPlayer.onError(100,10001);
             mHadPrepared = false;
-            playerStatus = 6;
+            playerStatus = MediaStatusCode.STOP;
         }
     };
 }

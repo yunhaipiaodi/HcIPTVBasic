@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import com.haochuan.core.BaseMediaPlayer;
 import com.haochuan.core.IVideoPlayer;
 import com.haochuan.core.Logger;
+import com.haochuan.core.util.MediaStatusCode;
 
 import static com.haochuan.core.util.MessageCode.PLAYER_OBJ_NULL;
 
@@ -20,7 +21,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
     private VideoView videoView;   //系统播放器对象
     private IVideoPlayer iVideoPlayer; //播放器事件监控
     private MediaPlayer mediaPlayer;
-    private int playerStatus = 6;
+    private int playerStatus = MediaStatusCode.STOP;
     protected boolean mHadPrepared = false;                 //Prepared
     private int startTime = 0;//播放器开始的时间,单位毫秒
 
@@ -52,7 +53,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
         videoView.setOnPreparedListener((mp) ->{
             mediaPlayer = mp;
             iVideoPlayer.onPlaying();
-            playerStatus = 2;
+            playerStatus = MediaStatusCode.PLAY;
             mHadPrepared = true;
             seekToStartTime();
         });
@@ -63,12 +64,12 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
                 case MediaPlayer.MEDIA_INFO_BUFFERING_START:
                     // MediaPlayer暂时暂停内部播放以缓冲更多数据。
                     iVideoPlayer.onPlayingBuffering();
-                    playerStatus = 5;
+                    playerStatus = MediaStatusCode.BUFFER;
                     break;
                 case MediaPlayer.MEDIA_INFO_BUFFERING_END:
                     // 填充缓冲区后，MediaPlayer正在恢复播放。
                     iVideoPlayer.onPlaying();
-                    playerStatus = 4;
+                    playerStatus = MediaStatusCode.PLAY;
                     break;
                 default:
                     break;
@@ -79,7 +80,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
         videoView.setOnErrorListener((mp,what,extra) -> {
             mediaPlayer = mp;
             iVideoPlayer.onError(what,extra);
-            playerStatus = 6;
+            playerStatus = MediaStatusCode.STOP;
             mHadPrepared = false;
             return true;
         });
@@ -88,7 +89,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
             mediaPlayer = mp;
             iVideoPlayer.onCompletion();
             mHadPrepared = false;
-            playerStatus = 6;
+            playerStatus = MediaStatusCode.COMPLETE;
         });
     }
 
@@ -104,7 +105,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
         }
         videoView.setVideoPath(url);
         videoView.start();
-        playerStatus = 1;   //视频准备中；
+        playerStatus = MediaStatusCode.PREPARE;  //视频准备中；
     }
 
     @Override
@@ -123,7 +124,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
         }
         if(isPrePared()){
             videoView.start();
-            playerStatus = 4;   //播放中；
+            playerStatus = MediaStatusCode.PLAY;   //播放中；
             iVideoPlayer.onResume();
         }else{
             Logger.w("视频未准备好，不能继续播放");
@@ -139,7 +140,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
         }
         if(isPrePared()){
             videoView.pause();
-            playerStatus = 3;   //暂停中；
+            playerStatus = MediaStatusCode.PAUSE;   //暂停中；
             iVideoPlayer.onPause();
         }else{
             Logger.w("视频未准备好，不能暂停");
@@ -171,7 +172,7 @@ public class SystemVideoPlayer extends BaseMediaPlayer {
         videoView.stopPlayback();
         videoView.suspend();
         mHadPrepared = false;
-        playerStatus = 6;   //暂停中；
+        playerStatus = MediaStatusCode.STOP;   //暂停中；
         iVideoPlayer.onDestroy();
     }
 

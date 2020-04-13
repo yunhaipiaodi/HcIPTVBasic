@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.haochuan.core.IVideoPlayer;
 import com.haochuan.core.Logger;
+import com.haochuan.core.util.MediaStatusCode;
 import com.shuyu.gsyvideoplayer.utils.Debuger;
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer;
 
@@ -159,22 +160,22 @@ public class EmptyControlVideoView extends StandardGSYVideoPlayer {
         int currentStatus = 6;
         switch (mCurrentState){
             case 1:
-                currentStatus =1;
+                currentStatus = MediaStatusCode.PREPARE;
                 break;
             case 2:
-                currentStatus =2;
+                currentStatus = MediaStatusCode.PLAY;
                 break;
             case 5:
-                currentStatus =3;
+                currentStatus = MediaStatusCode.PAUSE;
                 break;
             case 3:
-                currentStatus =4;
+                currentStatus = MediaStatusCode.BUFFER;
                 break;
             case 6:
-                currentStatus =5;
+                currentStatus = MediaStatusCode.COMPLETE;
                 break;
             default:
-                currentStatus =6;
+                currentStatus = MediaStatusCode.STOP;
                 break;
         }
         return currentStatus;
