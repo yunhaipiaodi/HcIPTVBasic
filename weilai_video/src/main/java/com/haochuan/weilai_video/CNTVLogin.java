@@ -142,7 +142,7 @@ public class CNTVLogin {
     private void initLog(String extVersionType, String extVersionCode, String serverLog, String deviceID, String mac) {
         Logger.d(String.format("CNTVLogin,initLog(%s,%s,%s,%s,%s)",
                 extVersionType, extVersionCode, serverLog, deviceID, mac));
-        if (logSDK.getInstance().sdkInit(serverLog, deviceID, deviceID, BuildConfig.icntv_app_channel, BuildConfig.icntv_app_key)) {
+        if (logSDK.getInstance().sdkInit(serverLog, "", deviceID, BuildConfig.icntv_app_channel, BuildConfig.icntv_app_key)) {
             new ReportCNTVLog().reportHomeLog(extVersionType, extVersionCode);
         }
     }

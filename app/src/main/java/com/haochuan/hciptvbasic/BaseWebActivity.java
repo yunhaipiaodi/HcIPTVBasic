@@ -219,7 +219,8 @@ public abstract class BaseWebActivity extends AppCompatActivity {
         //如果是未来版本，请用这段代码
         if(cntvLogin.isOpenAdshow()){
             Log.d("djbl","onBackPressed close ad");
-            cntvLogin.removeADImage(this);
+            //未来规则有更改，在开屏广告期间，不能主动关闭广告
+            //cntvLogin.removeADImage(this);
         }else{
             utilToJS.onBackPressed();
         }

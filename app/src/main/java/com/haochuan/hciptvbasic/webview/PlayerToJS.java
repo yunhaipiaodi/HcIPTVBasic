@@ -349,10 +349,10 @@ public class PlayerToJS {
                 Logger.e(PLAYER_OBJ_NULL,"播放器对象为空,不能播放");
                 return PLAYER_OBJ_NULL;
             }
-            if(!RegexUtil.isUrl(url)){
+           /* if(!RegexUtil.isUrl(url)){
                 Logger.e(PARAM_ERROR,"调用play函数，url格式不正确，不能执行播放，请检查;url:" + url);
                 return PARAM_ERROR;
-            }
+            }*/
 
 
             if(MathUtil.isDigitsOnly(x) && MathUtil.isDigitsOnly(y) && MathUtil.isDigitsOnly(width) && MathUtil.isDigitsOnly(height) && MathUtil.isDigitsOnly(seekTime)){
